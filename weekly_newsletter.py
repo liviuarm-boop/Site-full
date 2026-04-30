@@ -1,3 +1,9 @@
+def telegram_teaser(points):
+    md = "🗞 *Newsletter săptămânal*\n\n"
+    for p in points[:4]:
+        md += f"• {p}\n"
+    md += "\nCitește complet → ghidbursa.ro/newsletter.html"
+    telegram_send(md)
 #!/usr/bin/env python3
 """
 GhidBursa.ro — weekly_newsletter.py
