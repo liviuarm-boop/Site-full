@@ -1,0 +1,81 @@
+name: Weekly Newsletter BVB
+
+on:
+  schedule:
+    # Marți 07:00 UTC = 09:00 România — generează preview automat
+    - cron: '0 7 * * 2'
+
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'preview = trimite doar la tine | send = trimite la toți'
+        required: true
+        default: 'preview'
+        type: choice
+        options:
+          - preview
+          - send
+
+jobs:
+  newsletter:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      # ── PREVIEW (rulează automat marțea sau manual cu mode=preview) ──
+      - name: Generate & send preview to owner
+        if: github.event_name == 'schedule' || inputs.mode == 'preview'
+        env:
+          ANTHROPIC_API_KEY:      ${{ secrets.ANTHROPIC_API_KEY }}
+          RESEND_API_KEY:         ${{ secrets.RESEND_API_KEY }}
+          NEWSLETTER_WORKER_URL:  ${{ secrets.NEWSLETTER_WORKER_URL }}
+          EXPORT_SECRET:          ${{ secrets.EXPORT_SECRET }}
+          OWNER_EMAIL:            ${{ secrets.OWNER_EMAIL }}
+          TELEGRAM_BOT_TOKEN:     ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHANNEL_ID:    ${{ secrets.TELEGRAM_CHANNEL_ID }}
+        run: python weekly_newsletter.py --preview
+
+      # Salvează draft-ul pentru pasul de send ulterior
+      - name: Save draft artifact
+        if: github.event_name == 'schedule' || inputs.mode == 'preview'
+        uses: actions/upload-artifact@v4
+        with:
+          name: newsletter-draft-${{ github.run_number }}
+          path: /tmp/newsletter_draft.json
+          retention-days: 7
+
+      # ── SEND (rulează DOAR manual cu mode=send) ──
+      - name: Download latest draft (if exists)
+        if: inputs.mode == 'send'
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          workflow: weekly-newsletter.yml
+          name_is_regexp: true
+          name: newsletter-draft-.*
+          path: /tmp/
+          search_artifacts: true
+        continue-on-error: true  # dacă nu există draft, regenerează
+
+      - name: Send to all subscribers
+        if: inputs.mode == 'send'
+        env:
+          ANTHROPIC_API_KEY:      ${{ secrets.ANTHROPIC_API_KEY }}
+          RESEND_API_KEY:         ${{ secrets.RESEND_API_KEY }}
+          NEWSLETTER_WORKER_URL:  ${{ secrets.NEWSLETTER_WORKER_URL }}
+          EXPORT_SECRET:          ${{ secrets.EXPORT_SECRET }}
+          OWNER_EMAIL:            ${{ secrets.OWNER_EMAIL }}
+          TELEGRAM_BOT_TOKEN:     ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHANNEL_ID:    ${{ secrets.TELEGRAM_CHANNEL_ID }}
+        run: python weekly_newsletter.py --send
