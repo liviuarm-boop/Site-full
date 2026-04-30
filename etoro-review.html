@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+
+<html lang="ro">
+<head>
+<link href="favicon.svg" rel="icon" type="image/svg+xml"/>
+<link href="favicon.svg" rel="shortcut icon"/>
+<meta charset="utf-8"/>
+<style data-critical="true">
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+ --black: #080B0F;
+ --dark: #0D1117;
+ --card: #111820;
+ --card2: #141E28;
+ --border: #1E2A38;
+ --accent: #00D4FF;
+ --accent2: #00FF94;
+ --gold: #FFB800;
+ --red: #FF4D6D;
+ --text: #E8EDF2;
+ --muted: #6B7A8D;
+ --font-display: 'Plus Jakarta Sans', sans-serif;
+ --font-body: 'DM Sans', sans-serif;
+ --nav-h: 56px;
+ --ticker-h: 76px;
+ --offset: 132px; 
+}
+@media (min-width: 768px) {
+ :root {
+ --nav-h: 72px;
+ --offset: 148px;
+ }
+}
+html { scroll-behavior: smooth; font-size: 15px; }
+body {
+ background: var(--black);
+ color: var(--text);
+ font-family: var(--font-body);
+ line-height: 1.6;
+ overflow-x: hidden;
+ -webkit-font-smoothing: antialiased;
+ width: 100%;
+ max-width: 100vw;
+}
+body::before {
+ content: '';
+ position: fixed; inset: 0;
+ background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+ pointer-events: none; z-index: 0; opacity: 0.5;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+img { max-width: 100%; height: auto; display: block; }
+h1, h2, h3, h4 {
+ font-family: var(--font-display);
+ -webkit-font-smoothing: antialiased;
+ letter-spacing: -0.01em;
+ line-height: 1.18;
+}
+h1 { font-size: clamp(18px, 2vw, 28px); font-weight: 700; }
+h2 { font-size: clamp(18px, 2.5vw, 28px); font-weight: 700; }
+h3 { font-size: clamp(15px, 2vw, 20px); font-weight: 600; }
+h4 { font-size: 14px; font-weight: 700; }
+p { color: rgba(232,237,242,.82); line-height: 1.75; font-size: 15px; }
+nav {
+ position: fixed; top: 0; left: 0; right: 0;
+ z-index: 200;
+ height: var(--nav-h);
+ display: flex; align-items: center; justify-content: space-between;
+ padding: 0 20px;
+ background: rgba(8,11,15,0.92);
+ backdrop-filter: blur(24px);
+ border-bottom: 1px solid var(--border);
+}
+@media (min-width: 768px) { nav { padding: 0 48px; } }
+@media (min-width: 1280px) { nav { padding: 0 64px; } }
+.nav-logo {
+ font-family: var(--font-display);
+ font-size: 18px; font-weight: 800; letter-spacing: -0.02em;
+ color: var(--text); text-decoration: none;
+ display: flex; align-items: center; gap: 8px;
+ flex-shrink: 0;
+}
+@media (min-width: 768px) { .nav-logo { font-size: 22px; } }
+.nav-logo span { color: var(--accent); }
+.nav-logo:hover { text-decoration: none; }
+.nav-dot {
+ width: 8px; height: 8px;
+ background: var(--accent2); border-radius: 50%;
+ animation: pulse 2s ease-in-out infinite; flex-shrink: 0;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+.nav-links {
+ display: none;
+ align-items: center; gap: 28px; list-style: none;
+}
+@media (min-width: 768px) { .nav-links { display: flex; } }
+.nav-links a { color: var(--muted); font-size: 14px; font-weight: 500; transition: color .2s; text-decoration: none; }
+.nav-links a:hover { color: var(--text); }
+.nav-cta {
+ background: var(--accent) !important;
+ color: var(--black) !important;
+ padding: 9px 18px; border-radius: 6px;
+ font-weight: 700 !important; font-size: 13px !important;
+}
+.nav-cta:hover { opacity: .85; }
+.hamburger {
+ display: flex; flex-direction: column; gap: 5px;
+ background: none; border: none; cursor: pointer; padding: 6px;
+}
+@media (min-width: 768px) { .hamburger { display: none; } }
+.hamburger span {
+ display: block; width: 22px; height: 2px;
+ background: var(--text); border-radius: 2px;
+ transition: all .3s;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.mobile-nav {
+ display: none; position: fixed;
+ top: var(--nav-h); left: 0; right: 0;
+ background: rgba(8,11,15,.98);
+ border-bottom: 1px solid var(--border);
+ z-index: 199; flex-direction: column;
+ padding: 8px 0 16px;
+ transform: translateY(-10px); opacity: 0;
+ transition: transform .25s, opacity .25s;
+}
+.mobile-nav.open {
+ display: flex; transform: translateY(0); opacity: 1;
+}
+.mobile-nav a {
+ display: block; padding: 14px 24px;
+ color: var(--text); font-size: 15px; font-weight: 500;
+ border-bottom: 1px solid rgba(30,42,56,.5);
+ text-decoration: none; transition: background .15s;
+}
+.mobile-nav a:last-child { border-bottom: none; }
+.mobile-nav a:hover { background: rgba(0,212,255,.05); }
+.mobile-nav .mobile-cta {
+ margin: 12px 24px 0;
+ background: var(--accent); color: var(--black) !important;
+ border-radius: 8px; text-align: center; font-weight: 700 !important;
+ border-bottom: none !important;
+}
+.ticker-bar {
+ position: sticky;
+ top: var(--nav-h);
+ z-index: 150;
+ height: var(--ticker-h);
+ background: rgba(8,11,15,.98);
+ border-bottom: 1px solid var(--border);
+ overflow: hidden;
+}
+.ticker-bar .tradingview-widget-container,
+.ticker-bar .tradingview-widget-container__widget { height: 100% !important; }
+.section-inner { max-width: 1280px; margin: 0 auto; padding: 0 20px; }
+.reveal,.reveal-left,.reveal-right,.reveal-scale{
+ opacity:0;
+ transition:opacity .65s cubic-bezier(.4,0,.2,1),transform .65s cubic-bezier(.4,0,.2,1);
+ will-change:opacity,transform;
+}
+.reveal{transform:translateY(28px)}
+.reveal-left{transform:translateX(-28px)}
+.reveal-right{transform:translateX(28px)}
+.reveal-scale{transform:scale(.96)}
+.reveal.visible,.reveal-left.visible,.reveal-right.visible,.reveal-scale.visible{
+ opacity:1;transform:none;
+}
+@keyframes forceVisible { to { opacity: 1; tran
+.btn {
+ display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+ font-family: var(--font-display); font-weight: 700;
+ border-radius: 8px; cursor: pointer;
+ text-decoration: none; transition: opacity .2s, transform .15s;
+ white-space: nowrap;
+}
+.btn:hover { opacity: .85; transform: translateY(-1px); text-decoration: none; }
+.btn:active { transform: translateY(0); }
+.btn-primary { background: var(--accent); color: var(--black); padding: 13px 24px; font-size: 14px; }
+.btn-secondary { background: rgba(0,212,255,.1); border: 1px solid rgba(0,212,255,.25); color: var(--accent); padding: 12px 22px; font-size: 14px; }
+.btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 11px 20px; font-size: 13px; }
+.btn-ghost:hover { border-color: var(--text); color: var(--text); }
+.btn-green { background: rgba(0,255,148,.1); border: 1px solid rgba(0,255,148,.25); color: var(--accent2); padding: 12px 22px; font-size: 14px; }
+.btn-full { width: 100%; }
+.btn-sm { padding: 8px 14px; font-size: 12px; }
+.btn-lg { padding: 16px 32px; font-size: 16px; }
+</style>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Review eToro România 2026 — Copy Trading, Comisioane, Siguranță | GhidBursa.ro</title>
+<meta name="description" content="Review eToro România 2026: copy trading, comisioane reale, retrageri. Pentru cine e potrivit și pentru cine nu."/>
+
+<style>
+ *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ :root { --black: #080B0F; --card: #111820; --border: #1E2A38; --accent: #00D4FF; --accent2: #00FF94; --gold: #FFB800; --red: #FF4D6D; --text: #E8EDF2; --muted: #6B7A8D; --font-display: 'Plus Jakarta Sans', sans-serif; --font-body: 'DM Sans', sans-serif; }
+ body { background: var(--black); color: var(--text); font-family: var(--font-body); font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 18px 60px; background: rgba(8,11,15,0.92); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+ .nav-logo { font-family: var(--font-display); font-size: 20px; font-weight: 700; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+ .nav-logo span { color: var(--accent); }
+ .nav-dot { width: 7px; height: 7px; background: var(--accent2); border-radius: 50%; animation: pulse 2s ease-in-out infinite; flex-shrink: 0; }
+ .nav-links { display: flex; align-items: center; gap: 28px; list-style: none; }@media(min-width:768px) and (max-width:1100px){.nav-links{gap:16px!important}.nav-links a{font-size:13px!important}.nav-cta{padding:7px 12px!important;font-size:12px!important}}
+ .nav-links a { color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 500; transition: color 0.2s; }
+ .nav-links a:hover { color: var(--text); }
+ .nav-cta { background: var(--accent) !important; color: var(--black) !important; padding: 9px 18px; border-radius: 6px; font-weight: 600 !important; font-size: 13px !important; }
+ .nav-cta:hover { opacity: 0.85; }
+ .layout{max-width:1200px;margin:0 auto;padding:calc(var(--offset) + 20px) 20px 60px;display:grid;grid-template-columns:1fr;gap:20px;align-items:start}@media(min-width:900px){.layout{padding:calc(var(--offset)+20px) 60px 80px 80px;grid-template-columns:1fr 320px;gap:60px}}
+ .breadcrumb { font-size: 12px; color: var(--muted); margin-bottom: 20px; display: flex; gap: 8px; }
+ .breadcrumb a { color: var(--muted); text-decoration: none; } .breadcrumb a:hover { color: var(--accent); }
+ .article-cat { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.2); padding: 5px 12px; border-radius: 4px; margin-bottom: 20px; }
+ h1 { font-family: var(--font-display); font-size: 44px; font-weight: 700; line-height: 1.08; letter-spacing: -0.01em; margin-bottom: 20px; -webkit-font-smoothing: antialiased; }
+ .article-meta { display: flex; align-items: center; gap: 20px; font-size: 13px; color: var(--muted); padding: 20px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-bottom: 40px; }
+ .score-hero { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 40px; margin-bottom: 48px; display: flex; gap: 40px; align-items: center; }
+ .score-num-big { font-family: var(--font-display); font-size: 72px; font-weight: 700; line-height: 1; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; -webkit-font-smoothing: antialiased; }
+ .score-label { font-size: 12px; color: var(--muted); margin-top: 8px; }
+ .score-breakdown { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+ .score-row { display: flex; flex-direction: column; gap: 6px; }
+ .score-row-label { font-size: 13px; color: var(--muted); display: flex; justify-content: space-between; }
+ .score-row-label span { color: var(--text); font-weight: 600; }
+ .score-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+ .score-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+ .verdict { background: rgba(0,255,148,0.05); border: 1px solid rgba(0,255,148,0.2); border-radius: 12px; padding: 28px; margin-bottom: 40px; }
+ .verdict-title { font-family: var(--font-display); font-weight: 700; font-size: 16px; color: var(--accent2); margin-bottom: 12px; }
+ .verdict p { font-size: 15px; color: var(--text); line-height: 1.7; }
+ .pros-cons { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; background: var(--border); border-radius: 12px; overflow: hidden; margin: 28px 0; }
+ .pros, .cons { background: var(--card); padding: 28px; }
+ .pros-title { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--accent2); margin-bottom: 16px; }
+ .cons-title { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--red); margin-bottom: 16px; }
+ .pros ul, .cons ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+ .pros li, .cons li { font-size: 14px; line-height: 1.5; display: flex; gap: 10px; }
+ .pros li::before { content: '✓'; color: var(--accent2); font-weight: 700; flex-shrink: 0; }
+ .cons li::before { content: '✗'; color: var(--red); font-weight: 700; flex-shrink: 0; }
+ .content h2 { font-family: var(--font-display); font-size: 26px; font-weight: 700; letter-spacing: -0.01em; margin: 48px 0 20px; padding-top: 48px; border-top: 1px solid var(--border); -webkit-font-smoothing: antialiased; }
+ .content h2:first-child { margin-top: 0; border-top: none; padding-top: 0; }
+ .content h3 { font-family: var(--font-display); font-size: 19px; font-weight: 700; margin: 28px 0 12px; }
+ .content p { color: rgba(232,237,242,0.85); line-height: 1.8; margin-bottom: 18px; }
+ .content strong { color: var(--text); font-weight: 600; }
+ .comm-table { width: 100%; border-collapse: collapse; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 24px 0; }
+ .comm-table th { background: rgba(255,255,255,0.02); padding: 14px 20px; text-align: left; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); }
+ .comm-table td { padding: 16px 20px; border-bottom: 1px solid var(--border); font-size: 14px; }
+ .comm-table tr:last-child td { border-bottom: none; }
+ .comm-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+ .highlight-row td { color: var(--accent2); font-weight: 600; }
+ .warning { background: rgba(255,184,0,0.06); border: 1px solid rgba(255,184,0,0.2); border-radius: 12px; padding: 24px; margin: 28px 0; }
+ .warning-title { font-weight: 700; color: var(--gold); margin-bottom: 8px; font-size: 14px; }
+ .warning p { font-size: 14px; color: rgba(232,237,242,0.75); margin: 0; line-height: 1.6; }
+ .info-box { background: rgba(0,212,255,0.05); border: 1px solid rgba(0,212,255,0.15); border-radius: 12px; padding: 24px; margin: 28px 0; }
+ .info-box p { font-size: 14px; color: rgba(232,237,242,0.8); margin: 0; line-height: 1.7; }
+ .sidebar { position: sticky; top: 100px; display: flex; flex-direction: column; gap: 24px; }
+ .cta-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 32px; text-align: center; }
+ .cta-card h3 { font-family: var(--font-display); font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+ .cta-card p { font-size: 13px; color: var(--muted); margin-bottom: 24px; line-height: 1.6; }
+ .btn-main { display: block; background: var(--accent); color: var(--black); font-family: var(--font-display); font-weight: 700; font-size: 15px; padding: 16px; border-radius: 8px; text-decoration: none; transition: opacity 0.2s; margin-bottom: 12px; }
+ .btn-main:hover { opacity: 0.85; }
+ .btn-sec { display: block; background: transparent; border: 1px solid var(--border); color: var(--muted); font-size: 13px; padding: 14px; border-radius: 8px; text-decoration: none; transition: border-color 0.2s, color 0.2s; }
+ .btn-sec:hover { border-color: var(--text); color: var(--text); }
+ .cta-disclaimer { font-size: 10px; color: var(--muted); margin-top: 12px; line-height: 1.5; opacity: 0.7; }
+ .toc-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 28px; }
+ .toc-card h4 { font-family: var(--font-display); font-size: 14px; font-weight: 700; margin-bottom: 16px; }
+ .toc-card ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+ .toc-card a { font-size: 13px; color: var(--muted); text-decoration: none; display: flex; align-items: center; gap: 8px; transition: color 0.2s; }
+ .toc-card a:hover { color: var(--accent); }
+ .toc-card a::before { content: ''; width: 4px; height: 4px; background: var(--border); border-radius: 50%; flex-shrink: 0; }
+ .facts-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 28px; }
+ .facts-card h4 { font-family: var(--font-display); font-size: 14px; font-weight: 700; margin-bottom: 16px; }
+ .fact-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+ .fact-row:last-child { border-bottom: none; }
+ .fact-key { color: var(--muted); }
+ .fact-val { color: var(--text); font-weight: 600; text-align: right; }
+ .fact-val.good { color: var(--accent2); }
+ .fact-val.warn { color: var(--gold); }
+ .fact-val.bad { color: var(--red); }
+ footer { border-top: 1px solid var(--border); padding: 40px 60px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--muted); }
+ footer a { color: var(--muted); text-decoration: none; }
+</style>
+<link href="shared.css?v=12" rel="stylesheet"/>
+<link href="mobile.css?v=12" rel="stylesheet"/>
+<link href="https://www.ghidbursa.ro/etoro-review.html" rel="canonical"/>
+<meta content="website" property="og:type"/>
+<meta content="Review eToro România 2026 — Copy Trading, Comisioane, Siguranță | GhidBursa.ro" property="og:title"/>
+<meta content="Review complet eToro România 2026. Copy trading, comisioane, acțiuni fără comision, criptomonede. Tot ce trebuie să știi înainte să deschizi cont." property="og:description"/>
+<meta content="https://www.ghidbursa.ro/etoro-review.html" property="og:url"/>
+<meta content="GhidBursa.ro" property="og:site_name"/>
+<meta content="summary" name="twitter:card"/>
+<meta content="Review eToro România 2026 — Copy Trading, Comisioane, Siguranță | GhidBursa.ro" name="twitter:title"/>
+<meta content="Review complet eToro România 2026. Copy trading, comisioane, acțiuni fără comision, criptomonede. Tot ce trebuie să știi înainte să deschizi cont." name="twitter:description"/>
+<script type="application/ld+json">
+{"dateModified": "2026-03-19", "@context":"https://schema.org","@type":"Review","name":"Review eToro România 2026 — Copy Trading, Comisioane, Siguranță | GhidBursa.ro","description":"Review complet eToro România 2026. Copy trading, comisioane, acțiuni fără comision, criptomonede. Tot ce trebuie să știi înainte să deschizi cont.","url":"https://www.ghidbursa.ro/etoro-review.html","itemReviewed":{"@type":"FinancialService","name":"Etoro"},"author":{"@type":"Organization","name":"GhidBursa.ro"}}
+</script>
+<meta property="og:image" content="https://www.ghidbursa.ro/og-image.png"/>
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta property="og:locale" content="ro_RO"/>
+  <meta property="og:site_name" content="GhidBursa.ro"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="@GhidBursa"/>
+  <meta name="twitter:image" content="https://www.ghidbursa.ro/og-image.png"/>
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"/>
+  <meta name="author" content="GhidBursa.ro"/>
+  <meta http-equiv="content-language" content="ro"/>
+  <meta name="theme-color" content="#080B0F"/>
+  <link rel="dns-prefetch" href="//s3.tradingview.com"/>
+    <link rel="stylesheet" href="/fonts/fonts.css"/>
+<link rel="preload" href="/fonts/plus-jakarta-sans-700.woff2" as="font" type="font/woff2" crossorigin="anonymous" fetchpriority="high"/>
+<link rel="stylesheet" href="/cookie-consent.css"/>
+</head>
+<body class="no-ticker">
+<nav>
+<a class="nav-logo" href="index.html"><div class="nav-dot"></div>Ghid<span>Bursa</span>.ro</a>
+<ul class="nav-links">
+<li><a href="brokeri.html">Brokeri</a></li>
+<li><a href="ghiduri.html">Ghiduri</a></li>
+<li><a href="screener.html">Screener BVB</a></li>
+<li><a href="calculatoare.html">Calculatoare</a></li>
+<li><a href="newsletter.html">Newsletter</a></li>
+<li><a class="nav-cta" href="brokeri.html">Compară brokeri →</a></li>
+</ul>
+<button aria-label="Meniu" class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
+</nav>
+<div class="mobile-nav" id="mobileNav">
+<a href="index.html">Acasă</a>
+<a href="brokeri.html">Brokeri</a>
+<a href="ghiduri.html">Ghiduri</a>
+<a href="screener.html">Screener BVB</a>
+<a href="calculatoare.html">Calculatoare</a>
+<a href="newsletter.html">Newsletter</a>
+<a href="fear-greed.html">Sentiment BVB</a>
+<a href="fidelis-2025.html">Fidelis 2026</a>
+<a href="glosar.html">Glosar</a>
+<a href="despre-noi.html">Contact</a>
+<a class="mobile-cta" href="brokeri.html">Compară brokeri →</a>
+</div>
+<div class="layout">
+<main>
+<div class="breadcrumb"><a href="index.html">Acasă</a> › <a href="index.html#brokeri">Brokeri</a> › Review eToro</div>
+<div class="article-cat">Review broker</div>
+<h1>eToro România 2026 — Copy trading și 0% comision.</h1>
+<div class="article-meta">
+<div>Actualizat: Ianuarie 2026</div>
+<div>10 min lectură</div>
+<div>✓ Verificat de echipa GhidBursa</div>
+</div>
+<div class="score-hero reveal">
+<div style="text-align:center">
+<div class="score-num-big">8.0</div>
+<div class="score-label">Scor GhidBursa</div>
+<div style="font-size:11px;color:var(--muted);margin-top:4px">din 10 posibile</div>
+</div>
+<div class="score-breakdown">
+<div class="score-row"><div class="score-row-label">Comisioane <span>8.5</span></div><div class="score-bar"><div class="score-fill" style="width:85%"></div></div></div>
+<div class="score-row"><div class="score-row-label">Copy Trading <span>10.0</span></div><div class="score-bar"><div class="score-fill" style="width:100%"></div></div></div>
+<div class="score-row"><div class="score-row-label">Platformă <span>8.8</span></div><div class="score-bar"><div class="score-fill" style="width:88%"></div></div></div>
+<div class="score-row"><div class="score-row-label">Siguranță <span>9.0</span></div><div class="score-bar"><div class="score-fill" style="width:90%"></div></div></div>
+<div class="score-row"><div class="score-row-label">Acces BVB <span>5.0</span></div><div class="score-bar"><div class="score-fill" style="width:50%"></div></div></div>
+<div class="score-row"><div class="score-row-label">Criptomonede <span>9.5</span></div><div class="score-bar"><div class="score-fill" style="width:95%"></div></div></div>
+</div>
+</div>
+<div class="verdict">
+<div class="verdict-title">✓ Verdictul GhidBursa</div>
+<p>eToro este brokerul ideal dacă vrei <strong>copy trading</strong> — să copiezi automat strategia unor investitori de succes — sau dacă investești în <strong>acțiuni internaționale și criptomonede</strong>. Nu este potrivit pentru investitorii concentrați strict pe BVB. Spread-urile mai mari și lipsa accesului complet la piața românească îl dezavantajează față de XTB pentru investitorul român tipic, dar funcționalitățile sociale îl fac unic.</p>
+</div>
+<div class="pros-cons reveal">
+<div class="pros">
+<div class="pros-title">✓ Avantaje eToro</div>
+<ul>
+<li>Copy Trading — copiezi automat investitori de succes</li>
+<li>CopyPortfolios — portofolii tematice gata construite</li>
+<li>Acțiuni fără comision (spread inclus)</li>
+<li>3.000+ acțiuni, ETF-uri, crypto, mărfuri</li>
+<li>Platformă socială — vezi ce investesc alții</li>
+<li>Cont demo gratuit cu $100.000 virtuali</li>
+<li>Reglementat CySEC (UE) + FCA (UK)</li>
+<li>App mobilă excelentă, 4.5★</li>
+</ul>
+</div>
+<div class="cons">
+<div class="cons-title">✗ Dezavantaje eToro</div>
+<ul>
+<li>Acces BVB limitat — nu toate acțiunile românești</li>
+<li>Spread pe acțiuni (câștigă din diferența bid/ask)</li>
+<li>Depozit minim $50</li>
+<li>Taxă retragere $5 per retragere</li>
+<li>Cont în USD — risc valutar pentru investitorii în RON</li>
+<li>Taxă inactivitate $10/lună după 12 luni</li>
+<li>Nu oferă titluri de stat sau obligațiuni BVB</li>
+</ul>
+</div>
+</div>
+<div class="content">
+<h2 id="cine">Ce este eToro și de ce e popular în România?</h2>
+<p>eToro este o platformă de investiții israeliană fondată în 2007, cu peste <strong>35 de milioane de utilizatori</strong> în 140 de țări. Este cel mai popular broker social din lume — conceptul de "copy trading" a fost inventat și popularizat de eToro.</p>
+<p>În România, eToro a câștigat teren mai ales în rândul tinerilor care vor să investească dar nu au timp sau cunoștințe să analizeze acțiuni individual. Ideea de a copia automat un investitor verificat este extrem de atractivă pentru începători.</p>
+<p>eToro este reglementat de <strong>CySEC</strong> (Cipru, valabil în tot spațiul UE) și de <strong>FCA</strong> (Marea Britanie). Fondurile clienților sunt segregate și protejate până la <strong>€20.000</strong> prin schema europeană.</p>
+<h2 id="copy-trading">Copy Trading — Principalul avantaj al eToro</h2>
+<p>Copy Trading este funcția prin care <strong>copiezi automat</strong> fiecare tranzacție a unui alt investitor. Dacă el cumpără Tesla, și tu cumperi Tesla proporțional cu suma alocată. Dacă el vinde, și tu vinzi.</p>
+<p>eToro are mii de "Popular Investors" — investitori verificați cu track record public, statistici detaliate și portofolii transparente. Poți filtra după randament anual, risc, număr de copieri, strategie.</p>
+<div class="info-box reveal">
+<p><strong>Cum funcționează practic:</strong> Aloci $500 pentru a copia un investitor. El face o tranzacție cu 5% din portofoliul lui → tu faci automat aceeași tranzacție cu 5% din cei $500 ai tăi ($25). Totul se întâmplă automat, fără să faci nimic.</p>
+</div>
+<div class="warning">
+<div class="warning-title">Copy Trading nu elimină riscul</div>
+<p>Chiar și cei mai buni investitori pierd uneori. Performanța trecută nu garantează rezultate viitoare. Copiezi și câștigurile, și pierderile. Citește cu atenție statisticile fiecărui investitor înainte de a-l copia.</p>
+</div>
+<h2 id="comisioane">Comisioane eToro — Cum câștigă bani?</h2>
+<p>eToro nu percepe comision explicit per tranzacție la acțiuni — în schimb câștigă din <strong>spread</strong> (diferența dintre prețul de cumpărare și cel de vânzare).</p>
+<table class="comm-table">
+<thead><tr><th>Instrument</th><th>Comision</th><th>Observații</th></tr></thead>
+<tbody>
+<tr class="highlight-row"><td><strong>Acțiuni reale</strong></td><td><strong>0% comision</strong></td><td>Spread inclus în preț</td></tr>
+<tr class="highlight-row"><td><strong>ETF-uri</strong></td><td><strong>0% comision</strong></td><td>Spread inclus</td></tr>
+<tr><td>Criptomonede</td><td>1% spread</td><td>Minim pe piață pentru crypto</td></tr>
+<tr><td>CFD Forex</td><td>Spread variabil</td><td>De la 1 pip pentru majore</td></tr>
+<tr><td>Depozit</td><td>0%</td><td>Minim $50</td></tr>
+<tr><td>Retragere</td><td>$5 fix</td><td>La fiecare retragere</td></tr>
+<tr><td>Conversie valutară</td><td>0.5-1.5%</td><td>RON → USD la depozit</td></tr>
+<tr><td>Inactivitate (12 luni)</td><td>$10/lună</td><td>Dacă nu te loghezi 12 luni</td></tr>
+</tbody>
+</table>
+<div class="warning">
+<div class="warning-title">Atenție la conversia valutară</div>
+<p>Contul eToro este în USD. Dacă depui RON sau EUR, se face o conversie cu un cost de 0.5-1.5%. La retragere, același lucru. Dacă leul se depreciază față de dolar în perioada în care ești investit, pierzi suplimentar din conversie. Acest risc valutar nu există la brokerii care lucrează în RON (XTB) sau EUR (Trading 212).</p>
+</div>
+<h2 id="bvb">eToro și BVB — Limitări importante</h2>
+<p>eToro oferă accès la câteva dintre cele mai mari companii de pe BVB (SNP, TLV, H2O), dar <strong>nu la toate</strong>. Piața AeRO, obligațiunile BVB și titlurile de stat Fidelis nu sunt disponibile.</p>
+<p>Dacă obiectivul tău principal este să investești pe BVB, eToro nu este alegerea optimă. Îl recomandăm mai ales pentru diversificarea internațională și funcțiile de copy trading.</p>
+<h2 id="pentru-cine">eToro este potrivit pentru tine?</h2>
+<p><strong>Alege eToro dacă:</strong></p>
+<p>✓ Vrei să copiezi automat investitori de succes (Copy Trading)<br/>
+   ✓ Investești mai ales în acțiuni americane sau globale<br/>
+   ✓ Vrei să investești și în criptomonede dintr-o singură platformă<br/>
+   ✓ Ești atras de aspectul social — să vezi ce investesc alții<br/>
+   ✓ Preferi o platformă simplă, vizuală, fără complexitate</p>
+<p><strong>Alege XTB sau Trading 212 în schimb dacă:</strong></p>
+<p>✗ Vrei să investești serios pe BVB<br/>
+   ✗ Vrei acces la Fidelis sau AeRO<br/>
+   ✗ Nu vrei risc valutar (cont în USD)<br/>
+   ✗ Faci retrageri frecvente (taxa $5/retragere se acumulează)</p>
+<h2 id="cum-deschizi">Cum deschizi cont la eToro</h2>
+<p><strong>Pasul 1:</strong> Accesează etoro.com și apasă "Înregistrare". Poți folosi și Google sau Apple ID.</p>
+<p><strong>Pasul 2:</strong> Completează datele personale și verifică identitatea (CI sau pașaport + selfie).</p>
+<p><strong>Pasul 3:</strong> Completează chestionarul de experiență financiară (cerință legală UE).</p>
+<p><strong>Pasul 4:</strong> Depune minim $50 prin card sau transfer. Atenție la conversia RON → USD.</p>
+<p><strong>Pasul 5:</strong> Explorează platforma pe contul demo înainte de a investi bani reali.</p>
+</div>
+<div class="reveal" style="background:linear-gradient(135deg,rgba(0,212,255,.07),rgba(0,255,148,.04));border:1px solid rgba(0,212,255,.2);border-radius:14px;padding:28px;margin-top:32px;text-align:center">
+<h3 style="font-size:20px;margin-bottom:8px">Deschide cont eToro acum</h3>
+<p style="color:#6B7A8D;font-size:14px;margin-bottom:20px;max-width:400px;margin-left:auto;margin-right:auto">Review verificat de echipa GhidBursa. Comisioane, siguranță și platformă analizate independent.</p>
+<a class="btn btn-primary btn-lg" href="etoro-review.html">Deschide cont eToro →</a>
+<br/><a href="brokeri.html" style="display:inline-block;margin-top:12px;font-size:13px;color:#6B7A8D;text-decoration:none">← Compară toți brokerii</a>
+<p style="font-size:11px;color:#6B7A8D;margin-top:14px;opacity:.7">Link afiliere. Nu constituie consultanță financiară. Investițiile implică riscuri.</p>
+</div>
+</main>
+<aside class="sidebar">
+<div class="cta-card">
+<div class="score-num-big" style="font-size:52px">8.0</div>
+<div style="font-size:12px;color:var(--muted);margin-bottom:24px">Scor GhidBursa 2026</div>
+<h3>Deschide cont eToro</h3>
+<p>Copy Trading, acțiuni fără comision, crypto. Minim $50.</p>
+<a class="btn-main" href="etoro-review.html">→ Deschide cont eToro</a>
+<a class="btn-sec" href="xtb-vs-trading212.html">Compară toți brokerii →</a>
+<div class="cta-disclaimer">51% din conturile retail pierd bani când tranzacționează CFD cu eToro. Investițiile implică riscuri.</div>
+</div>
+<div class="toc-card">
+<h4>Cuprins</h4>
+<ul>
+<li><a href="#cine">Ce este eToro?</a></li>
+<li><a href="#copy-trading">Copy Trading explicat</a></li>
+<li><a href="#comisioane">Comisioane complete</a></li>
+<li><a href="#bvb">eToro și BVB</a></li>
+<li><a href="#pentru-cine">Pentru cine e potrivit?</a></li>
+<li><a href="#cum-deschizi">Cum deschizi cont</a></li>
+</ul>
+</div>
+<div class="facts-card">
+<h4>Fapte rapide eToro</h4>
+<div class="fact-row"><span class="fact-key">Fondat</span><span class="fact-val">2007, Israel</span></div>
+<div class="fact-row"><span class="fact-key">Utilizatori</span><span class="fact-val">35M+ global</span></div>
+<div class="fact-row"><span class="fact-key">Reglementat</span><span class="fact-val good">CySEC + FCA ✓</span></div>
+<div class="fact-row"><span class="fact-key">Depozit minim</span><span class="fact-val warn">$50</span></div>
+<div class="fact-row"><span class="fact-key">Comision acțiuni</span><span class="fact-val good">0% (spread)</span></div>
+<div class="fact-row"><span class="fact-key">Copy Trading</span><span class="fact-val good">Da ✓</span></div>
+<div class="fact-row"><span class="fact-key">Acces BVB complet</span><span class="fact-val bad">Parțial ✗</span></div>
+<div class="fact-row"><span class="fact-key">Cont în</span><span class="fact-val warn">USD (risc valutar)</span></div>
+<div class="fact-row"><span class="fact-key">Taxă retragere</span><span class="fact-val warn">$5/retragere</span></div>
+<div class="fact-row"><span class="fact-key">Cont demo</span><span class="fact-val good">$100k virtual ✓</span></div>
+</div>
+</aside>
+</div>
+<footer>
+<a href="index.html" style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:16px;color:var(--text)">Ghid<span style="color:var(--accent)">Bursa</span>.ro</a>
+<div class="footer-links">
+      <a href="unsubscribe.html">Dezabonare newsletter</a>
+<a href="brokeri.html">Brokeri</a>
+<a href="ghiduri.html">Ghiduri</a>
+<a href="screener.html">Screener BVB</a>
+<a href="calculatoare.html">Calculatoare</a>
+<a href="newsletter.html">Newsletter</a>
+<a href="fear-greed.html">Sentiment BVB</a>
+<a href="calendar-dividende.html">Dividende</a>
+<a href="glosar.html">Glosar</a>
+<a href="legal.html#termeni">Termeni</a>
+<a href="legal.html#disclaimer">Disclaimer</a>
+<a href="despre-noi.html">Contact</a>
+</div>
+<span>© 2026 GhidBursa.ro</span>
+<p class="footer-disclaimer">Investițiile implică riscuri. Conținutul GhidBursa.ro este informativ și nu constituie consultanță financiară. Verificați toate informațiile înainte de a lua decizii de investiție.</p>
+</footer>
+<script defer="" src="shared.js"></script>
+<script defer src="/cookie-consent.js"></script>
+</body>
+</html>

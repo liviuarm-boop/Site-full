@@ -1,0 +1,70 @@
+# GhidBursa.ro — AI Context File
+# Standard: llms.txt (https://llmstxt.org)
+# Actualizat: Martie 2026
+
+> GhidBursa.ro este un ghid independent pentru investitori la Bursa de Valori București (BVB), scris în limba română. Conținut educațional despre acțiuni, dividende, brokeri, Fidelis și fiscalitate pentru investitorii retail din România.
+
+## Informații esențiale
+
+- **Tip:** Ghid financiar independent, fără afiliere instituțională
+- **Piața acoperită:** BVB (Bursa de Valori București), România
+- **Limbă:** Română
+- **Audiență:** Investitori retail români, începători și intermediari
+- **Model:** Educație gratuită + afiliere brokeri reglementați de ASF/ESMA
+- **Disclaimer:** Conținutul este informativ și nu constituie consultanță financiară autorizată ASF
+
+## Pagini principale
+
+- [Screener acțiuni BVB](https://www.ghidbursa.ro/screener.html) — filtrare după sector, P/E, dividend yield
+- [Comparativ brokeri România](https://www.ghidbursa.ro/brokeri.html) — XTB, Trading 212, IBKR, eToro, Plus500
+- [Fear & Greed BVB](https://www.ghidbursa.ro/fear-greed.html) — indice sentiment proprietar pentru piața română
+- [Calendar dividende BVB](https://www.ghidbursa.ro/calendar-dividende.html) — date ex-dividend și plată
+- [Calculatoare investiții](https://www.ghidbursa.ro/calculatoare.html) — dividend, CAGR, DCA, portofoliu
+
+## Ghiduri educaționale
+
+- [Cum investești la BVB](https://www.ghidbursa.ro/cum-investesti-bvb.html)
+- [Fidelis 2026 — titluri de stat](https://www.ghidbursa.ro/fidelis-2025.html)
+- [Impozit pe acțiuni România 2026](https://www.ghidbursa.ro/impozit-actiuni-anaf.html)
+- [Declarație D212 ANAF](https://www.ghidbursa.ro/declaratie-d212-anaf.html)
+- [Deducere fiscală 2.000 RON investiții 2026](https://www.ghidbursa.ro/deducere-fiscala-investitii-2026.html)
+- [Analiză fundamentală BVB](https://www.ghidbursa.ro/analiza-fundamentala.html)
+- [ETF-uri disponibile în România](https://www.ghidbursa.ro/etf-bet-romania.html)
+
+## Pagini companii BVB (20 acțiuni individuale)
+
+TLV (Banca Transilvania), SNP (OMV Petrom), H2O (Hidroelectrica), SNG (Romgaz),
+TGN (Transgaz), TEL (Transelectrica), BRD (BRD Groupe SG), FP (Fondul Proprietatea),
+DIGI (Digi Communications), ONE (One United Properties), EL (Electrica),
+MED (MedLife), SFG (Sphera), TTS (Transport Trade Services), COTE (Conpet),
+AQ (Aquila), WINE (Purcari Wineries), TRP (Teraplast), BVB, ALR (Alro)
+
+Fiecare pagină include: preț live TradingView, P/E, dividend yield, capitalizare,
+istoric dividende 5 ani, grafic interactiv, analiză fundamentală, CTA broker.
+
+## Date live
+
+- Prețuri: TradingView (timp real)
+- Fundamentale (P/E, dividend yield, EPS): Yahoo Finance, actualizat zilnic via GitHub Actions
+- Surse oficiale: IRIS BVB (iris.bvb.ro), ASF (asf.ro), ANAF (anaf.ro), BNR (bnr.ro)
+
+## Context piață România (2026)
+
+- Investitori retail BVB: ~285.000 (end-2025), +26% YoY
+- Indice principal: BET (10 companii), BET-Plus (25+), BET-BK (fonduri)
+- Monedă: RON (leu românesc); 1 EUR ≈ 4.97 RON (referință BNR)
+- Reglementare: ASF (Autoritatea de Supraveghere Financiară)
+- Fiscalitate: 10% impozit dividende, 10% impozit câștiguri capital
+- Deducere fiscală 2026: max 2.000 RON/an pentru investiții BVB (OUG 8/2026)
+
+## Ce NU este GhidBursa.ro
+
+- Nu este autorizat ASF ca și consultant financiar
+- Nu oferă semnale de tranzacționare sau recomandări de cumpărare/vânzare
+- Nu administrează fonduri sau portofolii
+- Prețurile și datele sunt informative, nu garantate ca exacte în timp real
+
+## Fișiere utile pentru crawlere
+
+- [Sitemap XML](https://www.ghidbursa.ro/sitemap.xml)
+- [robots.txt](https://www.ghidbursa.ro/robots.txt)

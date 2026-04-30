@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="robots" content="noindex, nofollow"/>
+<title>Dezabonare Newsletter — GhidBursa.ro</title>
+<meta name="description" content="Dezabonare Newsletter — GhidBursa.ro. Introdu adresa de email cu care te-ai abonat. Vei fi dezabonat imediat, fără confirmare."/>
+<link rel="icon" type="image/svg+xml" href="favicon.svg"/>
+<link rel="stylesheet" href="/fonts/fonts.css"/>
+<link rel="preload" href="/fonts/plus-jakarta-sans-700.woff2" as="font" type="font/woff2" crossorigin="anonymous" fetchpriority="high"/>
+<link rel="stylesheet" href="shared.css?v=12"/>
+<link rel="stylesheet" href="mobile.css?v=12"/>
+<style>
+.unsub-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.unsub-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 48px 40px;
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+}
+.unsub-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  margin: 0 auto 24px;
+  color: var(--muted);
+}
+.unsub-icon.success { border-color: var(--accent2); color: var(--accent2); }
+.unsub-icon.error   { border-color: var(--red); color: var(--red); }
+.unsub-card h1 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  letter-spacing: -0.01em;
+}
+.unsub-card .subtitle {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 32px;
+  line-height: 1.6;
+}
+.unsub-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.unsub-input {
+  background: rgba(8,11,15,.6);
+  border: 1.5px solid var(--border);
+  color: var(--text);
+  padding: 14px 16px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-family: var(--font-body);
+  outline: none;
+  transition: border-color .2s;
+  width: 100%;
+  text-align: center;
+}
+.unsub-input:focus { border-color: var(--accent); }
+.unsub-input::placeholder { color: var(--muted); }
+.unsub-btn {
+  background: var(--red);
+  color: white;
+  border: none;
+  padding: 14px 24px;
+  border-radius: 10px;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity .2s, transform .15s;
+  width: 100%;
+}
+.unsub-btn:hover { opacity: .85; transform: translateY(-1px); }
+.unsub-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+.unsub-result {
+  display: none;
+  margin-top: 20px;
+  padding: 14px 18px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+.unsub-result.ok  { background: rgba(0,255,148,.08); border: 1px solid rgba(0,255,148,.2); color: var(--accent2); }
+.unsub-result.err { background: rgba(255,77,109,.08); border: 1px solid rgba(255,77,109,.2); color: var(--red); }
+.back-link {
+  display: inline-block;
+  margin-top: 24px;
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color .2s;
+}
+.back-link:hover { color: var(--accent); text-decoration: none; }
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 28px 0;
+}
+.legal-note {
+  font-size: 11px;
+  color: var(--muted);
+  opacity: .5;
+  line-height: 1.6;
+}
+@media (max-width: 479px) {
+  .unsub-card { padding: 32px 24px; }
+  .unsub-card h1 { font-size: 19px; }
+}
+</style>
+<link rel="stylesheet" href="/cookie-consent.css"/>
+</head>
+<body class="no-ticker">
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    Ghid<span>Bursa</span>.ro
+  </a>
+</nav>
+
+<div class="unsub-wrap">
+  <div class="unsub-card">
+
+    <div class="unsub-icon" id="unsub-icon">✉</div>
+    <h1 id="unsub-title">Dezabonare Newsletter</h1>
+    <p class="subtitle" id="unsub-subtitle">
+      Introdu adresa de email cu care te-ai abonat.<br/>
+      Vei fi dezabonat imediat, fără confirmare.
+    </p>
+
+    <div class="unsub-form" id="unsub-form">
+      <input
+        type="email"
+        class="unsub-input"
+        id="unsub-email"
+        placeholder="emailul@tau.com"
+        autocomplete="email"
+        inputmode="email"
+      />
+      <button class="unsub-btn" id="unsub-btn" onclick="doUnsub()">
+        Dezabonează-mă
+      </button>
+    </div>
+
+    <div class="unsub-result" id="unsub-result"></div>
+
+    <div class="divider"></div>
+
+    <p class="legal-note">
+      Datele tale sunt stocate în conformitate cu GDPR.<br/>
+      După dezabonare, emailul tău va fi marcat ca inactiv în baza noastră de date.
+    </p>
+
+    <a class="back-link" href="index.html">← Înapoi pe GhidBursa.ro</a>
+
+  </div>
+</div>
+
+<script>
+var WORKER_URL = 'https://newsletter.ghidbursa.ro';
+
+function doUnsub() {
+  var emailEl = document.getElementById('unsub-email');
+  var btn     = document.getElementById('unsub-btn');
+  var result  = document.getElementById('unsub-result');
+  var email   = emailEl.value.trim().toLowerCase();
+
+  // Validare simplă
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+    showResult('err', 'Introdu o adresă de email validă.');
+    emailEl.focus();
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Se procesează...';
+  result.style.display = 'none';
+
+  fetch(WORKER_URL + '/unsubscribe-by-email', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: email }),
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.ok) {
+      // Schimbă icon și titlu
+      var icon = document.getElementById('unsub-icon');
+      icon.textContent = '✓';
+      icon.classList.add('success');
+      document.getElementById('unsub-title').textContent = 'Dezabonat cu succes';
+      document.getElementById('unsub-subtitle').textContent =
+        'Adresa ' + email + ' a fost eliminată din newsletter-ul GhidBursa.ro.';
+      document.getElementById('unsub-form').style.display = 'none';
+      showResult('ok', data.message || 'Te-ai dezabonat cu succes.');
+    } else {
+      btn.disabled = false;
+      btn.textContent = 'Dezabonează-mă';
+      showResult('err', data.error || 'A apărut o eroare. Încearcă din nou.');
+    }
+  })
+  .catch(function() {
+    btn.disabled = false;
+    btn.textContent = 'Dezabonează-mă';
+    showResult('err', 'Eroare de rețea. Verifică conexiunea și încearcă din nou.');
+  });
+}
+
+function showResult(type, msg) {
+  var el = document.getElementById('unsub-result');
+  el.className = 'unsub-result ' + type;
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+// Enter key support
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('unsub-email').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') doUnsub();
+  });
+});
+</script>
+
+<script defer src="/cookie-consent.js"></script>
+</body>
+</html>

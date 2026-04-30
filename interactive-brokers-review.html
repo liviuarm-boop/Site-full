@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+
+<html lang="ro">
+<head>
+<link href="favicon.svg" rel="icon" type="image/svg+xml"/>
+<link href="favicon.svg" rel="shortcut icon"/>
+<meta charset="utf-8"/>
+<style data-critical="true">
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+ --black: #080B0F;
+ --dark: #0D1117;
+ --card: #111820;
+ --card2: #141E28;
+ --border: #1E2A38;
+ --accent: #00D4FF;
+ --accent2: #00FF94;
+ --gold: #FFB800;
+ --red: #FF4D6D;
+ --text: #E8EDF2;
+ --muted: #6B7A8D;
+ --font-display: 'Plus Jakarta Sans', sans-serif;
+ --font-body: 'DM Sans', sans-serif;
+ --nav-h: 56px;
+ --ticker-h: 76px;
+ --offset: 132px; 
+}
+@media (min-width: 768px) {
+ :root {
+ --nav-h: 72px;
+ --offset: 148px;
+ }
+}
+html { scroll-behavior: smooth; font-size: 15px; }
+body {
+ background: var(--black);
+ color: var(--text);
+ font-family: var(--font-body);
+ line-height: 1.6;
+ overflow-x: hidden;
+ -webkit-font-smoothing: antialiased;
+ width: 100%;
+ max-width: 100vw;
+}
+body::before {
+ content: '';
+ position: fixed; inset: 0;
+ background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+ pointer-events: none; z-index: 0; opacity: 0.5;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+img { max-width: 100%; height: auto; display: block; }
+h1, h2, h3, h4 {
+ font-family: var(--font-display);
+ -webkit-font-smoothing: antialiased;
+ letter-spacing: -0.01em;
+ line-height: 1.18;
+}
+h1 { font-size: clamp(18px, 2vw, 28px); font-weight: 700; }
+h2 { font-size: clamp(18px, 2.5vw, 28px); font-weight: 700; }
+h3 { font-size: clamp(15px, 2vw, 20px); font-weight: 600; }
+h4 { font-size: 14px; font-weight: 700; }
+p { color: rgba(232,237,242,.82); line-height: 1.75; font-size: 15px; }
+nav {
+ position: fixed; top: 0; left: 0; right: 0;
+ z-index: 200;
+ height: var(--nav-h);
+ display: flex; align-items: center; justify-content: space-between;
+ padding: 0 20px;
+ background: rgba(8,11,15,0.92);
+ backdrop-filter: blur(24px);
+ border-bottom: 1px solid var(--border);
+}
+@media (min-width: 768px) { nav { padding: 0 48px; } }
+@media (min-width: 1280px) { nav { padding: 0 64px; } }
+.nav-logo {
+ font-family: var(--font-display);
+ font-size: 18px; font-weight: 800; letter-spacing: -0.02em;
+ color: var(--text); text-decoration: none;
+ display: flex; align-items: center; gap: 8px;
+ flex-shrink: 0;
+}
+@media (min-width: 768px) { .nav-logo { font-size: 22px; } }
+.nav-logo span { color: var(--accent); }
+.nav-logo:hover { text-decoration: none; }
+.nav-dot {
+ width: 8px; height: 8px;
+ background: var(--accent2); border-radius: 50%;
+ animation: pulse 2s ease-in-out infinite; flex-shrink: 0;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+.nav-links {
+ display: none;
+ align-items: center; gap: 28px; list-style: none;
+}
+@media (min-width: 768px) { .nav-links { display: flex; } }
+.nav-links a { color: var(--muted); font-size: 14px; font-weight: 500; transition: color .2s; text-decoration: none; }
+.nav-links a:hover { color: var(--text); }
+.nav-cta {
+ background: var(--accent) !important;
+ color: var(--black) !important;
+ padding: 9px 18px; border-radius: 6px;
+ font-weight: 700 !important; font-size: 13px !important;
+}
+.nav-cta:hover { opacity: .85; }
+.hamburger {
+ display: flex; flex-direction: column; gap: 5px;
+ background: none; border: none; cursor: pointer; padding: 6px;
+}
+@media (min-width: 768px) { .hamburger { display: none; } }
+.hamburger span {
+ display: block; width: 22px; height: 2px;
+ background: var(--text); border-radius: 2px;
+ transition: all .3s;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.mobile-nav {
+ display: none; position: fixed;
+ top: var(--nav-h); left: 0; right: 0;
+ background: rgba(8,11,15,.98);
+ border-bottom: 1px solid var(--border);
+ z-index: 199; flex-direction: column;
+ padding: 8px 0 16px;
+ transform: translateY(-10px); opacity: 0;
+ transition: transform .25s, opacity .25s;
+}
+.mobile-nav.open {
+ display: flex; transform: translateY(0); opacity: 1;
+}
+.mobile-nav a {
+ display: block; padding: 14px 24px;
+ color: var(--text); font-size: 15px; font-weight: 500;
+ border-bottom: 1px solid rgba(30,42,56,.5);
+ text-decoration: none; transition: background .15s;
+}
+.mobile-nav a:last-child { border-bottom: none; }
+.mobile-nav a:hover { background: rgba(0,212,255,.05); }
+.mobile-nav .mobile-cta {
+ margin: 12px 24px 0;
+ background: var(--accent); color: var(--black) !important;
+ border-radius: 8px; text-align: center; font-weight: 700 !important;
+ border-bottom: none !important;
+}
+.ticker-bar {
+ position: sticky;
+ top: var(--nav-h);
+ z-index: 150;
+ height: var(--ticker-h);
+ background: rgba(8,11,15,.98);
+ border-bottom: 1px solid var(--border);
+ overflow: hidden;
+}
+.ticker-bar .tradingview-widget-container,
+.ticker-bar .tradingview-widget-container__widget { height: 100% !important; }
+.section-inner { max-width: 1280px; margin: 0 auto; padding: 0 20px; }
+.reveal,.reveal-left,.reveal-right,.reveal-scale{
+ opacity:0;
+ transition:opacity .65s cubic-bezier(.4,0,.2,1),transform .65s cubic-bezier(.4,0,.2,1);
+ will-change:opacity,transform;
+}
+.reveal{transform:translateY(28px)}
+.reveal-left{transform:translateX(-28px)}
+.reveal-right{transform:translateX(28px)}
+.reveal-scale{transform:scale(.96)}
+.reveal.visible,.reveal-left.visible,.reveal-right.visible,.reveal-scale.visible{
+ opacity:1;transform:none;
+}
+@keyframes forceVisible { to { opacity: 1; tran
+.btn {
+ display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+ font-family: var(--font-display); font-weight: 700;
+ border-radius: 8px; cursor: pointer;
+ text-decoration: none; transition: opacity .2s, transform .15s;
+ white-space: nowrap;
+}
+.btn:hover { opacity: .85; transform: translateY(-1px); text-decoration: none; }
+.btn:active { transform: translateY(0); }
+.btn-primary { background: var(--accent); color: var(--black); padding: 13px 24px; font-size: 14px; }
+.btn-secondary { background: rgba(0,212,255,.1); border: 1px solid rgba(0,212,255,.25); color: var(--accent); padding: 12px 22px; font-size: 14px; }
+.btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 11px 20px; font-size: 13px; }
+.btn-ghost:hover { border-color: var(--text); color: var(--text); }
+.btn-green { background: rgba(0,255,148,.1); border: 1px solid rgba(0,255,148,.25); color: var(--accent2); padding: 12px 22px; font-size: 14px; }
+.btn-full { width: 100%; }
+.btn-sm { padding: 8px 14px; font-size: 12px; }
+.btn-lg { padding: 16px 32px; font-size: 16px; }
+</style>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Review Interactive Brokers 2026 — Cel mai bun broker global pentru volume mari și piețe internaționale | GhidBursa.ro</title>
+<meta name="description" content="Review Interactive Brokers România 2026: comisioane, acces piețe globale, platforma Trader Workstation. Pentru investitori avansați."/>
+
+<link href="shared.css?v=12" rel="stylesheet"/>
+<link href="mobile.css?v=12" rel="stylesheet"/>
+<link href="https://www.ghidbursa.ro/interactive-brokers-review.html" rel="canonical"/>
+<meta content="website" property="og:type"/>
+<meta content="Review Interactive Brokers 2026 — Cel mai bun broker global pentru volume mari și piețe internaționale | GhidBursa.ro" property="og:title"/>
+<meta content="Review complet Interactive Brokers 2026. Cel mai bun broker global pentru volume mari și piețe internaționale. Scor GhidBursa: 7.2/10." property="og:description"/>
+<meta content="https://www.ghidbursa.ro/interactive-brokers-review.html" property="og:url"/>
+<meta content="GhidBursa.ro" property="og:site_name"/>
+<meta content="summary" name="twitter:card"/>
+<meta content="Review Interactive Brokers 2026 — Cel mai bun broker global pentru volume mari și piețe internaționale | GhidBursa.ro" name="twitter:title"/>
+<meta content="Review complet Interactive Brokers 2026. Cel mai bun broker global pentru volume mari și piețe internaționale. Scor GhidBursa: 7.2/10." name="twitter:description"/>
+<script type="application/ld+json">
+{"dateModified": "2026-03-19", "@context":"https://schema.org","@type":"Review","name":"Review Interactive Brokers 2026 — Cel mai bun broker global pentru volume mari și piețe internaționale | GhidBursa.ro","description":"Review complet Interactive Brokers 2026. Cel mai bun broker global pentru volume mari și piețe internaționale. Scor GhidBursa: 7.2/10.","url":"https://www.ghidbursa.ro/interactive-brokers-review.html","itemReviewed":{"@type":"FinancialService","name":"Interactive Brokers"},"author":{"@type":"Organization","name":"GhidBursa.ro"}}
+</script>
+<meta property="og:image" content="https://www.ghidbursa.ro/og-image.png"/>
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta property="og:locale" content="ro_RO"/>
+  <meta property="og:site_name" content="GhidBursa.ro"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="@GhidBursa"/>
+  <meta name="twitter:image" content="https://www.ghidbursa.ro/og-image.png"/>
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"/>
+  <meta name="author" content="GhidBursa.ro"/>
+  <meta http-equiv="content-language" content="ro"/>
+  <meta name="theme-color" content="#080B0F"/>
+  <link rel="dns-prefetch" href="//s3.tradingview.com"/>
+    <link rel="stylesheet" href="/fonts/fonts.css"/>
+<link rel="preload" href="/fonts/plus-jakarta-sans-700.woff2" as="font" type="font/woff2" crossorigin="anonymous" fetchpriority="high"/>
+<link rel="stylesheet" href="/cookie-consent.css"/>
+</head>
+<body class="no-ticker">
+<nav>
+<a class="nav-logo" href="index.html"><div class="nav-dot"></div>Ghid<span>Bursa</span>.ro</a>
+<ul class="nav-links">
+<li><a href="brokeri.html">Brokeri</a></li>
+<li><a href="ghiduri.html">Ghiduri</a></li>
+<li><a href="screener.html">Screener BVB</a></li>
+<li><a href="calculatoare.html">Calculatoare</a></li>
+<li><a href="newsletter.html">Newsletter</a></li>
+<li><a class="nav-cta" href="brokeri.html">Compară brokeri →</a></li>
+</ul>
+<button aria-label="Meniu" class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
+</nav>
+<div class="mobile-nav" id="mobileNav">
+<a href="index.html">Acasă</a>
+<a href="brokeri.html">Brokeri</a>
+<a href="ghiduri.html">Ghiduri</a>
+<a href="screener.html">Screener BVB</a>
+<a href="calculatoare.html">Calculatoare</a>
+<a href="newsletter.html">Newsletter</a>
+<a href="fear-greed.html">Sentiment BVB</a>
+<a href="fidelis-2025.html">Fidelis 2026</a>
+<a href="glosar.html">Glosar</a>
+<a href="despre-noi.html">Contact</a>
+<a class="mobile-cta" href="brokeri.html">Compară brokeri →</a>
+</div>
+<div class="page-wrap">
+<div class="layout-article">
+<main>
+<div class="breadcrumb"><a href="index.html">Acasă</a> › <a href="brokeri.html">Brokeri</a> › Review Interactive Brokers</div>
+<div class="tag tag-blue" style="margin-bottom:16px">Review broker · Actualizat 2026</div>
+<h1 style="margin-bottom:16px">Interactive Brokers 2026 — Cel mai avansat broker disponibil în România. — ideal volume mari</h1>
+<div style="display:flex;align-items:center;gap:20px;padding:16px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:32px;flex-wrap:wrap">
+<span style="font-size:13px;color:var(--muted)">Actualizat: Ianuarie 2026</span>
+<span style="font-size:13px;color:var(--muted)">~9 min lectură</span>
+<span style="font-size:13px;color:var(--muted)">Verificat de echipa GhidBursa</span>
+</div>
+<!-- Score Hero -->
+<div class="score-hero reveal">
+<div>
+<div class="score-num">7.2</div>
+<div class="score-label">Scor GhidBursa 2026</div>
+<div style="font-size:11px;color:var(--muted);margin-top:2px">din 10 posibile</div>
+</div>
+<div class="score-breakdown"><div style="margin-bottom:10px"><div class="score-row-label">Comisioane globale <span>9.5</span></div><div class="score-bar"><div class="score-fill" style="width:95%"></div></div></div><div style="margin-bottom:10px"><div class="score-row-label">Platformă <span>8.5</span></div><div class="score-bar"><div class="score-fill" style="width:85%"></div></div></div><div style="margin-bottom:10px"><div class="score-row-label">Siguranță <span>9.9</span></div><div class="score-bar"><div class="score-fill" style="width:99%"></div></div></div><div style="margin-bottom:10px"><div class="score-row-label">Piețe disponibile <span>9.8</span></div><div class="score-bar"><div class="score-fill" style="width:98%"></div></div></div><div style="margin-bottom:10px"><div class="score-row-label">Ușurință utilizare <span>4.5</span></div><div class="score-bar"><div class="score-fill" style="width:45%"></div></div></div><div style="margin-bottom:10px"><div class="score-row-label">Potrivit România <span>6.0</span></div><div class="score-bar"><div class="score-fill" style="width:60%"></div></div></div></div>
+</div>
+<!-- Verdict -->
+<div class="success-box reveal">
+<div class="box-title">Concluzie</div>
+<p>Interactive Brokers (IBKR) este cel mai bun broker din lume pentru investitorii cu volume mari și portofolii diversificate global. Comisioanele sunt minime, platforma profesională, accesul la mii de piețe din 150 de țări este incomparabil. Recomandat în special pentru portofolii peste $10.000 și tranzacționare activă.</p>
+</div>
+<!-- Pros/Cons -->
+<div class="pros-cons reveal">
+<div class="pros"><div class="pros-title">✓ Avantaje Interactive Brokers</div><ul><li>Comisioane minime — 0.05% pe acțiuni europene, min €1.25</li><li>Acces la 150 de țări și mii de piețe</li><li>Siguranță maximă — reglementat SEC, FCA, CySEC</li><li>Protecție fonduri $500.000 prin SIPC</li><li>Dobândă pe cash: ~3.5% EUR, ~4%+ USD</li><li>Opțiuni, futures, forex, crypto — orice există</li><li>Listat pe NASDAQ — transparență maximă</li></ul></div>
+<div class="cons"><div class="cons-title">✗ Dezavantaje Interactive Brokers</div><ul><li>Platformă complexă — curbă de învățare mare</li><li>Fără interfață în română</li><li>Suport în română inexistent</li><li>Recomandat pentru portofolii $10.000+</li><li>Taxă inactivitate pentru conturi mici</li><li>Acces BVB mai limitat față de brokerii locali</li></ul></div>
+</div>
+<!-- Content -->
+<div class="article-body"><h2>Cine este Interactive Brokers?</h2>
+<p>Interactive Brokers (IBKR) este unul dintre cei mai mari brokeri din lume, fondat în <strong>1978</strong> în SUA și listat pe NASDAQ. Are peste <strong>2 milioane de clienți</strong> în 200 de țări și gestionează active de peste $400 miliarde. Este alegerea standard pentru traderi profesioniști, hedge fund-uri și investitori instituționali.</p>
+<p>În România, IBKR operează prin entitatea europeană reglementată de <strong>Central Bank of Ireland</strong> și <strong>FCA (UK)</strong>.</p>
+<h2>Comisioane — Cele mai mici disponibile</h2>
+<div class="table-wrap reveal"><table class="data-table">
+<thead><tr><th>Piață</th><th>Comision IBKR</th><th>Comparație XTB</th></tr></thead>
+<tbody>
+<tr><td>Acțiuni europene (BVB inclus)</td><td class="td-green">0.05%, min €1.25</td><td>0% (sub €100k/lună)</td></tr>
+<tr><td>Acțiuni US (NYSE/NASDAQ)</td><td class="td-green">$0.005/acțiune</td><td>0% (sub €100k/lună)</td></tr>
+<tr><td>ETF-uri</td><td class="td-green">0.05%, min €1.25</td><td>0% (sub €100k/lună)</td></tr>
+<tr><td>Opțiuni</td><td class="td-green">€1.25/contract</td><td>Nu disponibil</td></tr>
+<tr><td>Dobândă cash EUR</td><td class="td-green">~3.5%</td><td>~2.5%</td></tr>
+</tbody></table></div>
+<div class="info-box reveal"><div class="box-title">Când IBKR bate XTB</div><p>La volume mari (peste €100.000/lună), XTB percepe 0.5% — la acest nivel IBKR cu 0.05% devine mult mai ieftin. La o tranzacție de €200.000: XTB → €1.000 comision, IBKR → €100 comision.</p></div>
+<h2>Platforma Trader Workstation (TWS)</h2>
+<p>TWS este una dintre cele mai puternice platforme de tranzacționare din lume — și una dintre cele mai complexe. Oferă scanere avansate, tranzacționare algoritmică, API complet, analiză tehnică cu sute de indicatori și acces simultan la sute de piețe.</p>
+<div class="warn-box reveal"><div class="box-title">Avertisment — nu pentru începători</div><p>TWS are o curbă de învățare semnificativă. Folosiți contul demo gratuit înainte de a depune bani reali. Dacă ești la începuturi, <a href="xtb-review.html">XTB</a> sau <a href="trading212-review.html">Trading 212</a> sunt alegeri mai potrivite.</p></div>
+<h2>Când alegi IBKR?</h2>
+<p>Interactive Brokers este alegerea optimă dacă: tranzacționezi volume mari (peste €100.000/lună), vrei opțiuni/futures cu comisioane profesionale, investești pe piețe exotice din 150 de țări, sau vrei să tranzacționezi algoritmic cu API.</p></div>
+<!-- Bottom CTA -->
+<div class="reveal" style="background:linear-gradient(135deg,rgba(0,212,255,.07),rgba(0,255,148,.04));border:1px solid rgba(0,212,255,.2);border-radius:14px;padding:28px;margin-top:32px;text-align:center">
+<h3 style="margin-bottom:8px">Deschide cont Interactive Brokers</h3>
+<p style="color:var(--muted);font-size:14px;margin-bottom:20px">Analizat și verificat de echipa GhidBursa. Nu constituie consultanță financiară.</p>
+<a class="btn btn-primary btn-lg" href="https://www.interactivebrokers.co.uk">→ Vizitează InteractiveBrokers.co.uk</a>
+<p class="disclaimer">Investițiile implică riscuri, inclusiv pierderea capitalului.</p>
+</div>
+</main>
+<aside>
+<!-- Score card -->
+<div class="sidebar-card reveal">
+<div style="text-align:center;margin-bottom:16px">
+<div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:52px;font-weight:700;background:linear-gradient(135deg,#00D4FF,#00FF94);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1">7.2</div>
+<div style="font-size:12px;color:var(--muted)">Scor GhidBursa 2026</div>
+</div>
+<a class="btn btn-primary btn-full" href="https://www.interactivebrokers.co.uk" style="margin-bottom:10px">→ Vizitează InteractiveBrokers.co.uk</a>
+<a class="btn btn-ghost btn-full" href="brokeri.html">Compară toți brokerii →</a>
+<p class="disclaimer">Nu constituie consultanță financiară. Investițiile implică riscuri.</p>
+</div>
+<!-- Facts -->
+<div class="sidebar-card reveal">
+<h4>Date rapide</h4>
+<div class="metric-row"><span class="metric-label">Fondat</span><span class="metric-val green">1978, SUA</span></div><div class="metric-row"><span class="metric-label">Listat pe</span><span class="metric-val green">NASDAQ ✓</span></div><div class="metric-row"><span class="metric-label">Reglementat</span><span class="metric-val green">SEC + FCA + CBI</span></div><div class="metric-row"><span class="metric-label">Protecție fonduri</span><span class="metric-val green">$500.000 SIPC</span></div><div class="metric-row"><span class="metric-label">Depozit minim</span><span class="metric-val gold">$0 (rec. $10k+)</span></div><div class="metric-row"><span class="metric-label">Comision EU</span><span class="metric-val green">0.05%, min €1.25</span></div><div class="metric-row"><span class="metric-label">Interfață română</span><span class="metric-val">Nu ✗</span></div><div class="metric-row"><span class="metric-label">Dobândă cash</span><span class="metric-val green">~3.5% EUR</span></div>
+</div>
+<!-- Related -->
+<div class="sidebar-card reveal">
+<h4>Ghiduri conexe</h4>
+<ul class="sidebar-links">
+<li><a href="brokeri.html">Compară toți brokerii</a></li>
+<li><a href="cum-investesti-bvb.html">Cum investești la BVB</a></li>
+<li><a href="screener.html">Screener acțiuni BVB</a></li>
+<li><a href="fidelis-2025.html">Ghid Fidelis 2026</a></li>
+<li><a href="impozit-actiuni-anaf.html">Impozit acțiuni ANAF</a></li>
+</ul>
+</div>
+</aside>
+</div>
+</div>
+<footer>
+<a href="index.html" style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:16px;color:var(--text)">Ghid<span style="color:var(--accent)">Bursa</span>.ro</a>
+<div class="footer-links">
+      <a href="unsubscribe.html">Dezabonare newsletter</a>
+<a href="brokeri.html">Brokeri</a>
+<a href="ghiduri.html">Ghiduri</a>
+<a href="screener.html">Screener BVB</a>
+<a href="calculatoare.html">Calculatoare</a>
+<a href="newsletter.html">Newsletter</a>
+<a href="fear-greed.html">Sentiment BVB</a>
+<a href="calendar-dividende.html">Dividende</a>
+<a href="glosar.html">Glosar</a>
+<a href="legal.html#termeni">Termeni</a>
+<a href="legal.html#disclaimer">Disclaimer</a>
+<a href="despre-noi.html">Contact</a>
+</div>
+<span>© 2026 GhidBursa.ro</span>
+<p class="footer-disclaimer">Investițiile implică riscuri. Conținutul GhidBursa.ro este informativ și nu constituie consultanță financiară. Verificați toate informațiile înainte de a lua decizii de investiție.</p>
+</footer>
+<script defer="" src="shared.js"></script>
+<script defer src="/cookie-consent.js"></script>
+</body>
+</html>

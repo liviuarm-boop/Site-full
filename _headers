@@ -1,0 +1,42 @@
+# GhidBursa.ro — Cloudflare Pages Headers
+# Cache-Control + Security headers
+
+# HTML — always fresh
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://s3.tradingview.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self'; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://newsletter.ghidbursa.ro https://ghidbursa-newsletter.liviuarm.workers.dev; frame-src https://s3.tradingview.com https://www.tradingview.com; object-src 'none'; base-uri 'self'
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+# Self-hosted fonts — cache forever
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+  Access-Control-Allow-Origin: *
+
+# CSS + JS — versioned via ?v= query so cache forever
+/*.css
+  Cache-Control: public, max-age=31536000, immutable
+/*.js
+  Cache-Control: public, max-age=31536000, immutable
+
+# Images
+/*.svg
+  Cache-Control: public, max-age=86400
+/*.png
+  Cache-Control: public, max-age=86400
+/*.webp
+  Cache-Control: public, max-age=86400
+/*.woff2
+  Cache-Control: public, max-age=31536000, immutable
+
+# JSON data
+/*.json
+  Cache-Control: public, max-age=3600
+
+# Global security headers
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin

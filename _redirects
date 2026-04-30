@@ -1,0 +1,14 @@
+/tools.html /calculatoare.html 301
+
+# Deleted broker pages → brokeri.html
+/tradeville-review.html /brokeri.html 301
+/goldring-review.html /brokeri.html 301
+/btcapital-review.html /brokeri.html 301
+/xtb-vs-tradeville.html /brokeri.html 301
+
+# Redirect bare domain to www
+https://ghidbursa.ro/* https://www.ghidbursa.ro/:splat 301
+
+# Redirect HTTP to HTTPS (Cloudflare usually handles this, but belt+suspenders)
+http://ghidbursa.ro/* https://www.ghidbursa.ro/:splat 301
+http://www.ghidbursa.ro/* https://www.ghidbursa.ro/:splat 301

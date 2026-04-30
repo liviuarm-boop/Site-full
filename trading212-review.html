@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+
+<html lang="ro">
+<head>
+<link href="favicon.svg" rel="icon" type="image/svg+xml"/>
+<link href="favicon.svg" rel="shortcut icon"/>
+<meta charset="utf-8"/>
+<style data-critical="true">
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+ --black: #080B0F;
+ --dark: #0D1117;
+ --card: #111820;
+ --card2: #141E28;
+ --border: #1E2A38;
+ --accent: #00D4FF;
+ --accent2: #00FF94;
+ --gold: #FFB800;
+ --red: #FF4D6D;
+ --text: #E8EDF2;
+ --muted: #6B7A8D;
+ --font-display: 'Plus Jakarta Sans', sans-serif;
+ --font-body: 'DM Sans', sans-serif;
+ --nav-h: 56px;
+ --ticker-h: 76px;
+ --offset: 132px; 
+}
+@media (min-width: 768px) {
+ :root {
+ --nav-h: 72px;
+ --offset: 148px;
+ }
+}
+html { scroll-behavior: smooth; font-size: 15px; }
+body {
+ background: var(--black);
+ color: var(--text);
+ font-family: var(--font-body);
+ line-height: 1.6;
+ overflow-x: hidden;
+ -webkit-font-smoothing: antialiased;
+ width: 100%;
+ max-width: 100vw;
+}
+body::before {
+ content: '';
+ position: fixed; inset: 0;
+ background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+ pointer-events: none; z-index: 0; opacity: 0.5;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+img { max-width: 100%; height: auto; display: block; }
+h1, h2, h3, h4 {
+ font-family: var(--font-display);
+ -webkit-font-smoothing: antialiased;
+ letter-spacing: -0.01em;
+ line-height: 1.18;
+}
+h1 { font-size: clamp(18px, 2vw, 28px); font-weight: 700; }
+h2 { font-size: clamp(18px, 2.5vw, 28px); font-weight: 700; }
+h3 { font-size: clamp(15px, 2vw, 20px); font-weight: 600; }
+h4 { font-size: 14px; font-weight: 700; }
+p { color: rgba(232,237,242,.82); line-height: 1.75; font-size: 15px; }
+nav {
+ position: fixed; top: 0; left: 0; right: 0;
+ z-index: 200;
+ height: var(--nav-h);
+ display: flex; align-items: center; justify-content: space-between;
+ padding: 0 20px;
+ background: rgba(8,11,15,0.92);
+ backdrop-filter: blur(24px);
+ border-bottom: 1px solid var(--border);
+}
+@media (min-width: 768px) { nav { padding: 0 48px; } }
+@media (min-width: 1280px) { nav { padding: 0 64px; } }
+.nav-logo {
+ font-family: var(--font-display);
+ font-size: 18px; font-weight: 800; letter-spacing: -0.02em;
+ color: var(--text); text-decoration: none;
+ display: flex; align-items: center; gap: 8px;
+ flex-shrink: 0;
+}
+@media (min-width: 768px) { .nav-logo { font-size: 22px; } }
+.nav-logo span { color: var(--accent); }
+.nav-logo:hover { text-decoration: none; }
+.nav-dot {
+ width: 8px; height: 8px;
+ background: var(--accent2); border-radius: 50%;
+ animation: pulse 2s ease-in-out infinite; flex-shrink: 0;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+.nav-links {
+ display: none;
+ align-items: center; gap: 28px; list-style: none;
+}
+@media (min-width: 768px) { .nav-links { display: flex; } }
+.nav-links a { color: var(--muted); font-size: 14px; font-weight: 500; transition: color .2s; text-decoration: none; }
+.nav-links a:hover { color: var(--text); }
+.nav-cta {
+ background: var(--accent) !important;
+ color: var(--black) !important;
+ padding: 9px 18px; border-radius: 6px;
+ font-weight: 700 !important; font-size: 13px !important;
+}
+.nav-cta:hover { opacity: .85; }
+.hamburger {
+ display: flex; flex-direction: column; gap: 5px;
+ background: none; border: none; cursor: pointer; padding: 6px;
+}
+@media (min-width: 768px) { .hamburger { display: none; } }
+.hamburger span {
+ display: block; width: 22px; height: 2px;
+ background: var(--text); border-radius: 2px;
+ transition: all .3s;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.mobile-nav {
+ display: none; position: fixed;
+ top: var(--nav-h); left: 0; right: 0;
+ background: rgba(8,11,15,.98);
+ border-bottom: 1px solid var(--border);
+ z-index: 199; flex-direction: column;
+ padding: 8px 0 16px;
+ transform: translateY(-10px); opacity: 0;
+ transition: transform .25s, opacity .25s;
+}
+.mobile-nav.open {
+ display: flex; transform: translateY(0); opacity: 1;
+}
+.mobile-nav a {
+ display: block; padding: 14px 24px;
+ color: var(--text); font-size: 15px; font-weight: 500;
+ border-bottom: 1px solid rgba(30,42,56,.5);
+ text-decoration: none; transition: background .15s;
+}
+.mobile-nav a:last-child { border-bottom: none; }
+.mobile-nav a:hover { background: rgba(0,212,255,.05); }
+.mobile-nav .mobile-cta {
+ margin: 12px 24px 0;
+ background: var(--accent); color: var(--black) !important;
+ border-radius: 8px; text-align: center; font-weight: 700 !important;
+ border-bottom: none !important;
+}
+.ticker-bar {
+ position: sticky;
+ top: var(--nav-h);
+ z-index: 150;
+ height: var(--ticker-h);
+ background: rgba(8,11,15,.98);
+ border-bottom: 1px solid var(--border);
+ overflow: hidden;
+}
+.ticker-bar .tradingview-widget-container,
+.ticker-bar .tradingview-widget-container__widget { height: 100% !important; }
+.section-inner { max-width: 1280px; margin: 0 auto; padding: 0 20px; }
+.reveal,.reveal-left,.reveal-right,.reveal-scale{
+ opacity:0;
+ transition:opacity .65s cubic-bezier(.4,0,.2,1),transform .65s cubic-bezier(.4,0,.2,1);
+ will-change:opacity,transform;
+}
+.reveal{transform:translateY(28px)}
+.reveal-left{transform:translateX(-28px)}
+.reveal-right{transform:translateX(28px)}
+.reveal-scale{transform:scale(.96)}
+.reveal.visible,.reveal-left.visible,.reveal-right.visible,.reveal-scale.visible{
+ opacity:1;transform:none;
+}
+@keyframes forceVisible { to { opacity: 1; tran
+.btn {
+ display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+ font-family: var(--font-display); font-weight: 700;
+ border-radius: 8px; cursor: pointer;
+ text-decoration: none; transition: opacity .2s, transform .15s;
+ white-space: nowrap;
+}
+.btn:hover { opacity: .85; transform: translateY(-1px); text-decoration: none; }
+.btn:active { transform: translateY(0); }
+.btn-primary { background: var(--accent); color: var(--black); padding: 13px 24px; font-size: 14px; }
+.btn-secondary { background: rgba(0,212,255,.1); border: 1px solid rgba(0,212,255,.25); color: var(--accent); padding: 12px 22px; font-size: 14px; }
+.btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 11px 20px; font-size: 13px; }
+.btn-ghost:hover { border-color: var(--text); color: var(--text); }
+.btn-green { background: rgba(0,255,148,.1); border: 1px solid rgba(0,255,148,.25); color: var(--accent2); padding: 12px 22px; font-size: 14px; }
+.btn-full { width: 100%; }
+.btn-sm { padding: 8px 14px; font-size: 12px; }
+.btn-lg { padding: 16px 32px; font-size: 16px; }
+</style>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Review Trading 212 2026 — 0% comision, acțiuni fracționate și cont de economii | GhidBursa.ro</title>
+<meta name="description" content="Review Trading 212 România 2026: acțiuni fără comision, dobândă cash, CFD-uri. Avantaje, dezavantaje și cine ar trebui să îl folosească."/>
+
+<link href="shared.css?v=12" rel="stylesheet"/>
+<link href="mobile.css?v=12" rel="stylesheet"/>
+<link href="https://www.ghidbursa.ro/trading212-review.html" rel="canonical"/>
+<meta content="website" property="og:type"/>
+<meta content="Review Trading 212 2026 — 0% comision, acțiuni fracționate | GhidBursa.ro" property="og:title"/>
+<meta content="Review complet Trading 212 2026. Comision 0%, acțiuni fracționate, cont de economii 4%+. Scor GhidBursa: 8.8/10." property="og:description"/>
+<meta content="https://www.ghidbursa.ro/trading212-review.html" property="og:url"/>
+<meta content="GhidBursa.ro" property="og:site_name"/>
+<meta content="summary" name="twitter:card"/>
+<meta content="Review Trading 212 2026 — 0% comision, acțiuni fracționate | GhidBursa.ro" name="twitter:title"/>
+<meta content="Review complet Trading 212 2026. Comision 0%, acțiuni fracționate, cont de economii 4%+. Scor GhidBursa: 8.8/10." name="twitter:description"/>
+<script type="application/ld+json">
+{"dateModified": "2026-03-19", "@context":"https://schema.org","@type":"Review","name":"Review Trading 212 2026","description":"Review complet Trading 212 2026. Comision 0%, acțiuni fracționate, cont de economii 4%+. Scor GhidBursa: 8.8/10.","url":"https://www.ghidbursa.ro/trading212-review.html","itemReviewed":{"@type":"FinancialService","name":"Trading 212"},"author":{"@type":"Organization","name":"GhidBursa.ro"}}
+</script>
+<meta property="og:image" content="https://www.ghidbursa.ro/og-image.png"/>
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta property="og:locale" content="ro_RO"/>
+  <meta property="og:site_name" content="GhidBursa.ro"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="@GhidBursa"/>
+  <meta name="twitter:image" content="https://www.ghidbursa.ro/og-image.png"/>
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"/>
+  <meta name="author" content="GhidBursa.ro"/>
+  <meta http-equiv="content-language" content="ro"/>
+  <meta name="theme-color" content="#080B0F"/>
+  <link rel="dns-prefetch" href="//s3.tradingview.com"/>
+    
+<script type="application/ld+json">{"dateModified": "2026-03-19", "@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Poate Trading 212 cumpăra acțiuni BVB?","acceptedAnswer":{"@type":"Answer","text":"Trading 212 nu oferă în prezent acces direct la acțiunile listate pe Bursa de Valori București (BVB). Platforma se concentrează pe acțiuni internaționale (NYSE, NASDAQ, LSE). Pentru acțiuni BVB, alternativele sunt XTB, Tradeville sau BT Capital."}},{"@type":"Question","name":"Este Trading 212 sigur în România?","acceptedAnswer":{"@type":"Answer","text":"Trading 212 este reglementat de FCA (UK) și CySEC (Cipru) și autorizat să opereze în România. Fondurile clienților sunt segregate. Compania are peste 3 milioane de utilizatori în Europa."}},{"@type":"Question","name":"Trading 212 este autorizat ASF pentru deducerea de 400 EUR?","acceptedAnswer":{"@type":"Answer","text":"Situație neclară. Trading 212 nu are sediu permanent în România — operează prin pasaport european. Eligibilitatea pentru deducerea OUG 8/2026 este discutabilă. Brokerii siguri eligibili sunt cei cu subsidiară sau sediu în România, autorizați direct de ASF."}},{"@type":"Question","name":"Cum funcționează dobânda pe cash la Trading 212?","acceptedAnswer":{"@type":"Answer","text":"Trading 212 oferă dobândă de până la 3.5% p.a. pe soldul cash neInvestit în EUR, prin programul Cash ISA. Dobânda se calculează zilnic și se creditează lunar. Condiții se pot modifica."}},{"@type":"Question","name":"Care sunt comisioanele reale la Trading 212?","acceptedAnswer":{"@type":"Answer","text":"Trading 212 percepe 0% comision pe tranzacții pentru acțiuni și ETF-uri. Câștigă din spread-ul valutar (0.15% la conversie valutară) și din dobânda la soldurile cash. Nu există taxă de inactivitate sau comision de custodie."}}]}</script>
+<link rel="stylesheet" href="/fonts/fonts.css"/>
+<link rel="preload" href="/fonts/plus-jakarta-sans-700.woff2" as="font" type="font/woff2" crossorigin="anonymous" fetchpriority="high"/>
+<link rel="stylesheet" href="/cookie-consent.css"/>
+</head>
+<body class="no-ticker">
+<nav>
+<a class="nav-logo" href="index.html"><div class="nav-dot"></div>Ghid<span>Bursa</span>.ro</a>
+<ul class="nav-links">
+<li><a href="brokeri.html">Brokeri</a></li>
+<li><a href="ghiduri.html">Ghiduri</a></li>
+<li><a href="screener.html">Screener BVB</a></li>
+<li><a href="calculatoare.html">Calculatoare</a></li>
+<li><a href="newsletter.html">Newsletter</a></li>
+<li><a class="nav-cta" href="brokeri.html">Compară brokeri →</a></li>
+</ul>
+<button aria-label="Meniu" class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
+</nav>
+<div class="mobile-nav" id="mobileNav">
+<a href="index.html">Acasă</a>
+<a href="brokeri.html">Brokeri</a>
+<a href="ghiduri.html">Ghiduri</a>
+<a href="screener.html">Screener BVB</a>
+<a href="calculatoare.html">Calculatoare</a>
+<a href="newsletter.html">Newsletter</a>
+<a href="fear-greed.html">Sentiment BVB</a>
+<a href="fidelis-2025.html">Fidelis 2026</a>
+<a href="glosar.html">Glosar</a>
+<a href="despre-noi.html">Contact</a>
+<a class="mobile-cta" href="brokeri.html">Compară brokeri →</a>
+</div>
+<div class="page-wrap">
+<div class="layout-article">
+<main>
+<div class="breadcrumb"><a href="index.html">Acasă</a> › <a href="brokeri.html">Brokeri</a> › Review Trading 212</div>
+<div class="tag tag-blue" style="margin-bottom:16px">Review broker · Actualizat 2026</div>
+<h1 style="margin-bottom:16px">Review Trading 212 2026 — Comision 0%, acțiuni fracționate și dobândă pe cash</h1>
+<div style="display:flex;align-items:center;gap:20px;padding:16px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:32px;flex-wrap:wrap">
+<span style="font-size:13px;color:var(--muted)">Actualizat: Ianuarie 2026</span>
+<span style="font-size:13px;color:var(--muted)">~9 min lectură</span>
+<span style="font-size:13px;color:var(--muted)">Verificat de echipa GhidBursa</span>
+</div>
+<div class="score-hero reveal">
+<div>
+<div class="score-num">8.8</div>
+<div class="score-label">Scor GhidBursa 2026</div>
+<div style="font-size:11px;color:var(--muted);margin-top:2px">din 10 posibile</div>
+</div>
+<div class="score-breakdown">
+<div style="margin-bottom:10px"><div class="score-row-label">Comisioane <span>10</span></div><div class="score-bar"><div class="score-fill" style="width:100%"></div></div></div>
+<div style="margin-bottom:10px"><div class="score-row-label">Platformă și aplicație <span>9.0</span></div><div class="score-bar"><div class="score-fill" style="width:90%"></div></div></div>
+<div style="margin-bottom:10px"><div class="score-row-label">Acțiuni fracționate <span>9.5</span></div><div class="score-bar"><div class="score-fill" style="width:95%"></div></div></div>
+<div style="margin-bottom:10px"><div class="score-row-label">Siguranță <span>8.5</span></div><div class="score-bar"><div class="score-fill" style="width:85%"></div></div></div>
+<div style="margin-bottom:10px"><div class="score-row-label">Acces BVB <span>5.0</span></div><div class="score-bar"><div class="score-fill" style="width:50%"></div></div></div>
+<div style="margin-bottom:10px"><div class="score-row-label">Dobândă cash <span>9.0</span></div><div class="score-bar"><div class="score-fill" style="width:90%"></div></div></div>
+</div>
+</div>
+<div class="success-box reveal">
+<div class="box-title">Concluzie</div>
+<p>Trading 212 este unul dintre cei mai buni brokeri pentru investitori care vor 0% comision, acțiuni fracționate și o dobândă competitivă pe cash. Punctul slab este accesul limitat la BVB — pentru acțiuni românești, XTB rămâne alegerea mai bună. Dar pentru un portofoliu global, Trading 212 excelează.</p>
+</div>
+<div class="pros-cons reveal">
+<div class="pros"><div class="pros-title">Avantaje Trading 212</div><ul>
+<li>Comision 0% pe acțiuni și ETF-uri — fără excepții de volum</li>
+<li>Acțiuni fracționate de la 1 EUR — poți cumpăra fracțiuni din Apple, Amazon</li>
+<li>Cont de economii (Cash ISA/Invest) cu ~4%+ dobândă pe cash neutilizat</li>
+<li>Aplicație mobilă excelentă — una dintre cele mai bune din industrie</li>
+<li>Reglementat FCA (UK) + CySEC (UE)</li>
+<li>Fără minim de depozit</li>
+<li>Pietele automată (Pies) — investiție automată în portofolii prestabilite</li>
+</ul></div>
+<div class="cons"><div class="cons-title">Dezavantaje Trading 212</div><ul>
+<li>Acces BVB limitat — nu acoperă toate companiile române</li>
+<li>Fără Fidelis sau titluri de stat românești</li>
+<li>Suport în română limitat</li>
+<li>Fără cont demo clasic (există un mod practică)</li>
+<li>Spread pe forex mai ridicat decât la brokeri specializați</li>
+</ul></div>
+</div>
+<div class="article-body">
+<h2>Cine este Trading 212?</h2>
+<p>Trading 212 este un broker britanic fondat în <strong>2004</strong>, reglementat de <strong>FCA</strong> în UK și <strong>CySEC</strong> în UE. Are peste 3 milioane de clienți în Europa și este cunoscut în principal pentru că a fost unul dintre primii brokeri care a introdus comisionul 0% pe acțiuni reale — înainte ca XTB sau eToro să facă același lucru.</p>
+<p>Spre deosebire de eToro (care oferă și CFD-uri), Trading 212 Invest îți oferă <strong>acțiuni reale</strong> — devii acționar efectiv, primești dividende și ai drept de vot. Acesta este un avantaj important față de platformele CFD.</p>
+<h2>Comisioane — 0% fără condiții</h2>
+<div class="table-wrap reveal"><table class="data-table">
+<thead><tr><th>Instrument</th><th>Comision Trading 212</th><th>Comparație XTB</th></tr></thead>
+<tbody>
+<tr><td>Acțiuni globale (US, EU)</td><td class="td-green">0% — fără condiții de volum</td><td>0% sub €100k/lună</td></tr>
+<tr><td>ETF-uri</td><td class="td-green">0%</td><td>0% sub €100k/lună</td></tr>
+<tr><td>Acțiuni fracționate</td><td class="td-green">De la 1 EUR</td><td>De la 10 EUR</td></tr>
+<tr><td>Depozit / Retragere</td><td class="td-green">0%</td><td>0%</td></tr>
+<tr><td>Dobândă cash</td><td class="td-green">~4.2% EUR</td><td>~3.4% EUR</td></tr>
+</tbody></table></div>
+<div class="info-box reveal"><p><strong>Avantajul față de XTB:</strong> XTB percepe 0.5% comision dacă tranzacționezi peste €100.000 pe lună. La Trading 212, comisionul rămâne 0% indiferent de volum. Pentru investitori activi cu sume mari, diferența poate fi semnificativă.</p></div>
+<h2>Acțiuni fracționate — un avantaj real</h2>
+<p>Trading 212 permite cumpărarea de <strong>fracțiuni de acțiuni</strong> de la 1 EUR. Asta înseamnă că poți cumpăra 0.01 acțiuni Amazon sau Nvidia fără să ai nevoie de suma completă a unei acțiuni. Util pentru diversificare cu sume mici.</p>
+<h2>Contul de economii — dobândă pe cash</h2>
+<p>Cash-ul neutilizat din contul tău Trading 212 Invest generează dobândă automată — în jur de <strong>4-4.5% pe EUR</strong> (variabil). Banii sunt plasați în fonduri monetare (money market funds), nu în depozite bancare — randamentul poate fluctua, dar istoric a fost competitiv.</p>
+<h2>Piețele automată (Pies)</h2>
+<p>Funcția "Pies" permite crearea unor portofolii automate: alegi companiile și ponderile, depui periodic o sumă, iar platforma cumpără automat proporțional. Ideal pentru o strategie DCA (Dollar Cost Averaging) pasivă.</p>
+<h2>Acces BVB — limitare importantă</h2>
+<p>Trading 212 oferă acces la un număr limitat de acțiuni BVB — principalele companii (SNP, TLV, BRD, H2O, SNG etc.), dar nu acoperă piața AeRO, companiile mai mici sau titlurile de stat Fidelis. Dacă investești preponderent pe BVB, <a href="xtb-review.html">XTB</a> sau <a href="interactive-brokers-review.html">Interactive Brokers</a> sunt alegeri mai complete.</p>
+<h2>Pentru cine este potrivit Trading 212?</h2>
+<p>Trading 212 este ideal dacă vrei un portofoliu global diversificat cu comision 0% fără limită de volum, dacă îți place să investești în acțiuni fracționate sau dacă vrei o dobândă bună pe cash. Nu îl recomandăm ca broker principal dacă BVB este piața ta principală.</p>
+</div>
+<div class="reveal" style="background:linear-gradient(135deg,rgba(0,212,255,.07),rgba(0,255,148,.04));border:1px solid rgba(0,212,255,.2);border-radius:14px;padding:28px;margin-top:32px;text-align:center">
+<h3 style="margin-bottom:8px">Deschide cont Trading 212</h3>
+<p style="color:var(--muted);font-size:14px;margin-bottom:20px">Analizat și verificat de echipa GhidBursa. Nu constituie consultanță financiară.</p>
+<a class="btn btn-primary btn-lg" href="https://www.trading212.com">Vizitează Trading212.com →</a>
+<p class="disclaimer" style="font-size:11px;color:var(--muted);margin-top:12px">Investițiile implică riscuri, inclusiv pierderea capitalului.</p>
+</div>
+</main>
+<aside>
+<div class="sidebar-card reveal">
+<div style="text-align:center;margin-bottom:16px">
+<div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:52px;font-weight:700;background:linear-gradient(135deg,#00D4FF,#00FF94);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1">8.8</div>
+<div style="font-size:12px;color:var(--muted)">Scor GhidBursa 2026</div>
+</div>
+<a class="btn btn-primary btn-full" href="https://www.trading212.com" style="margin-bottom:10px">Vizitează Trading212.com →</a>
+<a class="btn btn-ghost btn-full" href="brokeri.html">Compară toți brokerii →</a>
+<p class="disclaimer" style="font-size:11px;color:var(--muted);margin-top:12px">Nu constituie consultanță financiară.</p>
+</div>
+<div class="sidebar-card reveal">
+<h4>Date rapide</h4>
+<div class="metric-row"><span class="metric-label">Fondat</span><span class="metric-val green">2004, UK</span></div>
+<div class="metric-row"><span class="metric-label">Reglementat</span><span class="metric-val green">FCA + CySEC</span></div>
+<div class="metric-row"><span class="metric-label">Depozit minim</span><span class="metric-val green">Fără minim</span></div>
+<div class="metric-row"><span class="metric-label">Comision acțiuni</span><span class="metric-val green">0% — fără limit</span></div>
+<div class="metric-row"><span class="metric-label">Acțiuni fracționate</span><span class="metric-val green">De la 1 EUR</span></div>
+<div class="metric-row"><span class="metric-label">Dobândă cash EUR</span><span class="metric-val green">~4.2%</span></div>
+<div class="metric-row"><span class="metric-label">Fidelis / AeRO</span><span class="metric-val" style="color:var(--red)">Nu</span></div>
+<div class="metric-row"><span class="metric-label">Platformă română</span><span class="metric-val green">Da</span></div>
+</div>
+<div class="sidebar-card reveal">
+<h4>Ghiduri conexe</h4>
+<ul class="sidebar-links">
+<li><a href="brokeri.html">Compară toți brokerii</a></li>
+<li><a href="xtb-review.html">Review XTB</a></li>
+<li><a href="etoro-review.html">Review eToro</a></li>
+<li><a href="cum-investesti-bvb.html">Cum investești la BVB</a></li>
+<li><a href="impozit-actiuni-anaf.html">Impozit acțiuni ANAF</a></li>
+</ul>
+</div>
+</aside>
+</div>
+</div>
+
+<div class="faq-section" style="margin-top:32px">
+<h2 style="font-size:18px;font-weight:700;margin-bottom:20px">Întrebări frecvente</h2>
+<div class="faq-item" style="border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:10px;background:var(--card)">
+<div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px;cursor:pointer" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">Poate Trading 212 cumpăra acțiuni BVB? <span style="color:var(--accent);float:right">+</span></div>
+<div style="font-size:13px;color:rgba(232,237,242,.82);line-height:1.7">Trading 212 nu oferă în prezent acces direct la acțiunile listate pe Bursa de Valori București (BVB). Platforma se concentrează pe acțiuni internaționale (NYSE, NASDAQ, LSE). Pentru acțiuni BVB, alternativele sunt XTB, Tradeville sau BT Capital.</div>
+</div>
+<div class="faq-item" style="border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:10px;background:var(--card)">
+<div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px;cursor:pointer" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">Este Trading 212 sigur în România? <span style="color:var(--accent);float:right">+</span></div>
+<div style="font-size:13px;color:rgba(232,237,242,.82);line-height:1.7">Trading 212 este reglementat de FCA (UK) și CySEC (Cipru) și autorizat să opereze în România. Fondurile clienților sunt segregate. Compania are peste 3 milioane de utilizatori în Europa.</div>
+</div>
+<div class="faq-item" style="border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:10px;background:var(--card)">
+<div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px;cursor:pointer" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">Trading 212 este autorizat ASF pentru deducerea de 400 EUR? <span style="color:var(--accent);float:right">+</span></div>
+<div style="font-size:13px;color:rgba(232,237,242,.82);line-height:1.7">Situație neclară. Trading 212 nu are sediu permanent în România — operează prin pasaport european. Eligibilitatea pentru deducerea OUG 8/2026 este discutabilă. Brokerii siguri eligibili sunt cei cu subsidiară sau sediu în România, autorizați direct de ASF.</div>
+</div>
+<div class="faq-item" style="border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:10px;background:var(--card)">
+<div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px;cursor:pointer" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">Cum funcționează dobânda pe cash la Trading 212? <span style="color:var(--accent);float:right">+</span></div>
+<div style="font-size:13px;color:rgba(232,237,242,.82);line-height:1.7">Trading 212 oferă dobândă de până la 3.5% p.a. pe soldul cash neInvestit în EUR, prin programul Cash ISA. Dobânda se calculează zilnic și se creditează lunar. Condiții se pot modifica.</div>
+</div>
+<div class="faq-item" style="border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:10px;background:var(--card)">
+<div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px;cursor:pointer" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">Care sunt comisioanele reale la Trading 212? <span style="color:var(--accent);float:right">+</span></div>
+<div style="font-size:13px;color:rgba(232,237,242,.82);line-height:1.7">Trading 212 percepe 0% comision pe tranzacții pentru acțiuni și ETF-uri. Câștigă din spread-ul valutar (0.15% la conversie valutară) și din dobânda la soldurile cash. Nu există taxă de inactivitate sau comision de custodie.</div>
+</div>
+</div>
+
+<footer>
+<a href="index.html" style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:16px;color:var(--text)">Ghid<span style="color:var(--accent)">Bursa</span>.ro</a>
+<div class="footer-links">
+      <a href="unsubscribe.html">Dezabonare newsletter</a>
+<a href="brokeri.html">Brokeri</a>
+<a href="ghiduri.html">Ghiduri</a>
+<a href="screener.html">Screener BVB</a>
+<a href="calculatoare.html">Calculatoare</a>
+<a href="newsletter.html">Newsletter</a>
+<a href="fear-greed.html">Sentiment BVB</a>
+<a href="calendar-dividende.html">Dividende</a>
+<a href="glosar.html">Glosar</a>
+<a href="legal.html#termeni">Termeni</a>
+<a href="legal.html#disclaimer">Disclaimer</a>
+<a href="despre-noi.html">Contact</a>
+</div>
+<span>© 2026 GhidBursa.ro</span>
+<p class="footer-disclaimer">Investițiile implică riscuri. Conținutul GhidBursa.ro este informativ și nu constituie consultanță financiară. Verificați toate informațiile înainte de a lua decizii de investiție.</p>
+</footer>
+<script defer="" src="shared.js"></script>
+<script defer src="/cookie-consent.js"></script>
+</body>
+</html>

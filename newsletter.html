@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+
+<html lang="ro">
+<head>
+<meta charset="utf-8"/>
+<style data-critical="true">
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+ --black: #080B0F;
+ --dark: #0D1117;
+ --card: #111820;
+ --card2: #141E28;
+ --border: #1E2A38;
+ --accent: #00D4FF;
+ --accent2: #00FF94;
+ --gold: #FFB800;
+ --red: #FF4D6D;
+ --text: #E8EDF2;
+ --muted: #6B7A8D;
+ --font-display: 'Plus Jakarta Sans', sans-serif;
+ --font-body: 'DM Sans', sans-serif;
+ --nav-h: 56px;
+ --ticker-h: 76px;
+ --offset: 132px; 
+}
+@media (min-width: 768px) {
+ :root {
+ --nav-h: 72px;
+ --offset: 148px;
+ }
+}
+html { scroll-behavior: smooth; font-size: 15px; }
+body {
+ background: var(--black);
+ color: var(--text);
+ font-family: var(--font-body);
+ line-height: 1.6;
+ overflow-x: hidden;
+ -webkit-font-smoothing: antialiased;
+ width: 100%;
+ max-width: 100vw;
+}
+body::before {
+ content: '';
+ position: fixed; inset: 0;
+ background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+ pointer-events: none; z-index: 0; opacity: 0.5;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+img { max-width: 100%; height: auto; display: block; }
+h1, h2, h3, h4 {
+ font-family: var(--font-display);
+ -webkit-font-smoothing: antialiased;
+ letter-spacing: -0.01em;
+ line-height: 1.18;
+}
+h1 { font-size: clamp(18px, 2vw, 28px); font-weight: 700; }
+h2 { font-size: clamp(18px, 2.5vw, 28px); font-weight: 700; }
+h3 { font-size: clamp(15px, 2vw, 20px); font-weight: 600; }
+h4 { font-size: 14px; font-weight: 700; }
+p { color: rgba(232,237,242,.82); line-height: 1.75; font-size: 15px; }
+nav {
+ position: fixed; top: 0; left: 0; right: 0;
+ z-index: 200;
+ height: var(--nav-h);
+ display: flex; align-items: center; justify-content: space-between;
+ padding: 0 20px;
+ background: rgba(8,11,15,0.92);
+ backdrop-filter: blur(24px);
+ border-bottom: 1px solid var(--border);
+}
+@media (min-width: 768px) { nav { padding: 0 48px; } }
+@media (min-width: 1280px) { nav { padding: 0 64px; } }
+.nav-logo {
+ font-family: var(--font-display);
+ font-size: 18px; font-weight: 800; letter-spacing: -0.02em;
+ color: var(--text); text-decoration: none;
+ display: flex; align-items: center; gap: 8px;
+ flex-shrink: 0;
+}
+@media (min-width: 768px) { .nav-logo { font-size: 22px; } }
+.nav-logo span { color: var(--accent); }
+.nav-logo:hover { text-decoration: none; }
+.nav-dot {
+ width: 8px; height: 8px;
+ background: var(--accent2); border-radius: 50%;
+ animation: pulse 2s ease-in-out infinite; flex-shrink: 0;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+.nav-links {
+ display: none;
+ align-items: center; gap: 28px; list-style: none;
+}
+@media (min-width: 768px) { .nav-links { display: flex; } }
+.nav-links a { color: var(--muted); font-size: 14px; font-weight: 500; transition: color .2s; text-decoration: none; }
+.nav-links a:hover { color: var(--text); }
+.nav-cta {
+ background: var(--accent) !important;
+ color: var(--black) !important;
+ padding: 9px 18px; border-radius: 6px;
+ font-weight: 700 !important; font-size: 13px !important;
+}
+.nav-cta:hover { opacity: .85; }
+.hamburger {
+ display: flex; flex-direction: column; gap: 5px;
+ background: none; border: none; cursor: pointer; padding: 6px;
+}
+@media (min-width: 768px) { .hamburger { display: none; } }
+.hamburger span {
+ display: block; width: 22px; height: 2px;
+ background: var(--text); border-radius: 2px;
+ transition: all .3s;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.mobile-nav {
+ display: none; position: fixed;
+ top: var(--nav-h); left: 0; right: 0;
+ background: rgba(8,11,15,.98);
+ border-bottom: 1px solid var(--border);
+ z-index: 199; flex-direction: column;
+ padding: 8px 0 16px;
+ transform: translateY(-10px); opacity: 0;
+ transition: transform .25s, opacity .25s;
+}
+.mobile-nav.open {
+ display: flex; transform: translateY(0); opacity: 1;
+}
+.mobile-nav a {
+ display: block; padding: 14px 24px;
+ color: var(--text); font-size: 15px; font-weight: 500;
+ border-bottom: 1px solid rgba(30,42,56,.5);
+ text-decoration: none; transition: background .15s;
+}
+.mobile-nav a:last-child { border-bottom: none; }
+.mobile-nav a:hover { background: rgba(0,212,255,.05); }
+.mobile-nav .mobile-cta {
+ margin: 12px 24px 0;
+ background: var(--accent); color: var(--black) !important;
+ border-radius: 8px; text-align: center; font-weight: 700 !important;
+ border-bottom: none !important;
+}
+.ticker-bar {
+ position: sticky;
+ top: var(--nav-h);
+ z-index: 150;
+ height: var(--ticker-h);
+ background: rgba(8,11,15,.98);
+ border-bottom: 1px solid var(--border);
+ overflow: hidden;
+}
+.ticker-bar .tradingview-widget-container,
+.ticker-bar .tradingview-widget-container__widget { height: 100% !important; }
+.section-inner { max-width: 1280px; margin: 0 auto; padding: 0 20px; }
+.reveal,.reveal-left,.reveal-right,.reveal-scale{
+ opacity:0;
+ transition:opacity .65s cubic-bezier(.4,0,.2,1),transform .65s cubic-bezier(.4,0,.2,1);
+ will-change:opacity,transform;
+}
+.reveal{transform:translateY(28px)}
+.reveal-left{transform:translateX(-28px)}
+.reveal-right{transform:translateX(28px)}
+.reveal-scale{transform:scale(.96)}
+.reveal.visible,.reveal-left.visible,.reveal-right.visible,.reveal-scale.visible{
+ opacity:1;transform:none;
+}
+@keyframes forceVisible { to { opacity: 1; tran
+.btn {
+ display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+ font-family: var(--font-display); font-weight: 700;
+ border-radius: 8px; cursor: pointer;
+ text-decoration: none; transition: opacity .2s, transform .15s;
+ white-space: nowrap;
+}
+.btn:hover { opacity: .85; transform: translateY(-1px); text-decoration: none; }
+.btn:active { transform: translateY(0); }
+.btn-primary { background: var(--accent); color: var(--black); padding: 13px 24px; font-size: 14px; }
+.btn-secondary { background: rgba(0,212,255,.1); border: 1px solid rgba(0,212,255,.25); color: var(--accent); padding: 12px 22px; font-size: 14px; }
+.btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 11px 20px; font-size: 13px; }
+.btn-ghost:hover { border-color: var(--text); color: var(--text); }
+.btn-green { background: rgba(0,255,148,.1); border: 1px solid rgba(0,255,148,.25); color: var(--accent2); padding: 12px 22px; font-size: 14px; }
+.btn-full { width: 100%; }
+.btn-sm { padding: 8px 14px; font-size: 12px; }
+.btn-lg { padding: 16px 32px; font-size: 16px; }
+</style>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Newsletter GhidBursa — Rezumat BVB Săptămânal, Dividende și Alerte Fidelis | GhidBursa.ro</title>
+<meta name="description" content="Abonează-te la newsletter GhidBursa.ro: analize săptămânale BVB, alerte dividende și ghiduri pentru investitori români."/>
+<link href="https://www.ghidbursa.ro/newsletter.html" rel="canonical"/>
+<meta content="Newsletter GhidBursa — Investiții BVB la zi" property="og:title"/>
+<meta content="Rezumat săptămânal BVB, alerte dividende și Fidelis. Gratuit, fără spam." property="og:description"/>
+<meta content="website" property="og:type"/>
+<meta content="https://www.ghidbursa.ro/newsletter.html" property="og:url"/>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Newsletter GhidBursa","url":"https://www.ghidbursa.ro/newsletter.html"}</script>
+<link href="favicon.svg" rel="icon" type="image/svg+xml"/>
+
+<link href="shared.css?v=12" rel="stylesheet"/>
+<link href="mobile.css?v=12" rel="stylesheet"/>
+<style>
+/* ── NEWSLETTER PAGE ── */
+.nl-hero{padding:calc(var(--nav-h) + 40px) 0 60px;text-align:center;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(0,212,255,.06),transparent)}
+.nl-hero h1{font-size:clamp(28px,6vw,52px);margin-bottom:14px;max-width:700px;margin-left:auto;margin-right:auto}
+.nl-hero p{color:var(--muted);font-size:clamp(15px,2vw,17px);max-width:500px;margin:0 auto 32px;line-height:1.7}
+.nl-form-wrap{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;max-width:480px;margin:0 auto;text-align:left}
+.nl-form-wrap h3{font-family:var(--font-display);font-size:17px;font-weight:700;margin-bottom:4px}
+.nl-form-wrap p{font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.6}
+.nl-email-row{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.nl-email-row input{flex:1;min-width:200px;background:var(--dark);border:1px solid var(--border);color:var(--text);padding:12px 16px;border-radius:8px;font-size:15px;font-family:var(--font-body);outline:none;transition:border-color .2s}
+.nl-email-row input:focus{border-color:var(--accent)}
+.nl-email-row button{background:var(--accent);color:var(--black);border:none;border-radius:8px;padding:12px 20px;font-family:var(--font-display);font-size:14px;font-weight:700;cursor:pointer;transition:opacity .2s,transform .15s;white-space:nowrap}
+.nl-email-row button:hover{opacity:.88;transform:translateY(-1px)}
+.nl-gdpr{font-size:11px;color:var(--muted);display:flex;gap:8px;align-items:flex-start;line-height:1.5}
+.nl-gdpr input{margin-top:2px;flex-shrink:0;accent-color:var(--accent)}
+.nl-social-proof{display:flex;align-items:center;gap:10px;margin-top:16px;padding-top:14px;border-top:1px solid var(--border);font-size:12px;color:var(--muted)}
+.nl-avatars{display:flex}
+.nl-avatar{width:28px;height:28px;border-radius:50%;border:2px solid var(--card);margin-right:-8px;font-size:11px;display:flex;align-items:center;justify-content:center;font-weight:700;background:var(--border)}
+
+/* What you get */
+.nl-tiers{display:grid;grid-template-columns:1fr;gap:20px;margin-top:60px}
+@media(min-width:768px){.nl-tiers{grid-template-columns:1fr 1fr}}
+.nl-tier{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;position:relative}
+.nl-tier.premium{border-color:rgba(255,184,0,.3);background:linear-gradient(135deg,rgba(255,184,0,.05),rgba(255,255,255,.01))}
+.tier-badge{position:absolute;top:18px;right:18px;font-size:10px;font-weight:700;padding:3px 10px;border-radius:4px;letter-spacing:.06em}
+.tier-free{background:rgba(0,212,255,.12);color:var(--accent)}
+.tier-premium-badge{background:var(--gold);color:var(--black)}
+.nl-tier h3{font-family:var(--font-display);font-size:22px;font-weight:700;margin-bottom:6px}
+.nl-tier .price{font-family:var(--font-display);font-size:28px;font-weight:700;margin-bottom:14px;line-height:1}
+.nl-tier .price .currency{font-size:14px;vertical-align:top;margin-top:5px;display:inline-block;font-weight:600;color:var(--muted)}
+.nl-tier .price .period{font-size:13px;color:var(--muted);font-weight:500}
+.nl-tier ul{list-style:none;padding:0;display:flex;flex-direction:column;gap:9px;margin-bottom:20px}
+.nl-tier li{font-size:14px;display:flex;gap:10px;align-items:flex-start;line-height:1.5}
+.nl-tier li .check{flex-shrink:0;margin-top:1px}
+.nl-tier li .check.green{color:var(--accent2)}.nl-tier li .check.gold{color:var(--gold)}.nl-tier li .check.gray{color:var(--muted)}
+.nl-tier .locked{opacity:.5;position:relative}
+.nl-tier .locked::after{content:"";margin-left:5px;font-size:11px}
+.lock-notice{background:rgba(255,184,0,.06);border:1px solid rgba(255,184,0,.2);border-radius:8px;padding:12px 14px;font-size:13px;color:var(--gold);line-height:1.6;margin-bottom:14px}
+
+/* Preview section */
+.nl-preview{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:0;overflow:hidden;margin-top:60px}
+.nl-preview-header{padding:16px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.nl-preview-dot{width:10px;height:10px;border-radius:50%;background:var(--accent2);animation:pulse 2s ease-in-out infinite}
+.nl-preview-title{font-family:var(--font-display);font-size:15px;font-weight:700}
+.nl-preview-meta{font-size:12px;color:var(--muted)}
+.nl-email-preview{padding:24px 22px;font-size:14px;line-height:1.8;color:rgba(232,237,242,.85)}
+.nl-email-preview h4{font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--text);margin-bottom:4px}
+.nl-email-preview .divider{height:1px;background:var(--border);margin:16px 0}
+.nl-email-preview .section-lbl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.nl-email-preview .ticker-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(30,42,56,.5);font-size:13px}
+.nl-email-preview .ticker-row:last-child{border-bottom:none}
+.nl-email-preview .t-name{color:var(--muted)}
+.nl-email-preview .t-val{font-weight:700}
+.nl-email-preview .t-up{color:var(--accent2)}.nl-email-preview .t-dn{color:#FF4D6D}.nl-email-preview .t-flat{color:var(--muted)}
+
+/* Why GhidBursa */
+.why-grid{display:grid;grid-template-columns:1fr;gap:16px;margin-top:40px}
+@media(min-width:640px){.why-grid{grid-template-columns:1fr 1fr}}
+@media(min-width:1024px){.why-grid{grid-template-columns:repeat(3,1fr)}}
+.why-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px}
+.why-icon{font-size:28px;margin-bottom:10px}
+.why-card h4{font-family:var(--font-display);font-size:15px;font-weight:700;margin-bottom:6px}
+.why-card p{font-size:13px;color:var(--muted);line-height:1.6}
+
+/* Success state */
+.nl-success{display:none;text-align:center;padding:20px}
+.nl-success .big-icon{font-size:48px;margin-bottom:12px}
+</style>
+<meta content="summary" name="twitter:card"/>
+<meta content="Newsletter Investiții BVB — GhidBursa.ro" name="twitter:title"/>
+<meta content="Abonează-te la newsletter-ul GhidBursa.ro pentru analize BVB, știri Fidelis și dividende direct în inbox." name="twitter:description"/>
+<meta property="og:image" content="https://www.ghidbursa.ro/og-image.png"/>
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta property="og:locale" content="ro_RO"/>
+  <meta property="og:site_name" content="GhidBursa.ro"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="@GhidBursa"/>
+  <meta name="twitter:image" content="https://www.ghidbursa.ro/og-image.png"/>
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"/>
+  <meta name="author" content="GhidBursa.ro"/>
+  <meta http-equiv="content-language" content="ro"/>
+  <meta name="theme-color" content="#080B0F"/>
+  <link rel="dns-prefetch" href="//s3.tradingview.com"/>
+    <link rel="stylesheet" href="/fonts/fonts.css"/>
+<link rel="preload" href="/fonts/plus-jakarta-sans-700.woff2" as="font" type="font/woff2" crossorigin="anonymous" fetchpriority="high"/>
+<link rel="stylesheet" href="/cookie-consent.css"/>
+</head>
+<body class="no-ticker">
+<nav>
+<a class="nav-logo" href="index.html"><div class="nav-dot"></div>Ghid<span>Bursa</span>.ro</a>
+<ul class="nav-links">
+<li><a href="brokeri.html">Brokeri</a></li>
+<li><a href="ghiduri.html">Ghiduri</a></li>
+<li><a href="screener.html">Screener BVB</a></li>
+<li><a href="calculatoare.html">Calculatoare</a></li>
+<li><a href="newsletter.html" style="color:var(--text)">Newsletter</a></li>
+<li><a class="nav-cta" href="brokeri.html">Compară brokeri →</a></li>
+</ul>
+<button aria-label="Meniu" class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
+</nav>
+<div class="mobile-nav" id="mobileNav">
+<a href="index.html">Acasă</a>
+<a href="brokeri.html">Brokeri</a>
+<a href="ghiduri.html">Ghiduri</a>
+<a href="screener.html">Screener BVB</a>
+<a href="calculatoare.html">Calculatoare</a>
+<a href="newsletter.html">Newsletter</a>
+<a href="fear-greed.html">Sentiment BVB</a>
+<a href="fidelis-2025.html">Fidelis 2026</a>
+<a href="glosar.html">Glosar</a>
+<a href="despre-noi.html">Contact</a>
+<a class="mobile-cta" href="brokeri.html">Compară brokeri →</a>
+</div>
+<!-- HERO -->
+<div class="breadcrumb"><a href="index.html">Acasă</a> › <span>Newsletter</span></div>
+<section class="nl-hero">
+<div class="section-inner">
+<div class="tag tag-green reveal" style="margin-bottom:14px;display:inline-flex">
+<span style="width:6px;height:6px;border-radius:50%;background:var(--accent2);display:inline-block;margin-right:6px"></span>
+      Gratuit · Fără spam · Te dezabonezi oricând
+    </div>
+<h1 class="reveal delay-1">Ce s-a mișcat pe BVB.<br/><span style="background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Explicat în 5 minute.</span></h1>
+<p class="reveal delay-2">Fără reclamă, fără clickbait, fără „analize" copiate de pe internet. Doar ce a contat săptămâna asta pe piața română și ce urmează.</p>
+<!-- FORM -->
+<div class="nl-form-wrap reveal delay-3" id="nlFormWrap">
+<h3>Abonează-te gratuit</h3>
+<p>Primul email marți dimineața. Dezabonare cu un click, oricând.</p>
+<div class="nl-email-row">
+<input autocomplete="email" id="nlEmail" placeholder="adresa@email.ro" type="email"/>
+<button onclick="handleSubscribe()">Abonează-mă →</button>
+</div>
+<label class="nl-gdpr">
+<input id="nlGdpr" type="checkbox"/>
+<span>Sunt de acord cu <a href="legal.html#gdpr" style="color:var(--accent)">politica de confidențialitate</a>. Datele mele sunt folosite exclusiv pentru trimiterea newsletter-ului.</span>
+</label>
+<div class="nl-social-proof">
+<div class="nl-avatars">
+<div class="nl-avatar" style="background:#1A3A5C">IO</div>
+<div class="nl-avatar" style="background:#1A4A3C">AM</div>
+<div class="nl-avatar" style="background:#3A1A4C">RD</div>
+<div class="nl-avatar" style="background:#4C3A1A">CP</div>
+</div>
+<span>Alătură-te primilor investitori abonați</span>
+</div>
+</div>
+<!-- SUCCESS STATE -->
+<div class="nl-success" id="nlSuccess">
+<h3 style="font-family:var(--font-display);font-size:22px;margin-bottom:8px">Ești abonat!</h3>
+<p style="color:var(--muted);font-size:15px">Verifică inbox-ul pentru emailul de confirmare. Primul newsletter vine marți.</p>
+</div>
+</div>
+</section>
+<div class="section-inner">
+<!-- TIERS -->
+<h2 class="reveal" style="text-align:center;margin-bottom:6px">Ce primești</h2>
+<p class="reveal" style="text-align:center;color:var(--muted);font-size:15px;margin-bottom:0">Gratuit acum · Premium în curând</p>
+<div class="nl-tiers reveal">
+<!-- FREE -->
+<div class="nl-tier">
+<span class="tier-badge tier-free">GRATUIT</span>
+<h3>GhidBursa Free</h3>
+<div class="price"><span class="currency">RON</span> 0 <span class="period">/lună</span></div>
+<ul>
+<li><span class="check green">✓</span><span><strong>Rezumat săptămânal BVB</strong> — ce s-a mișcat, cât și de ce. Trimis în fiecare marți.</span></li>
+<li><span class="check green">✓</span><span><strong>Top dividende lunare</strong> — acțiunile cu cel mai mare randament anunțat, cu date de plată.</span></li>
+<li><span class="check green">✓</span><span><strong>Alertă Fidelis instant</strong> — primești email în ziua în care se deschide o nouă emisiune Fidelis sau Tezaur.</span></li>
+<li><span class="check green">✓</span><span><strong>Ghid fiscal lunar</strong> — termene ANAF, declarații, actualizări legislative pe scurt.</span></li>
+<li><span class="check green">✓</span><span>Acces la toate calculatoarele și ghidurile GhidBursa.</span></li>
+</ul>
+<button class="btn btn-primary btn-full" onclick="document.getElementById('nlEmail').focus();window.scrollTo({top:0,behavior:'smooth'})">Abonează-mă gratuit →</button>
+</div>
+<!-- PREMIUM -->
+<div class="nl-tier premium">
+<span class="tier-badge tier-premium-badge">PREMIUM — ÎN CURÂND</span>
+<h3>GhidBursa Pro</h3>
+<div class="price" style="color:var(--gold)">49 <span class="currency" style="color:var(--gold)">RON</span><span class="period">/lună</span></div>
+<div class="lock-notice"> Lansare estimată: T2 2026. Abonații free au prioritate la beta.</div>
+<ul>
+<li><span class="check green">✓</span><span>Tot ce include Free, plus:</span></li>
+<li><span class="check gold locked"></span><span class="locked"><strong>Portofoliu model GhidBursa</strong> — alocarea recomandată, actualizată lunar cu justificare completă.</span></li>
+<li><span class="check gold locked"></span><span class="locked"><strong>Analize profunde</strong> — 2 rapoarte lunare pe companii BVB cu valoare estimată și recomandare.</span></li>
+<li><span class="check gold locked"></span><span class="locked"><strong>Alerte tranzacții</strong> — notificări în timp real când portofoliul model face o mișcare.</span></li>
+<li><span class="check gold locked"></span><span class="locked"><strong>Q&amp;A lunar</strong> — sesiune de întrebări și răspunsuri exclusive pentru abonați Pro.</span></li>
+<li><span class="check gold locked"></span><span class="locked">Screener cu filtre avansate și watchlist personal.</span></li>
+</ul>
+<button class="btn btn-full" onclick="document.getElementById('nlEmail').focus();window.scrollTo({top:0,behavior:'smooth'})" style="background:rgba(255,184,0,.1);border:1px solid rgba(255,184,0,.3);color:var(--gold);font-family:var(--font-display);font-weight:700;padding:13px;border-radius:8px;cursor:pointer;font-size:14px">Notifică-mă la lansare →</button>
+</div>
+</div>
+<!-- PREVIEW EMAIL -->
+<div style="margin-top:60px">
+<h2 class="reveal" style="text-align:center;margin-bottom:6px">Cum arată un newsletter</h2>
+<p class="reveal" style="text-align:center;color:var(--muted);font-size:15px;margin-bottom:24px">Preview ediția de marți</p>
+<div class="nl-preview reveal">
+<div class="nl-preview-header">
+<div class="nl-preview-dot"></div>
+<div>
+<div class="nl-preview-title">BVB Săptămânal #12 · 15 Martie 2026</div>
+<div class="nl-preview-meta">De la GhidBursa.ro · 3 min lectură</div>
+</div>
+</div>
+<div class="nl-email-preview">
+<h4>Bună ziua,</h4>
+<p>Săptămâna a adus volatilitate ridicată pe BVB, cu BET scăzând 1.2% pe fondul îngrijorărilor privind deficitul bugetar. Câteva mișcări notabile:</p>
+<div class="divider"></div>
+<div class="section-lbl">Mișcările săptămânii — BET</div>
+<div class="ticker-row"><span>BET Index</span><span class="t-name"></span><span class="t-val t-dn">‑1.2%</span></div>
+<div class="ticker-row"><span class="t-val" style="color:var(--accent)">TLV</span><span class="t-name">Banca Transilvania</span><span class="t-val t-up">+2.4%</span></div>
+<div class="ticker-row"><span class="t-val" style="color:var(--accent)">TGN</span><span class="t-name">Transgaz</span><span class="t-val t-up">+1.8%</span></div>
+<div class="ticker-row"><span class="t-val" style="color:var(--accent)">SNP</span><span class="t-name">OMV Petrom</span><span class="t-val t-dn">‑0.9%</span></div>
+<div class="ticker-row"><span class="t-val" style="color:var(--accent)">DIGI</span><span class="t-name">Digi Communications</span><span class="t-val t-dn">‑3.1%</span></div>
+<div class="divider"></div>
+<div class="section-lbl">Dividende anunțate săptămâna aceasta</div>
+<div class="ticker-row"><span class="t-val" style="color:var(--accent)">BRD</span><span class="t-name">~7.2% yield · ex-div. 28 April</span><span class="t-val t-up">Confirmat</span></div>
+<div class="ticker-row"><span class="t-val" style="color:var(--accent)">SFG</span><span class="t-name">~5.1% yield · ex-div. 15 Mai</span><span class="t-val t-up">Confirmat</span></div>
+<div class="divider"></div>
+<div class="section-lbl">Pe radar săptămâna viitoare</div>
+<p style="font-size:13px;color:var(--muted)">Rezultatele financiare Q4 2025/Q1 2026 pentru SNP și H2O se publică joi. Urmărim și evoluția randamentelor la Trezorerie, unde dobânzile la 3 ani au mai scăzut cu 15bp.</p>
+<div class="divider"></div>
+<p style="font-size:12px;color:var(--muted)">Până săptămâna viitoare,<br/><strong style="color:var(--text)">Echipa GhidBursa.ro</strong></p>
+<p style="font-size:11px;color:rgba(107,122,141,.6);margin-top:8px">Acesta este un material informativ, nu consultanță financiară. <a href="legal.html#disclaimer" style="color:var(--muted)">Disclaimer complet</a></p>
+</div>
+</div>
+</div>
+<!-- WHY GHIDBURSA -->
+<div style="margin-top:60px">
+<h2 class="reveal" style="text-align:center;margin-bottom:8px">De ce GhidBursa?</h2>
+<div class="why-grid">
+<div class="why-card reveal">
+<div class="why-icon"><svg fill="none" height="28" stroke="var(--accent)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="28"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg></div>
+<h4>Focusat exclusiv pe BVB</h4>
+<p>Nu primești știri globale pe care le găsești oriunde. Totul e filtrat pentru investitorul român de pe piața locală.</p>
+</div>
+<div class="why-card reveal delay-1">
+<div class="why-icon"><svg fill="none" height="28" stroke="var(--accent)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="28"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div>
+<h4>3 minute, nu 30</h4>
+<p>Fiecare ediție e scurtă și la obiect. Dacă nu citești în 3 minute, înseamnă că am inclus prea mult — și corectăm.</p>
+</div>
+<div class="why-card reveal delay-2">
+<div class="why-icon"><svg fill="none" height="28" stroke="var(--accent)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="28"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></div>
+<h4>Fără titluri alarmiste</h4>
+<p>Nu scriem "BVB în colaps!" ca să obținem clicuri. Tonul e calm, analitic și onest — inclusiv când piața scade.</p>
+</div>
+<div class="why-card reveal delay-3">
+<div class="why-icon"><svg fill="none" height="28" stroke="var(--accent)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="28"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></div>
+<h4>Alerte Fidelis în timp real</h4>
+<p>Fidelis se deschide de 2-3 ori pe an. Primești email instant în ziua lansării, nu a doua zi din știri.</p>
+</div>
+<div class="why-card reveal delay-4">
+<div class="why-icon"><svg fill="none" height="28" stroke="var(--accent)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="28"><line x1="18" x2="18" y1="20" y2="10"></line><line x1="12" x2="12" y1="20" y2="4"></line><line x1="6" x2="6" y1="20" y2="14"></line></svg></div>
+<h4>Date + context</h4>
+<p>Orice mișcare de preț vine cu o explicație. Nu doar "TLV +2%" ci de ce, și ce înseamnă pentru dividend estimat.</p>
+</div>
+<div class="why-card reveal delay-5">
+<div class="why-icon"><svg fill="none" height="28" stroke="var(--accent)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="28"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></div>
+<h4>Zero tracking agresiv</h4>
+<p>Nu vândem datele tale. Nu ai reclame în email. Nu îți trimitem mesaje la 3 dimineața. Punct.</p>
+</div>
+</div>
+</div>
+<!-- FINAL CTA -->
+<div style="text-align:center;padding:60px 0 20px">
+<h2 class="reveal">Gata să fii la curent cu BVB?</h2>
+<p class="reveal" style="color:var(--muted);margin:12px auto 28px;max-width:420px;font-size:15px;line-height:1.7">Gratuit. Fără card. Te dezabonezi cu un click. Primul email — marți dimineața.</p>
+<div class="reveal" style="max-width:400px;margin:0 auto">
+<div class="nl-email-row">
+<input id="nlEmail2" placeholder="adresa@email.ro" type="email"/>
+<button onclick="handleSubscribe2()">Abonează-mă →</button>
+</div>
+</div>
+<p class="disclaimer reveal" style="margin-top:12px">Prin abonare ești de acord cu politica de confidențialitate. Dezabonare oricând.</p>
+</div>
+</div><!-- /section-inner -->
+<footer>
+<a href="index.html" style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:16px;color:var(--text)">Ghid<span style="color:var(--accent)">Bursa</span>.ro</a>
+<div class="footer-links">
+      <a href="unsubscribe.html">Dezabonare newsletter</a>
+<a href="brokeri.html">Brokeri</a><a href="ghiduri.html">Ghiduri</a>
+<a href="screener.html">Screener BVB</a><a href="calculatoare.html">Calculatoare</a>
+<a href="newsletter.html">Newsletter</a><a href="fear-greed.html">Sentiment BVB</a>
+<a href="calendar-dividende.html">Dividende</a><a href="glosar.html">Glosar</a>
+<a href="legal.html#termeni">Termeni</a><a href="legal.html#disclaimer">Disclaimer</a>
+<a href="despre-noi.html">Contact</a>
+</div>
+<span>© 2026 GhidBursa.ro</span>
+<p class="footer-disclaimer">Investițiile implică riscuri. Conținutul GhidBursa.ro este informativ și nu constituie consultanță financiară. Verificați toate informațiile înainte de a lua decizii de investiție.</p>
+</footer>
+<script defer="" src="shared.js"></script>
+<script>
+// Replace this URL with your deployed Cloudflare Worker URL
+var NEWSLETTER_URL = "https://newsletter.ghidbursa.ro/subscribe";
+
+async function doSubscribe(email, btnEl, onSuccess) {
+  if (!email || !email.includes("@")) {
+    alert("Introdu o adresă de email validă.");
+    return;
+  }
+  var originalText = btnEl.textContent;
+  btnEl.disabled = true;
+  btnEl.textContent = "Se trimite...";
+  try {
+    var resp = await fetch(NEWSLETTER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email })
+    });
+    var data = await resp.json();
+    if (data.ok) {
+      onSuccess();
+    } else {
+      alert(data.error || "Eroare. Încearcă din nou.");
+      btnEl.disabled = false;
+      btnEl.textContent = originalText;
+    }
+  } catch (err) {
+    alert("Eroare de conexiune. Verifică internetul și încearcă din nou.");
+    btnEl.disabled = false;
+    btnEl.textContent = originalText;
+  }
+}
+
+function handleSubscribe() {
+  var email = document.getElementById("nlEmail").value.trim();
+  var gdpr = document.getElementById("nlGdpr").checked;
+  if (!gdpr) { alert("Bifează acordul GDPR pentru a te abona."); return; }
+  var btn = document.querySelector("#nlFormWrap button");
+  doSubscribe(email, btn, function() {
+    document.getElementById("nlFormWrap").style.display = "none";
+    document.getElementById("nlSuccess").style.display = "block";
+  });
+}
+
+function handleSubscribe2() {
+  var emailEl = document.getElementById("nlEmail2");
+  var email = emailEl.value.trim();
+  var btn = emailEl.nextElementSibling;
+  doSubscribe(email, btn, function() {
+    emailEl.value = "";
+    emailEl.placeholder = "Abonat! Verifică inbox-ul.";
+    btn.textContent = "Trimis";
+  });
+}
+</script>
+<script defer src="/cookie-consent.js"></script>
+</body>
+</html>

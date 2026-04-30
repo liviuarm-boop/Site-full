@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+
+<html lang="ro">
+<head>
+<link href="favicon.svg" rel="icon" type="image/svg+xml"/>
+<link href="favicon.svg" rel="shortcut icon"/>
+<meta charset="utf-8"/>
+<style data-critical="true">
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+ --black: #080B0F;
+ --dark: #0D1117;
+ --card: #111820;
+ --card2: #141E28;
+ --border: #1E2A38;
+ --accent: #00D4FF;
+ --accent2: #00FF94;
+ --gold: #FFB800;
+ --red: #FF4D6D;
+ --text: #E8EDF2;
+ --muted: #6B7A8D;
+ --font-display: 'Plus Jakarta Sans', sans-serif;
+ --font-body: 'DM Sans', sans-serif;
+ --nav-h: 56px;
+ --ticker-h: 76px;
+ --offset: 132px; 
+}
+@media (min-width: 768px) {
+ :root {
+ --nav-h: 72px;
+ --offset: 148px;
+ }
+}
+html { scroll-behavior: smooth; font-size: 15px; }
+body {
+ background: var(--black);
+ color: var(--text);
+ font-family: var(--font-body);
+ line-height: 1.6;
+ overflow-x: hidden;
+ -webkit-font-smoothing: antialiased;
+ width: 100%;
+ max-width: 100vw;
+}
+body::before {
+ content: '';
+ position: fixed; inset: 0;
+ background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+ pointer-events: none; z-index: 0; opacity: 0.5;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+img { max-width: 100%; height: auto; display: block; }
+h1, h2, h3, h4 {
+ font-family: var(--font-display);
+ -webkit-font-smoothing: antialiased;
+ letter-spacing: -0.01em;
+ line-height: 1.18;
+}
+h1 { font-size: clamp(18px, 2vw, 28px); font-weight: 700; }
+h2 { font-size: clamp(18px, 2.5vw, 28px); font-weight: 700; }
+h3 { font-size: clamp(15px, 2vw, 20px); font-weight: 600; }
+h4 { font-size: 14px; font-weight: 700; }
+p { color: rgba(232,237,242,.82); line-height: 1.75; font-size: 15px; }
+nav {
+ position: fixed; top: 0; left: 0; right: 0;
+ z-index: 200;
+ height: var(--nav-h);
+ display: flex; align-items: center; justify-content: space-between;
+ padding: 0 20px;
+ background: rgba(8,11,15,0.92);
+ backdrop-filter: blur(24px);
+ border-bottom: 1px solid var(--border);
+}
+@media (min-width: 768px) { nav { padding: 0 48px; } }
+@media (min-width: 1280px) { nav { padding: 0 64px; } }
+.nav-logo {
+ font-family: var(--font-display);
+ font-size: 18px; font-weight: 800; letter-spacing: -0.02em;
+ color: var(--text); text-decoration: none;
+ display: flex; align-items: center; gap: 8px;
+ flex-shrink: 0;
+}
+@media (min-width: 768px) { .nav-logo { font-size: 22px; } }
+.nav-logo span { color: var(--accent); }
+.nav-logo:hover { text-decoration: none; }
+.nav-dot {
+ width: 8px; height: 8px;
+ background: var(--accent2); border-radius: 50%;
+ animation: pulse 2s ease-in-out infinite; flex-shrink: 0;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+.nav-links {
+ display: none;
+ align-items: center; gap: 28px; list-style: none;
+}
+@media (min-width: 768px) { .nav-links { display: flex; } }
+.nav-links a { color: var(--muted); font-size: 14px; font-weight: 500; transition: color .2s; text-decoration: none; }
+.nav-links a:hover { color: var(--text); }
+.nav-cta {
+ background: var(--accent) !important;
+ color: var(--black) !important;
+ padding: 9px 18px; border-radius: 6px;
+ font-weight: 700 !important; font-size: 13px !important;
+}
+.nav-cta:hover { opacity: .85; }
+.hamburger {
+ display: flex; flex-direction: column; gap: 5px;
+ background: none; border: none; cursor: pointer; padding: 6px;
+}
+@media (min-width: 768px) { .hamburger { display: none; } }
+.hamburger span {
+ display: block; width: 22px; height: 2px;
+ background: var(--text); border-radius: 2px;
+ transition: all .3s;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.mobile-nav {
+ display: none; position: fixed;
+ top: var(--nav-h); left: 0; right: 0;
+ background: rgba(8,11,15,.98);
+ border-bottom: 1px solid var(--border);
+ z-index: 199; flex-direction: column;
+ padding: 8px 0 16px;
+ transform: translateY(-10px); opacity: 0;
+ transition: transform .25s, opacity .25s;
+}
+.mobile-nav.open {
+ display: flex; transform: translateY(0); opacity: 1;
+}
+.mobile-nav a {
+ display: block; padding: 14px 24px;
+ color: var(--text); font-size: 15px; font-weight: 500;
+ border-bottom: 1px solid rgba(30,42,56,.5);
+ text-decoration: none; transition: background .15s;
+}
+.mobile-nav a:last-child { border-bottom: none; }
+.mobile-nav a:hover { background: rgba(0,212,255,.05); }
+.mobile-nav .mobile-cta {
+ margin: 12px 24px 0;
+ background: var(--accent); color: var(--black) !important;
+ border-radius: 8px; text-align: center; font-weight: 700 !important;
+ border-bottom: none !important;
+}
+.ticker-bar {
+ position: sticky;
+ top: var(--nav-h);
+ z-index: 150;
+ height: var(--ticker-h);
+ background: rgba(8,11,15,.98);
+ border-bottom: 1px solid var(--border);
+ overflow: hidden;
+}
+.ticker-bar .tradingview-widget-container,
+.ticker-bar .tradingview-widget-container__widget { height: 100% !important; }
+.section-inner { max-width: 1280px; margin: 0 auto; padding: 0 20px; }
+.reveal,.reveal-left,.reveal-right,.reveal-scale{
+ opacity:0;
+ transition:opacity .65s cubic-bezier(.4,0,.2,1),transform .65s cubic-bezier(.4,0,.2,1);
+ will-change:opacity,transform;
+}
+.reveal{transform:translateY(28px)}
+.reveal-left{transform:translateX(-28px)}
+.reveal-right{transform:translateX(28px)}
+.reveal-scale{transform:scale(.96)}
+.reveal.visible,.reveal-left.visible,.reveal-right.visible,.reveal-scale.visible{
+ opacity:1;transform:none;
+}
+@keyframes forceVisible { to { opacity: 1; tran
+.btn {
+ display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+ font-family: var(--font-display); font-weight: 700;
+ border-radius: 8px; cursor: pointer;
+ text-decoration: none; transition: opacity .2s, transform .15s;
+ white-space: nowrap;
+}
+.btn:hover { opacity: .85; transform: translateY(-1px); text-decoration: none; }
+.btn:active { transform: translateY(0); }
+.btn-primary { background: var(--accent); color: var(--black); padding: 13px 24px; font-size: 14px; }
+.btn-secondary { background: rgba(0,212,255,.1); border: 1px solid rgba(0,212,255,.25); color: var(--accent); padding: 12px 22px; font-size: 14px; }
+.btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 11px 20px; font-size: 13px; }
+.btn-ghost:hover { border-color: var(--text); color: var(--text); }
+.btn-green { background: rgba(0,255,148,.1); border: 1px solid rgba(0,255,148,.25); color: var(--accent2); padding: 12px 22px; font-size: 14px; }
+.btn-full { width: 100%; }
+.btn-sm { padding: 8px 14px; font-size: 12px; }
+.btn-lg { padding: 16px 32px; font-size: 16px; }
+</style>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Review Plus500 2026 — Platformă CFD cu spread competitiv pentru trading activ | GhidBursa.ro</title>
+<meta name="description" content="Review Plus500 România 2026: platformă CFD, spread-uri reale, protecție cont negativ. Recenzie completă și verdict."/>
+
+<link href="shared.css?v=12" rel="stylesheet"/>
+<link href="mobile.css?v=12" rel="stylesheet"/>
+<link href="https://www.ghidbursa.ro/plus500-review.html" rel="canonical"/>
+<meta content="website" property="og:type"/>
+<meta content="Review Plus500 2026 — Platformă CFD pentru trading activ | GhidBursa.ro" property="og:title"/>
+<meta content="Review complet Plus500 2026. Platformă CFD listată la Londra, spread competitiv, acces global. Scor GhidBursa: 7.6/10." property="og:description"/>
+<meta content="https://www.ghidbursa.ro/plus500-review.html" property="og:url"/>
+<meta content="GhidBursa.ro" property="og:site_name"/>
+<meta content="summary" name="twitter:card"/>
+<meta content="Review Plus500 2026 — Platformă CFD pentru trading activ | GhidBursa.ro" name="twitter:title"/>
+<meta content="Review complet Plus500 2026. Platformă CFD listată la Londra, spread competitiv, acces global. Scor GhidBursa: 7.6/10." name="twitter:description"/>
+<script type="application/ld+json">
+{"dateModified": "2026-03-19", "@context":"https://schema.org","@type":"Review","name":"Review Plus500 2026","description":"Review complet Plus500 2026. Platformă CFD listată la Londra. Scor GhidBursa: 7.6/10.","url":"https://www.ghidbursa.ro/plus500-review.html","itemReviewed":{"@type":"FinancialService","name":"Plus500"},"author":{"@type":"Organization","name":"GhidBursa.ro"}}
+</script>
+<meta property="og:image" content="https://www.ghidbursa.ro/og-image.png"/>
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta property="og:locale" content="ro_RO"/>
+  <meta property="og:site_name" content="GhidBursa.ro"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="@GhidBursa"/>
+  <meta name="twitter:image" content="https://www.ghidbursa.ro/og-image.png"/>
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"/>
+  <meta name="author" content="GhidBursa.ro"/>
+  <meta http-equiv="content-language" content="ro"/>
+  <meta name="theme-color" content="#080B0F"/>
+  <link rel="dns-prefetch" href="//s3.tradingview.com"/>
+    <link rel="stylesheet" href="/fonts/fonts.css"/>
+<link rel="preload" href="/fonts/plus-jakarta-sans-700.woff2" as="font" type="font/woff2" crossorigin="anonymous" fetchpriority="high"/>
+<link rel="stylesheet" href="/cookie-consent.css"/>
+</head>
+<body class="no-ticker">
+<nav>
+<a class="nav-logo" href="index.html"><div class="nav-dot"></div>Ghid<span>Bursa</span>.ro</a>
+<ul class="nav-links">
+<li><a href="brokeri.html">Brokeri</a></li>
+<li><a href="ghiduri.html">Ghiduri</a></li>
+<li><a href="screener.html">Screener BVB</a></li>
+<li><a href="calculatoare.html">Calculatoare</a></li>
+<li><a href="newsletter.html">Newsletter</a></li>
+<li><a class="nav-cta" href="brokeri.html">Compară brokeri →</a></li>
+</ul>
+<button aria-label="Meniu" class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
+</nav>
+<div class="mobile-nav" id="mobileNav">
+<a href="index.html">Acasă</a>
+<a href="brokeri.html">Brokeri</a>
+<a href="ghiduri.html">Ghiduri</a>
+<a href="screener.html">Screener BVB</a>
+<a href="calculatoare.html">Calculatoare</a>
+<a href="newsletter.html">Newsletter</a>
+<a href="fear-greed.html">Sentiment BVB</a>
+<a href="fidelis-2025.html">Fidelis 2026</a>
+<a href="glosar.html">Glosar</a>
+<a href="despre-noi.html">Contact</a>
+<a class="mobile-cta" href="brokeri.html">Compară brokeri →</a>
+</div>
+<div class="page-wrap">
+<div class="layout-article">
+<main>
+<div class="breadcrumb"><a href="index.html">Acasă</a> › <a href="brokeri.html">Brokeri</a> › Review Plus500</div>
+<div class="tag tag-gold" style="margin-bottom:16px">Review broker · Actualizat 2026</div>
+<h1 style="margin-bottom:16px">Plus500 2026 — Platformă CFD. Bun pentru trading, nu pentru investit.</h1>
+<div style="display:flex;align-items:center;gap:20px;padding:16px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:32px;flex-wrap:wrap">
+<span style="font-size:13px;color:var(--muted)">Actualizat: Ianuarie 2026</span>
+<span style="font-size:13px;color:var(--muted)">~8 min lectură</span>
+<span style="font-size:13px;color:var(--muted)">Verificat de echipa GhidBursa</span>
+</div>
+<div class="warn-box" style="margin-bottom:24px">
+<div class="box-title">Atenție — CFD-uri</div>
+<p>Plus500 oferă exclusiv <strong>CFD-uri (Contracte pentru Diferență)</strong>, nu acțiuni reale. La CFD-uri nu deții efectiv acțiunile, nu primești dividende reale și există risc de levier. <strong>76% dintre conturile retail pierd bani când tranzacționează CFD-uri cu Plus500.</strong> Aceasta este o platformă pentru traderi activi, nu pentru investiții pe termen lung.</p>
+</div>
+<div class="score-hero reveal">
+<div>
+<div class="score-num">7.6</div>
+<div class="score-label">Scor GhidBursa 2026</div>
+<div style="font-size:11px;color:var(--muted);margin-top:2px">din 10 posibile</div>
+</div>
+<div class="score-breakdown">
+<div style="margin-bottom:10px"><div class="score-row-label">Platformă <span>9.0</span></div><div class="score-bar"><div class="score-fill" style="width:90%"></div></div></div>
+<div style="margin-bottom:10px"><div class="score-row-label">Siguranță (listat LSE) <span>9.5</span></div><div class="score-bar"><div class="score-fill" style="width:95%"></div></div></div>
+<div style="margin-bottom:10px"><div class="score-row-label">Acces piețe globale <span>9.0</span></div><div class="score-bar"><div class="score-fill" style="width:90%"></div></div></div>
+<div style="margin-bottom:10px"><div class="score-row-label">Spread <span>7.0</span></div><div class="score-bar"><div class="score-fill" style="width:70%"></div></div></div>
+<div style="margin-bottom:10px"><div class="score-row-label">Potrivit investitori long-term <span>3.0</span></div><div class="score-bar"><div class="score-fill" style="width:30%"></div></div></div>
+</div>
+</div>
+<div class="success-box reveal">
+<div class="box-title">Concluzie</div>
+<p>Plus500 este o platformă solidă pentru trading activ pe CFD-uri — acțiuni, indici, materii prime, forex și crypto. Este listată la Bursa din Londra, ceea ce adaugă transparență. Punctul slab critic: nu oferă acțiuni reale, deci nu este potrivit pentru investiții pe termen lung sau strategii buy-and-hold.</p>
+</div>
+<div class="pros-cons reveal">
+<div class="pros"><div class="pros-title">Avantaje Plus500</div><ul>
+<li>Listat la Bursa din Londra (LSE) — transparență maximă</li>
+<li>Reglementat FCA, CySEC, ASIC și alte autorități globale</li>
+<li>Platformă web și mobilă intuitivă, fără complexitate inutilă</li>
+<li>Cont demo nelimitat — practici fără bani reali</li>
+<li>Acces la acțiuni, indici, forex, materii prime, crypto — totul CFD</li>
+<li>Fără comision per tranzacție — câștigă din spread</li>
+</ul></div>
+<div class="cons"><div class="cons-title">Dezavantaje Plus500</div><ul>
+<li>Exclusiv CFD-uri — nu deții acțiuni reale</li>
+<li>Spread mai ridicat față de brokeri cu comision fix</li>
+<li>Taxă inactivitate $10/lună după 3 luni fără tranzacții</li>
+<li>Fără acțiuni fracționate reale</li>
+<li>Nu primești dividende reale (ajustări CFD în schimb)</li>
+<li>Nu este potrivit pentru strategii pasive pe termen lung</li>
+</ul></div>
+</div>
+<div class="article-body">
+<h2>Cine este Plus500?</h2>
+<p>Plus500 Ltd. este o companie fondată în <strong>2008 în Israel</strong>, listată la <strong>Bursa din Londra (LSE)</strong> din 2013 — ceea ce o face una dintre puținele platforme de trading transparente din punct de vedere public. Are reglementări în UK (FCA), UE (CySEC), Australia (ASIC) și SUA (CFTC).</p>
+<p>Spre deosebire de XTB sau Trading 212 care oferă acțiuni reale, <strong>Plus500 oferă exclusiv CFD-uri</strong>. Modelul de business este diferit: platforma câștigă din spread (diferența dintre prețul de cumpărare și vânzare), nu din comisioane directe.</p>
+<h2>Ce sunt CFD-urile și de ce contează</h2>
+<p>Un CFD (Contract for Difference) este un instrument derivat — contractezi o diferență de preț față de un activ suport (ex: acțiunea Apple), dar <strong>nu deții efectiv acțiunea</strong>. Consecințele practice:</p>
+<ul>
+<li>Nu apari ca acționar în registrul companiei</li>
+<li>Nu primești dividende reale (platforma ajustează contul cu suma echivalentă, dar tratamentul fiscal diferă)</li>
+<li>Poți folosi levier (risc amplificat)</li>
+<li>Pozițiile overnight generează costuri de finanțare</li>
+</ul>
+<h2>Costuri — Spread în loc de comision</h2>
+<div class="table-wrap reveal"><table class="data-table">
+<thead><tr><th>Instrument</th><th>Cost Plus500</th><th>Note</th></tr></thead>
+<tbody>
+<tr><td>Acțiuni CFD</td><td>Spread variabil</td><td>Ex: Apple ~0.10% spread</td></tr>
+<tr><td>Indici (S&amp;P500, DAX)</td><td>Spread fix/variabil</td><td>Din 0.4 puncte pe S&amp;P500</td></tr>
+<tr><td>Forex</td><td>Spread variabil</td><td>EUR/USD din 0.6 pips</td></tr>
+<tr><td>Crypto CFD</td><td>Spread variabil</td><td>Bitcoin ~0.7% spread</td></tr>
+<tr><td>Taxă inactivitate</td><td class="td-red">$10/lună</td><td>După 3 luni fără login</td></tr>
+<tr><td>Taxă overnight</td><td class="td-red">Variabil</td><td>Pozițiile ținute peste noapte</td></tr>
+</tbody></table></div>
+<h2>Platformă — simplitate ca punct forte</h2>
+<p>Platforma Plus500 este deliberat simplă — nu are zeci de indicatori tehnici sau funcții avansate. Este intuitivă, se încarcă rapid și funcționează bine pe mobil. Dacă ești un trader care vrea să execute rapid fără complexitate, această simplitate este un avantaj. Dacă ești analist tehnic care lucrează cu mulți indicatori, TWS de la Interactive Brokers este mai potrivit.</p>
+<h2>Când alegi Plus500?</h2>
+<p>Plus500 este potrivit dacă vrei să faci trading activ pe indici, materii prime sau forex cu o platformă reglementată și simplă, fără să vrei să deții active reale. Nu îl recomandăm dacă strategia ta este buy-and-hold pe termen lung sau dacă vrei să construiești un portofoliu de acțiuni reale — pentru asta, <a href="trading212-review.html">Trading 212</a> sau <a href="xtb-review.html">XTB</a> sunt mai potrivite.</p>
+</div>
+<div class="reveal" style="background:linear-gradient(135deg,rgba(255,184,0,.07),rgba(0,212,255,.04));border:1px solid rgba(255,184,0,.2);border-radius:14px;padding:28px;margin-top:32px;text-align:center">
+<h3 style="margin-bottom:8px">Deschide cont Plus500</h3>
+<p style="color:var(--muted);font-size:14px;margin-bottom:8px">Analizat și verificat de echipa GhidBursa. Nu constituie consultanță financiară.</p>
+<p style="color:var(--red);font-size:12px;margin-bottom:20px">76% dintre conturile retail pierd bani la tranzacționarea CFD-urilor cu Plus500.</p>
+<a class="btn btn-primary btn-lg" href="https://www.plus500.com">Vizitează Plus500.com →</a>
+<p style="font-size:11px;color:var(--muted);margin-top:12px">CFD-urile sunt instrumente complexe cu risc ridicat de pierdere rapidă a banilor.</p>
+</div>
+</main>
+<aside>
+<div class="sidebar-card reveal">
+<div style="text-align:center;margin-bottom:16px">
+<div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:52px;font-weight:700;background:linear-gradient(135deg,#00D4FF,#00FF94);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1">7.6</div>
+<div style="font-size:12px;color:var(--muted)">Scor GhidBursa 2026</div>
+</div>
+<a class="btn btn-primary btn-full" href="https://www.plus500.com" style="margin-bottom:10px">Vizitează Plus500.com →</a>
+<a class="btn btn-ghost btn-full" href="brokeri.html">Compară toți brokerii →</a>
+<p style="font-size:10px;color:var(--muted);margin-top:12px;line-height:1.5">CFD-urile sunt instrumente complexe. 76% pierd bani. Nu constituie consultanță financiară.</p>
+</div>
+<div class="sidebar-card reveal">
+<h4>Date rapide</h4>
+<div class="metric-row"><span class="metric-label">Fondat</span><span class="metric-val green">2008, Israel</span></div>
+<div class="metric-row"><span class="metric-label">Listat la</span><span class="metric-val green">LSE (Londra)</span></div>
+<div class="metric-row"><span class="metric-label">Reglementat</span><span class="metric-val green">FCA + CySEC + ASIC</span></div>
+<div class="metric-row"><span class="metric-label">Tip instrumente</span><span class="metric-val" style="color:var(--gold)">Exclusiv CFD</span></div>
+<div class="metric-row"><span class="metric-label">Depozit minim</span><span class="metric-val green">$100</span></div>
+<div class="metric-row"><span class="metric-label">Taxă inactivitate</span><span class="metric-val" style="color:var(--red)">$10/lună</span></div>
+<div class="metric-row"><span class="metric-label">Cont demo</span><span class="metric-val green">Da — nelimitat</span></div>
+</div>
+<div class="sidebar-card reveal">
+<h4>Ghiduri conexe</h4>
+<ul class="sidebar-links">
+<li><a href="brokeri.html">Compară toți brokerii</a></li>
+<li><a href="xtb-review.html">Review XTB</a></li>
+<li><a href="trading212-review.html">Review Trading 212</a></li>
+<li><a href="etoro-review.html">Review eToro</a></li>
+<li><a href="impozit-actiuni-anaf.html">Impozit acțiuni ANAF</a></li>
+</ul>
+</div>
+</aside>
+</div>
+</div>
+<footer>
+<a href="index.html" style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:16px;color:var(--text)">Ghid<span style="color:var(--accent)">Bursa</span>.ro</a>
+<div class="footer-links">
+      <a href="unsubscribe.html">Dezabonare newsletter</a>
+<a href="brokeri.html">Brokeri</a>
+<a href="ghiduri.html">Ghiduri</a>
+<a href="screener.html">Screener BVB</a>
+<a href="calculatoare.html">Calculatoare</a>
+<a href="newsletter.html">Newsletter</a>
+<a href="fear-greed.html">Sentiment BVB</a>
+<a href="calendar-dividende.html">Dividende</a>
+<a href="glosar.html">Glosar</a>
+<a href="legal.html#termeni">Termeni</a>
+<a href="legal.html#disclaimer">Disclaimer</a>
+<a href="despre-noi.html">Contact</a>
+</div>
+<span>© 2026 GhidBursa.ro</span>
+<p class="footer-disclaimer">Investițiile implică riscuri. Conținutul GhidBursa.ro este informativ și nu constituie consultanță financiară. Verificați toate informațiile înainte de a lua decizii de investiție.</p>
+</footer>
+<script defer="" src="shared.js"></script>
+<script defer src="/cookie-consent.js"></script>
+</body>
+</html>

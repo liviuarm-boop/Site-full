@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+
+<html lang="ro">
+<head>
+<meta charset="utf-8"/>
+<style data-critical="true">
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+ --black: #080B0F;
+ --dark: #0D1117;
+ --card: #111820;
+ --card2: #141E28;
+ --border: #1E2A38;
+ --accent: #00D4FF;
+ --accent2: #00FF94;
+ --gold: #FFB800;
+ --red: #FF4D6D;
+ --text: #E8EDF2;
+ --muted: #6B7A8D;
+ --font-display: 'Plus Jakarta Sans', sans-serif;
+ --font-body: 'DM Sans', sans-serif;
+ --nav-h: 56px;
+ --ticker-h: 76px;
+ --offset: 132px; 
+}
+@media (min-width: 768px) {
+ :root {
+ --nav-h: 72px;
+ --offset: 148px;
+ }
+}
+html { scroll-behavior: smooth; font-size: 15px; }
+body {
+ background: var(--black);
+ color: var(--text);
+ font-family: var(--font-body);
+ line-height: 1.6;
+ overflow-x: hidden;
+ -webkit-font-smoothing: antialiased;
+ width: 100%;
+ max-width: 100vw;
+}
+body::before {
+ content: '';
+ position: fixed; inset: 0;
+ background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+ pointer-events: none; z-index: 0; opacity: 0.5;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+img { max-width: 100%; height: auto; display: block; }
+h1, h2, h3, h4 {
+ font-family: var(--font-display);
+ -webkit-font-smoothing: antialiased;
+ letter-spacing: -0.01em;
+ line-height: 1.18;
+}
+h1 { font-size: clamp(18px, 2vw, 28px); font-weight: 700; }
+h2 { font-size: clamp(18px, 2.5vw, 28px); font-weight: 700; }
+h3 { font-size: clamp(15px, 2vw, 20px); font-weight: 600; }
+h4 { font-size: 14px; font-weight: 700; }
+p { color: rgba(232,237,242,.82); line-height: 1.75; font-size: 15px; }
+nav {
+ position: fixed; top: 0; left: 0; right: 0;
+ z-index: 200;
+ height: var(--nav-h);
+ display: flex; align-items: center; justify-content: space-between;
+ padding: 0 20px;
+ background: rgba(8,11,15,0.92);
+ backdrop-filter: blur(24px);
+ border-bottom: 1px solid var(--border);
+}
+@media (min-width: 768px) { nav { padding: 0 48px; } }
+@media (min-width: 1280px) { nav { padding: 0 64px; } }
+.nav-logo {
+ font-family: var(--font-display);
+ font-size: 18px; font-weight: 800; letter-spacing: -0.02em;
+ color: var(--text); text-decoration: none;
+ display: flex; align-items: center; gap: 8px;
+ flex-shrink: 0;
+}
+@media (min-width: 768px) { .nav-logo { font-size: 22px; } }
+.nav-logo span { color: var(--accent); }
+.nav-logo:hover { text-decoration: none; }
+.nav-dot {
+ width: 8px; height: 8px;
+ background: var(--accent2); border-radius: 50%;
+ animation: pulse 2s ease-in-out infinite; flex-shrink: 0;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+.nav-links {
+ display: none;
+ align-items: center; gap: 28px; list-style: none;
+}
+@media (min-width: 768px) { .nav-links { display: flex; } }
+.nav-links a { color: var(--muted); font-size: 14px; font-weight: 500; transition: color .2s; text-decoration: none; }
+.nav-links a:hover { color: var(--text); }
+.nav-cta {
+ background: var(--accent) !important;
+ color: var(--black) !important;
+ padding: 9px 18px; border-radius: 6px;
+ font-weight: 700 !important; font-size: 13px !important;
+}
+.nav-cta:hover { opacity: .85; }
+.hamburger {
+ display: flex; flex-direction: column; gap: 5px;
+ background: none; border: none; cursor: pointer; padding: 6px;
+}
+@media (min-width: 768px) { .hamburger { display: none; } }
+.hamburger span {
+ display: block; width: 22px; height: 2px;
+ background: var(--text); border-radius: 2px;
+ transition: all .3s;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.mobile-nav {
+ display: none; position: fixed;
+ top: var(--nav-h); left: 0; right: 0;
+ background: rgba(8,11,15,.98);
+ border-bottom: 1px solid var(--border);
+ z-index: 199; flex-direction: column;
+ padding: 8px 0 16px;
+ transform: translateY(-10px); opacity: 0;
+ transition: transform .25s, opacity .25s;
+}
+.mobile-nav.open {
+ display: flex; transform: translateY(0); opacity: 1;
+}
+.mobile-nav a {
+ display: block; padding: 14px 24px;
+ color: var(--text); font-size: 15px; font-weight: 500;
+ border-bottom: 1px solid rgba(30,42,56,.5);
+ text-decoration: none; transition: background .15s;
+}
+.mobile-nav a:last-child { border-bottom: none; }
+.mobile-nav a:hover { background: rgba(0,212,255,.05); }
+.mobile-nav .mobile-cta {
+ margin: 12px 24px 0;
+ background: var(--accent); color: var(--black) !important;
+ border-radius: 8px; text-align: center; font-weight: 700 !important;
+ border-bottom: none !important;
+}
+.ticker-bar {
+ position: sticky;
+ top: var(--nav-h);
+ z-index: 150;
+ height: var(--ticker-h);
+ background: rgba(8,11,15,.98);
+ border-bottom: 1px solid var(--border);
+ overflow: hidden;
+}
+.ticker-bar .tradingview-widget-container,
+.ticker-bar .tradingview-widget-container__widget { height: 100% !important; }
+.section-inner { max-width: 1280px; margin: 0 auto; padding: 0 20px; }
+.reveal,.reveal-left,.reveal-right,.reveal-scale{
+ opacity:0;
+ transition:opacity .65s cubic-bezier(.4,0,.2,1),transform .65s cubic-bezier(.4,0,.2,1);
+ will-change:opacity,transform;
+}
+.reveal{transform:translateY(28px)}
+.reveal-left{transform:translateX(-28px)}
+.reveal-right{transform:translateX(28px)}
+.reveal-scale{transform:scale(.96)}
+.reveal.visible,.reveal-left.visible,.reveal-right.visible,.reveal-scale.visible{
+ opacity:1;transform:none;
+}
+@keyframes forceVisible { to { opacity: 1; tran
+.btn {
+ display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+ font-family: var(--font-display); font-weight: 700;
+ border-radius: 8px; cursor: pointer;
+ text-decoration: none; transition: opacity .2s, transform .15s;
+ white-space: nowrap;
+}
+.btn:hover { opacity: .85; transform: translateY(-1px); text-decoration: none; }
+.btn:active { transform: translateY(0); }
+.btn-primary { background: var(--accent); color: var(--black); padding: 13px 24px; font-size: 14px; }
+.btn-secondary { background: rgba(0,212,255,.1); border: 1px solid rgba(0,212,255,.25); color: var(--accent); padding: 12px 22px; font-size: 14px; }
+.btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 11px 20px; font-size: 13px; }
+.btn-ghost:hover { border-color: var(--text); color: var(--text); }
+.btn-green { background: rgba(0,255,148,.1); border: 1px solid rgba(0,255,148,.25); color: var(--accent2); padding: 12px 22px; font-size: 14px; }
+.btn-full { width: 100%; }
+.btn-sm { padding: 8px 14px; font-size: 12px; }
+.btn-lg { padding: 16px 32px; font-size: 16px; }
+</style>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cât impozit plătești pe acțiunile BVB în 2026. | GhidBursa.ro</title>
+<meta name="description" content="Impozit pe acțiuni România 2026: cota 10% câștiguri, 8% dividende, CASS plafonat. Cum optimizezi legal și cum declari corect."/>
+
+<style>
+
+.page{max-width:900px;margin:0 auto;padding:calc(var(--nav-h) + 20px) 20px 60px;display:grid;grid-template-columns:1fr;gap:24px;align-items:start}@media(min-width:900px){.page{padding:calc(var(--nav-h) + 20px) 40px 80px;grid-template-columns:1fr 270px;gap:56px}}
+
+.breadcrumb a:hover{color:var(--accent)}
+.article-cat{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:5px 12px;border-radius:4px;margin-bottom:16px}
+.cat-gold{background:rgba(255,184,0,.08);border:1px solid rgba(255,184,0,.2);color:var(--gold)}
+.cat-blue{background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);color:var(--accent)}
+.cat-green{background:rgba(0,255,148,.08);border:1px solid rgba(0,255,148,.2);color:var(--accent2)}
+h1{font-family:var(--font-display);font-size:clamp(22px,5vw,38px);font-weight:700;line-height:1.08;letter-spacing:-.01em;margin-bottom:16px;-webkit-font-smoothing:antialiased}
+.article-meta{display:flex;gap:16px;font-size:13px;color:var(--muted);padding:16px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:32px;flex-wrap:wrap}
+h2{font-family:var(--font-display);font-size:22px;font-weight:700;margin:36px 0 14px;padding-top:36px;border-top:1px solid var(--border);-webkit-font-smoothing:antialiased}
+h2:first-of-type{border-top:none;padding-top:0;margin-top:0}
+h3{font-family:var(--font-display);font-size:17px;font-weight:700;margin:20px 0 9px;-webkit-font-smoothing:antialiased}
+p{color:rgba(232,237,242,.85);line-height:1.8;margin-bottom:14px;font-size:15px}
+strong{color:var(--text);font-weight:600}
+ul,ol{color:rgba(232,237,242,.8);padding-left:20px;margin-bottom:14px;font-size:15px}
+li{margin-bottom:7px;line-height:1.7}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.info-box{background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.15);border-radius:12px;padding:18px 22px;margin:16px 0}
+.info-box p{font-size:14px;margin:0;line-height:1.7}
+.warning{background:rgba(255,184,0,.05);border:1px solid rgba(255,184,0,.2);border-radius:12px;padding:18px 22px;margin:16px 0}
+.warning p{font-size:14px;margin:0;line-height:1.6;color:rgba(232,237,242,.75)}
+.warning-title{font-weight:700;color:var(--gold);margin-bottom:7px;font-size:13px}
+table.dt{width:100%;border-collapse:collapse;border:1px solid var(--border);border-radius:12px;overflow:hidden;margin:16px 0;font-size:14px}
+table.dt th{background:rgba(255,255,255,.02);padding:11px 15px;text-align:left;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
+table.dt td{padding:12px 15px;border-bottom:1px solid var(--border)}
+table.dt tr:last-child td{border-bottom:none}
+table.dt tbody tr:hover{background:rgba(255,255,255,.02)}
+.green{color:var(--accent2);font-weight:600}.gold{color:var(--gold);font-weight:600}.red{color:#FF4D6D}
+.portfolio-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;margin:16px 0}
+.portfolio-card h3{font-family:var(--font-display);font-size:16px;font-weight:700;margin-bottom:6px;-webkit-font-smoothing:antialiased}
+.portfolio-badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:4px;margin-bottom:14px}
+.badge-safe{background:rgba(0,255,148,.1);color:var(--accent2)}
+.badge-balanced{background:rgba(0,212,255,.1);color:var(--accent)}
+.badge-growth{background:rgba(255,184,0,.1);color:var(--gold)}
+.alloc-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px}
+.alloc-row:last-child{border-bottom:none}
+.alloc-name{color:var(--text);font-weight:500}
+.alloc-pct{font-family:var(--font-display);font-weight:700;font-size:14px;-webkit-font-smoothing:antialiased}
+.alloc-bar-wrap{flex:1;margin:0 12px;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.alloc-bar{height:100%;border-radius:2px}
+.sidebar{display:flex;flex-direction:column;gap:14px}
+.side-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px}
+.side-card h4{font-family:var(--font-display);font-size:13px;font-weight:700;margin-bottom:13px;-webkit-font-smoothing:antialiased}
+.side-card ul{list-style:none;padding:0;display:flex;flex-direction:column;gap:7px}
+.side-card li a{font-size:13px;color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:7px;transition:color .2s}
+.side-card li a:hover{color:var(--accent)}
+.side-card li a::before{content:'';width:4px;height:4px;background:var(--border);border-radius:50%;flex-shrink:0}
+.btn-cta{display:block;background:var(--accent);color:var(--black);font-family:var(--font-display);font-weight:700;font-size:14px;padding:13px;border-radius:8px;text-decoration:none;text-align:center;transition:opacity .2s;margin-bottom:9px}
+.btn-cta:hover{opacity:.85}
+.btn-sec{display:block;border:1px solid var(--border);color:var(--muted);font-size:13px;padding:11px;border-radius:8px;text-decoration:none;text-align:center;transition:all .2s}
+.btn-sec:hover{border-color:var(--text);color:var(--text)}
+.disclaimer-sm{font-size:10px;color:var(--muted);margin-top:9px;line-height:1.5;opacity:.7}</style>
+<link href="shared.css?v=12" rel="stylesheet"/>
+<link href="mobile.css?v=12" rel="stylesheet"/>
+<link href="https://www.ghidbursa.ro/impozit-actiuni-anaf.html" rel="canonical"/>
+<meta content="website" property="og:type"/>
+<meta content="Impozit pe Acțiuni și Investiții România 2026 — Ghid Complet ANAF | GhidBursa.ro" property="og:title"/>
+<meta content="Tot despre impozitul pe câștiguri din acțiuni, dividende și investiții în România 2026. Cote, declarare ANAF, CASS și optimizare fiscală legală." property="og:description"/>
+<meta content="https://www.ghidbursa.ro/impozit-actiuni-anaf.html" property="og:url"/>
+<meta content="GhidBursa.ro" property="og:site_name"/>
+<meta content="summary" name="twitter:card"/>
+<meta content="Impozit pe Acțiuni și Investiții România 2026 — Ghid Complet ANAF | GhidBursa.ro" name="twitter:title"/>
+<meta content="Tot despre impozitul pe câștiguri din acțiuni, dividende și investiții în România 2026. Cote, declarare ANAF, CASS și optimizare fiscală legală." name="twitter:description"/>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Impozit pe Acțiuni și Investiții România 2026 — Ghid Complet ANAF | GhidBursa.ro","description":"Tot despre impozitul pe câștiguri din acțiuni, dividende și investiții în România 2026. Cote, declarare ANAF, CASS și optimizare fiscală legală.","url":"https://www.ghidbursa.ro/impozit-actiuni-anaf.html","author":{"@type":"Organization","name":"GhidBursa.ro","url":"https://www.ghidbursa.ro"},"publisher":{"@type":"Organization","name":"GhidBursa.ro","logo":{"@type":"ImageObject","url":"https://www.ghidbursa.ro/favicon.png"}},"dateModified": "2026-03-19"}
+</script>
+<meta property="og:image" content="https://www.ghidbursa.ro/og-image.png"/>
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta property="og:locale" content="ro_RO"/>
+  <meta property="og:site_name" content="GhidBursa.ro"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="@GhidBursa"/>
+  <meta name="twitter:image" content="https://www.ghidbursa.ro/og-image.png"/>
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"/>
+  <meta name="author" content="GhidBursa.ro"/>
+  <meta http-equiv="content-language" content="ro"/>
+  <meta name="theme-color" content="#080B0F"/>
+  <link rel="dns-prefetch" href="//s3.tradingview.com"/>
+    <link rel="stylesheet" href="/fonts/fonts.css"/>
+<link rel="preload" href="/fonts/plus-jakarta-sans-700.woff2" as="font" type="font/woff2" crossorigin="anonymous" fetchpriority="high"/>
+<link rel="stylesheet" href="/cookie-consent.css"/>
+<style>@media(max-width:767px){.article-meta{flex-direction:column;gap:6px;font-size:12px}.sidebar,.side-card{position:static!important}.page{overflow-x:hidden}}</style>
+</head>
+<body class="no-ticker">
+<nav>
+<a class="nav-logo" href="index.html"><div class="nav-dot"></div>Ghid<span>Bursa</span>.ro</a>
+<ul class="nav-links">
+<li><a href="brokeri.html">Brokeri</a></li>
+<li><a href="ghiduri.html">Ghiduri</a></li>
+<li><a href="screener.html">Screener BVB</a></li>
+<li><a href="calculatoare.html">Calculatoare</a></li>
+<li><a href="newsletter.html">Newsletter</a></li>
+<li><a class="nav-cta" href="brokeri.html">Compară brokeri →</a></li>
+</ul>
+<button aria-label="Meniu" class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
+</nav>
+<div class="mobile-nav" id="mobileNav">
+<a href="index.html">Acasă</a>
+<a href="brokeri.html">Brokeri</a>
+<a href="ghiduri.html">Ghiduri</a>
+<a href="screener.html">Screener BVB</a>
+<a href="calculatoare.html">Calculatoare</a>
+<a href="newsletter.html">Newsletter</a>
+<a href="fear-greed.html">Sentiment BVB</a>
+<a href="fidelis-2025.html">Fidelis 2026</a>
+<a href="glosar.html">Glosar</a>
+<a href="despre-noi.html">Contact</a>
+<a class="mobile-cta" href="brokeri.html">Compară brokeri →</a>
+</div>
+<div class="page">
+<div>
+<div class="breadcrumb"><a href="index.html">Acasă</a> › <span>Fiscalitate</span></div>
+<div class="article-cat cat-gold">Fiscalitate</div>
+<h1>Impozit pe Acțiuni și Investiții România 2026 — Ghid Complet ANAF</h1>
+<div class="article-meta">Actualizat: Ianuarie 2026 · 10 min lectură · Legislație 2026 în vigoare</div>
+<div class="warning"><div class="warning-title">Atenție — disclaimer fiscal</div><p>Legislația fiscală se modifică frecvent. Informațiile din acest ghid sunt orientative și nu constituie consultanță fiscală. Consultați un contabil autorizat pentru situații complexe sau sume mari.</p></div>
+<h2>Tipuri de venituri din investiții și cotele de impozit</h2>
+<table class="dt">
+<thead><tr><th>Tip venit</th><th>Cotă impozit</th><th>Cine reține</th><th>Declarare ANAF</th></tr></thead>
+<tbody>
+<tr><td><strong>Câștig din vânzare acțiuni BVB</strong></td><td class="gold">10%</td><td>Tu (prin D212)</td><td class="red">Da — obligatoriu</td></tr>
+<tr><td><strong>Dividende companii românești</strong></td><td class="gold">8%</td><td class="green">Compania (la sursă)</td><td class="green">Nu (reținut automat)</td></tr>
+<tr><td><strong>Câștig acțiuni internaționale</strong></td><td class="gold">10%</td><td>Tu (prin D212)</td><td class="red">Da — obligatoriu</td></tr>
+<tr><td><strong>Dobânzi depozite bancare</strong></td><td class="gold">10%</td><td class="green">Banca (la sursă)</td><td class="green">Nu</td></tr>
+<tr><td><strong>Dobânzi Fidelis / Tezaur</strong></td><td class="green">0%</td><td>—</td><td class="green">Nu</td></tr>
+<tr><td><strong>Dobânzi obligațiuni corporative</strong></td><td class="gold">10%</td><td class="green">Emitentul (la sursă)</td><td class="green">Nu</td></tr>
+</tbody>
+</table>
+<h2>Calculul câștigului impozabil din acțiuni</h2>
+<p>Formula: <strong>Câștig net = Preț vânzare − Preț cumpărare − Comisioane</strong></p>
+<p>Dacă ai mai multe tranzacții pe același simbol, calculezi per lot (FIFO — First In, First Out): primele acțiuni cumpărate sunt considerate primele vândute. Pierderile dintr-o tranzacție compensează câștigurile din altele în cadrul aceluiași an fiscal.</p>
+<table class="dt">
+<thead><tr><th>Tranzacție</th><th>Câștig/Pierdere</th></tr></thead>
+<tbody>
+<tr><td>Lot 1: Cumpăr SNP la 0.50, vând la 0.62 → câștig net 117 RON</td><td class="green">+117 RON</td></tr>
+<tr><td>Lot 2: Cumpăr TLV la 24, vând la 20 → pierdere 400 RON</td><td class="red">−400 RON</td></tr>
+<tr><td>Lot 3: Cumpăr BRD la 14, vând la 17 → câștig net 295 RON</td><td class="green">+295 RON</td></tr>
+<tr><td><strong>Total câștig net compensat</strong></td><td class="gold"><strong>+12 RON</strong></td></tr>
+<tr><td><strong>Impozit de plată (10%)</strong></td><td class="gold"><strong>1.2 RON</strong></td></tr>
+</tbody>
+</table>
+<h2>CASS — Contribuția la sănătate</h2>
+<p>Dacă câștigurile nete anuale din investiții (acțiuni + dividende externe + dobânzi externe) depășesc 6 salarii minime brute, datorezi și CASS:</p>
+<table class="dt">
+<thead><tr><th>Câștig net total anual</th><th>Bază de calcul CASS</th><th>CASS (10%)</th></tr></thead>
+<tbody>
+<tr><td>Sub ~21.000 RON</td><td>Nu se aplică</td><td class="green">0 RON</td></tr>
+<tr><td>21.000 – 42.000 RON</td><td>6 salarii minime</td><td>~2.100 RON</td></tr>
+<tr><td>42.000 – 63.000 RON</td><td>12 salarii minime</td><td>~4.200 RON</td></tr>
+<tr><td>Peste 63.000 RON</td><td>24 salarii minime</td><td>~8.400 RON</td></tr>
+</tbody>
+</table>
+<div class="info-box reveal"><p>CASS se calculează pe o bază fixă (multipli de salariu minim), nu pe câștigul efectiv. Chiar dacă câștigul tău net e 22.000 RON, plătești CASS calculat la 6 salarii minime (~21.000 RON), nu la 22.000 RON.</p></div>
+<h2>Cum optimizezi legal impozitul</h2>
+<ul>
+<li><strong>Investește în Fidelis</strong> — dobânzile sunt 100% scutite de impozit</li>
+<li><strong>Compensează pierderile</strong> — dacă ai investiții în pierdere la final de an, poți vinde pentru a compensa câștigurile din alte tranzacții</li>
+<li><strong>Nu depăși plafonul CASS</strong> — dacă câștigurile nete se apropie de 21.000 RON, evaluează cu un contabil dacă e mai avantajos să amâni unele vânzări pentru anul următor</li>
+<li><strong>Acțiuni internationale prin brokeri din UE</strong> — impozitarea e aceeași, dar procedura poate diferi</li>
+</ul>
+<p>→ <a href="declaratie-d212-anaf.html">Cum completezi D212 pas cu pas</a>
+<p>→ <a href="deducere-fiscala-investitii-2026.html" style="color:var(--gold)">🆕 Deducere fiscală 400 EUR pentru investiții 2026 (OUG 8/2026)</a></p></p>
+</div>
+<aside class="sidebar">
+<div class="side-card">
+<h4>Deschide cont broker</h4>
+<a class="btn-cta" href="xtb-review.html">XTB — 0% comision</a>
+<a class="btn-sec" href="trading212-review.html">Trading 212 — 0% fără limite</a>
+<div class="disclaimer-sm">Investițiile implică riscuri.</div>
+</div>
+<div class="side-card">
+<h4>Ghiduri conexe</h4>
+<ul>
+<li><a href="cum-investesti-bvb.html">Cum investești la BVB</a></li>
+<li><a href="fidelis-2025.html">Titluri de stat Fidelis</a></li>
+<li><a href="etf-bet-romania.html">ETF BET România</a></li>
+<li><a href="dividende-bvb-2025.html">Top dividende BVB</a></li>
+<li><a href="impozit-actiuni-anaf.html">Impozit acțiuni ANAF</a></li>
+<li><a href="brokeri.html">Compară brokeri</a></li>
+</ul>
+</div></aside>
+</div>
+<footer>
+<a href="index.html" style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:16px;color:var(--text)">Ghid<span style="color:var(--accent)">Bursa</span>.ro</a>
+<div class="footer-links">
+      <a href="unsubscribe.html">Dezabonare newsletter</a>
+<a href="brokeri.html">Brokeri</a>
+<a href="ghiduri.html">Ghiduri</a>
+<a href="screener.html">Screener BVB</a>
+<a href="calculatoare.html">Calculatoare</a>
+<a href="newsletter.html">Newsletter</a>
+<a href="fear-greed.html">Sentiment BVB</a>
+<a href="calendar-dividende.html">Dividende</a>
+<a href="glosar.html">Glosar</a>
+<a href="legal.html#termeni">Termeni</a>
+<a href="legal.html#disclaimer">Disclaimer</a>
+<a href="despre-noi.html">Contact</a>
+</div>
+<span>© 2026 GhidBursa.ro</span>
+<p class="footer-disclaimer">Investițiile implică riscuri. Conținutul GhidBursa.ro este informativ și nu constituie consultanță financiară. Verificați toate informațiile înainte de a lua decizii de investiție.</p>
+</footer>
+<script defer="" src="shared.js"></script>
+<script defer src="/cookie-consent.js"></script>
+</body>
+</html>

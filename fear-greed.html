@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+
+<html lang="ro">
+<head>
+<meta charset="utf-8"/>
+<style data-critical="true">
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+ --black: #080B0F;
+ --dark: #0D1117;
+ --card: #111820;
+ --card2: #141E28;
+ --border: #1E2A38;
+ --accent: #00D4FF;
+ --accent2: #00FF94;
+ --gold: #FFB800;
+ --red: #FF4D6D;
+ --text: #E8EDF2;
+ --muted: #6B7A8D;
+ --font-display: 'Plus Jakarta Sans', sans-serif;
+ --font-body: 'DM Sans', sans-serif;
+ --nav-h: 56px;
+ --ticker-h: 76px;
+ --offset: 132px; 
+}
+@media (min-width: 768px) {
+ :root {
+ --nav-h: 72px;
+ --offset: 148px;
+ }
+}
+html { scroll-behavior: smooth; font-size: 15px; }
+body {
+ background: var(--black);
+ color: var(--text);
+ font-family: var(--font-body);
+ line-height: 1.6;
+ overflow-x: hidden;
+ -webkit-font-smoothing: antialiased;
+ width: 100%;
+ max-width: 100vw;
+}
+body::before {
+ content: '';
+ position: fixed; inset: 0;
+ background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+ pointer-events: none; z-index: 0; opacity: 0.5;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+img { max-width: 100%; height: auto; display: block; }
+h1, h2, h3, h4 {
+ font-family: var(--font-display);
+ -webkit-font-smoothing: antialiased;
+ letter-spacing: -0.01em;
+ line-height: 1.18;
+}
+h1 { font-size: clamp(18px, 2vw, 28px); font-weight: 700; }
+h2 { font-size: clamp(18px, 2.5vw, 28px); font-weight: 700; }
+h3 { font-size: clamp(15px, 2vw, 20px); font-weight: 600; }
+h4 { font-size: 14px; font-weight: 700; }
+p { color: rgba(232,237,242,.82); line-height: 1.75; font-size: 15px; }
+nav {
+ position: fixed; top: 0; left: 0; right: 0;
+ z-index: 200;
+ height: var(--nav-h);
+ display: flex; align-items: center; justify-content: space-between;
+ padding: 0 20px;
+ background: rgba(8,11,15,0.92);
+ backdrop-filter: blur(24px);
+ border-bottom: 1px solid var(--border);
+}
+@media (min-width: 768px) { nav { padding: 0 48px; } }
+@media (min-width: 1280px) { nav { padding: 0 64px; } }
+.nav-logo {
+ font-family: var(--font-display);
+ font-size: 18px; font-weight: 800; letter-spacing: -0.02em;
+ color: var(--text); text-decoration: none;
+ display: flex; align-items: center; gap: 8px;
+ flex-shrink: 0;
+}
+@media (min-width: 768px) { .nav-logo { font-size: 22px; } }
+.nav-logo span { color: var(--accent); }
+.nav-logo:hover { text-decoration: none; }
+.nav-dot {
+ width: 8px; height: 8px;
+ background: var(--accent2); border-radius: 50%;
+ animation: pulse 2s ease-in-out infinite; flex-shrink: 0;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+.nav-links {
+ display: none;
+ align-items: center; gap: 28px; list-style: none;
+}
+@media (min-width: 768px) { .nav-links { display: flex; } }
+.nav-links a { color: var(--muted); font-size: 14px; font-weight: 500; transition: color .2s; text-decoration: none; }
+.nav-links a:hover { color: var(--text); }
+.nav-cta {
+ background: var(--accent) !important;
+ color: var(--black) !important;
+ padding: 9px 18px; border-radius: 6px;
+ font-weight: 700 !important; font-size: 13px !important;
+}
+.nav-cta:hover { opacity: .85; }
+.hamburger {
+ display: flex; flex-direction: column; gap: 5px;
+ background: none; border: none; cursor: pointer; padding: 6px;
+}
+@media (min-width: 768px) { .hamburger { display: none; } }
+.hamburger span {
+ display: block; width: 22px; height: 2px;
+ background: var(--text); border-radius: 2px;
+ transition: all .3s;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.mobile-nav {
+ display: none; position: fixed;
+ top: var(--nav-h); left: 0; right: 0;
+ background: rgba(8,11,15,.98);
+ border-bottom: 1px solid var(--border);
+ z-index: 199; flex-direction: column;
+ padding: 8px 0 16px;
+ transform: translateY(-10px); opacity: 0;
+ transition: transform .25s, opacity .25s;
+}
+.mobile-nav.open {
+ display: flex; transform: translateY(0); opacity: 1;
+}
+.mobile-nav a {
+ display: block; padding: 14px 24px;
+ color: var(--text); font-size: 15px; font-weight: 500;
+ border-bottom: 1px solid rgba(30,42,56,.5);
+ text-decoration: none; transition: background .15s;
+}
+.mobile-nav a:last-child { border-bottom: none; }
+.mobile-nav a:hover { background: rgba(0,212,255,.05); }
+.mobile-nav .mobile-cta {
+ margin: 12px 24px 0;
+ background: var(--accent); color: var(--black) !important;
+ border-radius: 8px; text-align: center; font-weight: 700 !important;
+ border-bottom: none !important;
+}
+.ticker-bar {
+ position: sticky;
+ top: var(--nav-h);
+ z-index: 150;
+ height: var(--ticker-h);
+ background: rgba(8,11,15,.98);
+ border-bottom: 1px solid var(--border);
+ overflow: hidden;
+}
+.ticker-bar .tradingview-widget-container,
+.ticker-bar .tradingview-widget-container__widget { height: 100% !important; }
+.section-inner { max-width: 1280px; margin: 0 auto; padding: 0 20px; }
+.reveal,.reveal-left,.reveal-right,.reveal-scale{
+ opacity:0;
+ transition:opacity .65s cubic-bezier(.4,0,.2,1),transform .65s cubic-bezier(.4,0,.2,1);
+ will-change:opacity,transform;
+}
+.reveal{transform:translateY(28px)}
+.reveal-left{transform:translateX(-28px)}
+.reveal-right{transform:translateX(28px)}
+.reveal-scale{transform:scale(.96)}
+.reveal.visible,.reveal-left.visible,.reveal-right.visible,.reveal-scale.visible{
+ opacity:1;transform:none;
+}
+@keyframes forceVisible { to { opacity: 1; tran
+.btn {
+ display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+ font-family: var(--font-display); font-weight: 700;
+ border-radius: 8px; cursor: pointer;
+ text-decoration: none; transition: opacity .2s, transform .15s;
+ white-space: nowrap;
+}
+.btn:hover { opacity: .85; transform: translateY(-1px); text-decoration: none; }
+.btn:active { transform: translateY(0); }
+.btn-primary { background: var(--accent); color: var(--black); padding: 13px 24px; font-size: 14px; }
+.btn-secondary { background: rgba(0,212,255,.1); border: 1px solid rgba(0,212,255,.25); color: var(--accent); padding: 12px 22px; font-size: 14px; }
+.btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 11px 20px; font-size: 13px; }
+.btn-ghost:hover { border-color: var(--text); color: var(--text); }
+.btn-green { background: rgba(0,255,148,.1); border: 1px solid rgba(0,255,148,.25); color: var(--accent2); padding: 12px 22px; font-size: 14px; }
+.btn-full { width: 100%; }
+.btn-sm { padding: 8px 14px; font-size: 12px; }
+.btn-lg { padding: 16px 32px; font-size: 16px; }
+</style>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Frică sau lăcomie pe BVB azi? — Sentimentul Pieței Românești | GhidBursa.ro</title>
+<meta name="description" content="Indicele Fear &amp; Greed pentru BVB — sentimentul pieței române calculat zilnic din 5 componente. Unic în România."/>
+<link href="https://www.ghidbursa.ro/fear-greed.html" rel="canonical"/>
+<meta content="Fear &amp; Greed Index BVB — Primul din România" property="og:title"/>
+<meta content="Scor de sentiment al pieței BVB, calculat zilnic din date reale. Frica extremă sau lăcomie?" property="og:description"/>
+<meta content="website" property="og:type"/>
+<meta content="https://www.ghidbursa.ro/fear-greed.html" property="og:url"/>
+<link href="favicon.svg" rel="icon" type="image/svg+xml"/>
+<script type="application/ld+json">{"dateModified": "2026-03-19", "@context":"https://schema.org","@type":"WebPage","name":"Fear & Greed Index BVB","description":"Primul indicator de sentiment al pieței de capital din România, calculat din date reale.","url":"https://www.ghidbursa.ro/fear-greed.html"}</script>
+
+<link href="shared.css?v=12" rel="stylesheet"/>
+<link href="mobile.css?v=12" rel="stylesheet"/>
+<style>
+/* ── PAGE ── */
+.fg-wrap{max-width:900px;margin:0 auto;padding:calc(var(--nav-h)+28px) 20px 80px}
+@media(min-width:768px){.fg-wrap{padding:calc(var(--nav-h)+44px) 40px 80px}}
+
+/* ── HERO ── */
+.fg-hero{text-align:center;padding:16px 0 40px}
+.fg-eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:rgba(0,255,148,.08);border:1px solid rgba(0,255,148,.2);color:var(--accent2);padding:5px 14px;border-radius:20px;margin-bottom:18px}
+.fg-hero h1{font-size:clamp(18px,2vw,26px);margin-bottom:8px}
+.fg-hero .sub{color:var(--muted);font-size:15px;max-width:480px;margin:0 auto}
+
+/* ── GAUGE ── */
+.gauge-section{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:clamp(18px,2vw,26px);margin-bottom:24px;position:relative;overflow:hidden}
+.gauge-section::before{content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;border-radius:50%;filter:blur(80px);pointer-events:none;transition:background 1s ease}
+.gauge-wrap{max-width:380px;margin:0 auto 24px;position:relative}
+.gauge-svg{width:100%;display:block}
+.gauge-center{position:absolute;bottom:0;left:50%;transform:translateX(-50%);text-align:center;padding-bottom:8px}
+.gauge-score{font-family:var(--font-display);font-size:clamp(48px,8vw,72px);font-weight:700;line-height:1;transition:color 1s ease}
+.gauge-label{font-size:clamp(16px,3vw,22px);font-weight:700;margin-top:4px;transition:color 1s ease}
+.gauge-updated{font-size:12px;color:var(--muted);margin-top:4px}
+.gauge-loading{font-size:14px;color:var(--muted);text-align:center;padding:40px 0}
+
+/* ── SCORE COLORS ── */
+.col-extreme-fear{color:#E24B4A}
+.col-fear{color:#EF9F27}
+.col-neutral{color:#BA7517}
+.col-greed{color:#97C459}
+.col-extreme-greed{color:#1D9E75}
+
+/* ── INDICATORS ── */
+.indicators-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:20px}
+@media(min-width:580px){.indicators-grid{grid-template-columns:repeat(3,1fr)}}
+.ind-card{background:rgba(0,0,0,.25);border-radius:12px;padding:16px}
+.ind-title{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.ind-score{font-family:var(--font-display);font-size:26px;font-weight:700;margin-bottom:2px}
+.ind-label{font-size:12px;color:var(--muted)}
+.ind-bar{height:4px;background:rgba(255,255,255,.08);border-radius:2px;margin-top:10px;overflow:hidden}
+.ind-bar-fill{height:100%;border-radius:2px;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+.ind-weight{font-size:10px;color:var(--muted);margin-top:6px}
+.ind-desc{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.4}
+
+/* ── CTA CONTEXTUAL ── */
+.cta-box{border-radius:14px;padding:24px;margin-top:20px;text-align:center;border:1px solid}
+.cta-box h3{font-size:18px;margin-bottom:8px}
+.cta-box p{font-size:14px;color:var(--muted);margin-bottom:18px;line-height:1.6}
+
+/* extreme fear CTA */
+.cta-fear{background:rgba(255,77,109,.06);border-color:rgba(255,77,109,.2)}
+.cta-fear h3{color:#FF4D6D}
+/* greed/extreme greed CTA */
+.cta-greed{background:rgba(0,255,148,.05);border-color:rgba(0,255,148,.2)}
+.cta-greed h3{color:var(--accent2)}
+/* neutral/fear CTA */
+.cta-neutral{background:rgba(0,212,255,.05);border-color:rgba(0,212,255,.2)}
+.cta-neutral h3{color:var(--accent)}
+
+/* ── HISTORY ZONE ── */
+.history-section{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:24px}
+.history-title{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px}
+.history-bar-wrap{display:flex;flex-direction:column;gap:8px}
+.hbar-row{display:flex;align-items:center;gap:10px;font-size:12px}
+.hbar-label{width:80px;color:var(--muted);flex-shrink:0;font-size:11px}
+.hbar-track{flex:1;background:rgba(255,255,255,.05);border-radius:4px;height:22px;overflow:hidden}
+.hbar-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding:0 8px;font-size:11px;font-weight:700;color:var(--black)}
+.hbar-val{width:36px;text-align:right;font-weight:700;color:var(--text);font-size:12px}
+
+/* ── EXPLAINER ── */
+.explainer{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:24px}
+.exp-title{font-size:14px;font-weight:700;margin-bottom:14px}
+.exp-step{display:grid;grid-template-columns:32px 1fr;gap:12px;margin-bottom:14px;align-items:start}
+.exp-step:last-child{margin-bottom:0}
+.exp-num{width:32px;height:32px;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:13px;font-weight:700;color:var(--accent);flex-shrink:0}
+.exp-text strong{font-size:13px;font-weight:700;color:var(--text)}
+.exp-text p{font-size:12px;color:var(--muted);line-height:1.6;margin:2px 0 0}
+
+/* ── EMAIL CTA ── */
+.email-cta{background:linear-gradient(135deg,rgba(0,212,255,.08),rgba(0,255,148,.05));border:1px solid rgba(0,212,255,.2);border-radius:16px;padding:28px;text-align:center;margin-bottom:24px}
+.email-cta h3{font-size:19px;margin-bottom:8px}
+.email-cta p{color:var(--muted);font-size:14px;margin-bottom:18px;max-width:420px;margin-left:auto;margin-right:auto;line-height:1.6}
+.email-form{display:flex;gap:8px;max-width:420px;margin:0 auto;flex-wrap:wrap}
+.email-form input{flex:1;min-width:180px;background:rgba(8,11,15,.7);border:1.5px solid var(--border);color:var(--text);padding:12px 14px;border-radius:9px;font-size:15px;font-family:var(--font-body);outline:none;transition:border-color .2s}
+.email-form input:focus{border-color:var(--accent)}
+.email-form input::placeholder{color:var(--muted)}
+.email-form button{background:var(--accent);color:var(--black);border:none;padding:12px 20px;border-radius:9px;font-family:var(--font-display);font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0}
+.email-form button:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,212,255,.3)}
+.email-note{font-size:11px;color:var(--muted);margin-top:10px}
+
+/* ── ERROR / LOADING ── */
+.load-state{text-align:center;padding:60px 20px}
+.load-spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.error-state{background:rgba(255,77,109,.05);border:1px solid rgba(255,77,109,.2);border-radius:12px;padding:20px;text-align:center;color:#FF4D6D;font-size:14px}
+</style>
+<meta content="summary" name="twitter:card"/>
+<meta content="Fear &amp; Greed Index BVB — Sentimentul Pieței Românești | GhidBursa.ro" name="twitter:title"/>
+<meta content="Primul indicator de sentiment BVB din România. Scor actualizat zilnic pe baza datelor reale de piață." name="twitter:description"/>
+<meta property="og:image" content="https://www.ghidbursa.ro/og-image.png"/>
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta property="og:locale" content="ro_RO"/>
+  <meta property="og:site_name" content="GhidBursa.ro"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="@GhidBursa"/>
+  <meta name="twitter:image" content="https://www.ghidbursa.ro/og-image.png"/>
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"/>
+  <meta name="author" content="GhidBursa.ro"/>
+  <meta http-equiv="content-language" content="ro"/>
+  <meta name="theme-color" content="#080B0F"/>
+  <link rel="dns-prefetch" href="//s3.tradingview.com"/>
+    <link rel="stylesheet" href="/fonts/fonts.css"/>
+<link rel="preload" href="/fonts/plus-jakarta-sans-700.woff2" as="font" type="font/woff2" crossorigin="anonymous" fetchpriority="high"/>
+<link rel="stylesheet" href="/cookie-consent.css"/>
+</head>
+<body class="no-ticker">
+<nav>
+<a class="nav-logo" href="index.html"><div class="nav-dot"></div>Ghid<span>Bursa</span>.ro</a>
+<ul class="nav-links">
+<li><a href="brokeri.html">Brokeri</a></li>
+<li><a href="ghiduri.html">Ghiduri</a></li>
+<li><a href="screener.html">Screener BVB</a></li>
+<li><a href="calculatoare.html">Calculatoare</a></li>
+<li><a href="newsletter.html">Newsletter</a></li>
+<li><a class="nav-cta" href="brokeri.html">Compară brokeri →</a></li>
+</ul>
+<button aria-label="Meniu" class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
+</nav>
+<div class="mobile-nav" id="mobileNav">
+<a href="index.html">Acasă</a>
+<a href="brokeri.html">Brokeri</a>
+<a href="screener.html">Screener BVB</a>
+<a href="calculatoare.html">Calculatoare</a>
+<a href="newsletter.html">Newsletter</a>
+<a href="fear-greed.html">Fear &amp; Greed</a>
+<a href="legal.html#disclaimer">Disclaimer</a>
+<a class="mobile-cta" href="brokeri.html">Compară brokeri →</a>
+</div>
+<div class="fg-wrap">
+<div class="breadcrumb"><a href="index.html">Acasă</a> › <span>Fear &amp; Greed BVB</span></div>
+<div class="fg-hero reveal">
+<div class="fg-eyebrow"><span class="live-dot"></span> Primul din România · Date reale zilnice</div>
+<h1>Fear &amp; Greed Index BVB</h1>
+<p class="sub">Sentimentul pieței de capital din România, calculat zilnic din date reale. 0 = Frică extremă, 100 = Lăcomie extremă.</p>
+</div>
+<!-- GAUGE SECTION -->
+<div class="gauge-section reveal" id="gaugeSection">
+<div class="load-state" id="loadState">
+<div class="load-spinner"></div>
+<p style="color:var(--muted);font-size:14px">Se încarcă datele de piață...</p>
+</div>
+<div id="gaugeContent" style="display:none">
+<div class="gauge-wrap">
+<!-- SVG: smooth gradient arc + tapered needle -->
+<svg style="display:block;width:100%;max-width:420px;margin:0 auto" viewbox="0 0 300 230" xmlns="http://www.w3.org/2000/svg">
+<defs><lineargradient gradientunits="userSpaceOnUse" id="fgArcGrad" x1="30" x2="270" y1="140" y2="140"><stop offset="0%" stop-color="#E24B4A"></stop><stop offset="22%" stop-color="#EF9F27"></stop><stop offset="44%" stop-color="#BA7517"></stop><stop offset="56%" stop-color="#97C459"></stop><stop offset="78%" stop-color="#1D9E75"></stop><stop offset="100%" stop-color="#1D9E75"></stop></lineargradient></defs>
+<path d="M 30 140 A 120 120 0 0 1 270 140" fill="none" stroke="rgba(255,255,255,.05)" stroke-linecap="round" stroke-width="24"></path>
+<path d="M 30 140 A 120 120 0 0 1 270 140" fill="none" stroke="url(#fgArcGrad)" stroke-linecap="round" stroke-width="24"></path>
+<text fill="rgba(255,255,255,.3)" font-family="system-ui,sans-serif" font-size="11" font-weight="500" x="24" y="164">Frică</text>
+<text fill="rgba(255,255,255,.3)" font-family="system-ui,sans-serif" font-size="11" font-weight="500" x="232" y="164">Lăcomie</text>
+<g id="needleG" style="transform-origin:150px 140px;transform:rotate(-90deg);transition:transform 1.4s cubic-bezier(.34,1.56,.64,1)">
+<polygon fill="white" opacity="0.9" points="150,28 147,140 153,140"></polygon>
+</g>
+<circle cx="150" cy="140" fill="#0D1117" r="8" stroke="rgba(255,255,255,.15)" stroke-width="1.5"></circle>
+<circle cx="150" cy="140" fill="rgba(255,255,255,.8)" r="3"></circle>
+</svg>
+<!-- Score + label sit BELOW the SVG, no overlap -->
+<div style="text-align:center;margin-top:12px">
+<div class="gauge-score" id="gaugeScore">—</div>
+<div class="gauge-label" id="gaugeLabel" style="margin-top:4px">—</div>
+<div class="gauge-updated" id="gaugeUpdated" style="margin-top:4px">—</div>
+</div>
+</div>
+<!-- Indicators -->
+<div class="indicators-grid" id="indGrid"></div>
+<!-- Contextual CTA -->
+<div class="cta-box cta-neutral" id="ctaBox" style="margin-top:20px"></div>
+</div>
+<div class="error-state" id="errorState" style="display:none">
+      Nu s-au putut încărca datele. Încearcă din nou mai târziu.
+    </div>
+</div>
+<!-- MARKET SUMMARY — rendered dynamically from score.json -->
+<div class="reveal" id="marketSummary" style="display:none;margin-bottom:24px">
+<div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px 28px">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+<div style="font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)">Rezumat curent</div>
+<div id="summaryDate" style="font-size:12px;color:var(--muted)"></div>
+</div>
+<div id="summaryText" style="font-size:15px;line-height:1.85;color:rgba(232,237,242,.88)"></div>
+<div id="summaryFactoids" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px"></div>
+<p style="font-size:11px;color:var(--muted);margin-top:16px;opacity:.7;line-height:1.5">Rezumat generat automat din datele de piață. Nu constituie consultanță financiară sau recomandare de investiție.</p>
+</div>
+</div>
+<!-- EMAIL CAPTURE -->
+<div class="email-cta reveal">
+<h3>Alertă când intră în Extreme Fear sau Extreme Greed</h3>
+<p>Momentele de frică extremă și lăcomie extremă sunt cele mai relevante pentru decizii de investiție. Primești email instant când indicatorul trece aceste praguri.</p>
+<form class="email-form" onsubmit="submitFGEmail(event)">
+<input autocomplete="email" id="fg-email" placeholder="adresa@ta.ro" required="" type="email"/>
+<button type="submit">Alertă gratuită →</button>
+</form>
+<div class="email-note">Gratuit. Maxim 2 emailuri/lună. Dezabonezi cu un click.</div>
+<div id="fg-email-success" style="display:none;color:var(--accent2);font-weight:700;margin-top:12px;font-size:14px">✓ Ești abonat! Vei primi alertă la schimbarea zonei.</div>
+</div>
+<!-- HOW IT WORKS -->
+<div class="explainer reveal">
+<div class="exp-title">Cum se calculează indicatorul</div>
+<div class="exp-step">
+<div class="exp-num">1</div>
+<div class="exp-text">
+<strong>Momentum BET (40%)</strong>
+<p>Compară prețul curent al indicelui BET față de media sa mobilă pe 125 zile. O piață mult peste medie semnalează euforie (lăcomie). Sub medie — pesimism (frică).</p>
+</div>
+</div>
+<div class="exp-step">
+<div class="exp-num">2</div>
+<div class="exp-text">
+<strong>Volatilitate BET (30%)</strong>
+<p>Deviația standard anualizată a randamentelor zilnice pe 20 zile. Volatilitate ridicată = incertitudine și frică. Piețe calme = lăcomie și complacență.</p>
+</div>
+</div>
+<div class="exp-step">
+<div class="exp-num">3</div>
+<div class="exp-text">
+<strong>Market Breadth (30%)</strong>
+<p>Procentul acțiunilor din BET care tranzacționează peste propria medie mobilă de 50 zile. Dacă &gt;70% sunt în trend pozitiv — piața respiră lăcomie.</p>
+</div>
+</div>
+<div class="info-box" style="margin-top:16px;margin-bottom:0">
+<div class="box-title">Sursele de date</div>
+<p>Datele sunt actualizate automat zilnic (luni-vineri, după închiderea BVB la 16:30). Indicele BET de pe Stooq.com, prețurile acțiunilor de pe Yahoo Finance. <strong>Nu sunt date în timp real</strong> — sunt end-of-day.</p>
+</div>
+</div>
+<!-- HOW TO USE -->
+<div class="history-section reveal">
+<div class="history-title">Cum folosești indicatorul</div>
+<div style="display:grid;grid-template-columns:1fr;gap:10px">
+<div style="display:flex;gap:12px;padding:12px;background:rgba(255,77,109,.06);border-radius:10px;border:1px solid rgba(255,77,109,.15)">
+<div style="font-size:22px;flex-shrink:0"></div>
+<div><div style="font-size:13px;font-weight:700;color:#FF4D6D;margin-bottom:4px">Frică extremă (0–20)</div><div style="font-size:13px;color:var(--muted);line-height:1.6">Istoric, momentele de panică creează oportunități de cumpărare pentru investitorii cu orizont lung. Prețurile sunt sub valorile fundamentale.</div></div>
+</div>
+<div style="display:flex;gap:12px;padding:12px;background:rgba(0,255,148,.04);border-radius:10px;border:1px solid rgba(0,255,148,.15)">
+<div style="font-size:22px;flex-shrink:0"></div>
+<div><div style="font-size:13px;font-weight:700;color:var(--accent2);margin-bottom:4px">Lăcomie extremă (80–100)</div><div style="font-size:13px;color:var(--muted);line-height:1.6">Piața poate fi supraevaluată. Momentul potrivit pentru a evalua dacă portofoliul e prea expus și a considera rebalansarea.</div></div>
+</div>
+<div style="display:flex;gap:12px;padding:12px;background:rgba(255,184,0,.04);border-radius:10px;border:1px solid rgba(255,184,0,.15)">
+<div style="font-size:22px;flex-shrink:0"></div>
+<div><div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:4px">Zonele intermediare (20–80)</div><div style="font-size:13px;color:var(--muted);line-height:1.6">Indicatorul e unul din mulți factori de decizie — nu singurul. Combină-l cu analiza fundamentală a companiilor individuale.</div></div>
+</div>
+</div>
+</div>
+<!-- DISCLAIMER -->
+<div class="warn-box reveal">
+<div class="box-title">Disclaimer important</div>
+<p>Indicatorul Fear &amp; Greed BVB este un instrument educativ bazat pe date publice. <strong>Nu constituie consultanță financiară</strong> și nu garantează rezultate viitoare. Investițiile la BVB implică riscuri, inclusiv pierderea capitalului investit. Deciziile de investiție sunt responsabilitatea exclusivă a fiecărui investitor.</p>
+</div>
+</div>
+<footer>
+<a href="index.html" style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:16px;color:var(--text)">Ghid<span style="color:var(--accent)">Bursa</span>.ro</a>
+<div class="footer-links">
+      <a href="unsubscribe.html">Dezabonare newsletter</a>
+<a href="brokeri.html">Brokeri</a><a href="ghiduri.html">Ghiduri</a>
+<a href="screener.html">Screener</a><a href="calculatoare.html">Calculatoare</a>
+<a href="newsletter.html">Newsletter</a><a href="fear-greed.html" style="color:var(--accent)">Fear &amp; Greed</a>
+<a href="legal.html#disclaimer">Disclaimer</a><a href="despre-noi.html">Contact</a>
+</div>
+<span>© 2026 GhidBursa.ro</span>
+<p class="footer-disclaimer">Investițiile implică riscuri. Conținutul GhidBursa.ro este informativ și nu constituie consultanță financiară. Verificați toate informațiile înainte de a lua decizii de investiție.</p>
+</footer>
+<script defer="" src="shared.js"></script>
+<script>
+// ── DATA SOURCE ──────────────────────────────────────────────
+// Replace GITHUB_RAW_URL with your actual repo raw URL
+var SCORE_URL = 'https://raw.githubusercontent.com/liviuarm-boop/ghidbursa-data/main/score.json';
+
+// ── COLORS ──────────────────────────────────────────────────
+function scoreColor(s) {
+  if (s === null || s === undefined) return '#6B7A8D';
+  if (s <= 20) return '#FF4D6D';
+  if (s <= 40) return '#FF8C42';
+  if (s <= 60) return '#FFB800';
+  if (s <= 80) return '#9CDE5F';
+  return '#00FF94';
+}
+function scoreClass(s) {
+  if (s <= 20) return 'col-extreme-fear';
+  if (s <= 40) return 'col-fear';
+  if (s <= 60) return 'col-neutral';
+  if (s <= 80) return 'col-greed';
+  return 'col-extreme-greed';
+}
+function scoreCtaClass(s) {
+  if (s <= 30) return 'cta-fear';
+  if (s >= 70) return 'cta-greed';
+  return 'cta-neutral';
+}
+
+// ── NEEDLE ───────────────────────────────────────────────────
+function setNeedle(score) {
+  // 0 => -90deg (full left), 50 => 0deg (top), 100 => +90deg (full right)
+  var deg = (score / 100) * 180 - 90;
+  var needle = document.getElementById('needleG');
+  if (needle) needle.style.transform = 'rotate(' + deg + 'deg)';
+}
+
+// ── GAUGE BG GLOW ────────────────────────────────────────────
+function setGaugeGlow(score) {
+  var color = scoreColor(score);
+  var el = document.getElementById('gaugeSection');
+  if (el) el.style.setProperty('--glow', color);
+  var before = el.querySelector ? el : document.getElementById('gaugeSection');
+  // Set ::before via inline override
+  var style = document.getElementById('gaugeGlowStyle');
+  if (!style) { style = document.createElement('style'); style.id = 'gaugeGlowStyle'; document.head.appendChild(style); }
+  style.textContent = '#gaugeSection::before{background:' + color.replace(')', ',.15)').replace('rgb', 'rgba') + ' !important}';
+}
+
+// ── RENDER INDICATORS ────────────────────────────────────────
+function renderIndicators(indicators) {
+  var grid = document.getElementById('indGrid');
+  if (!grid) return;
+  var items = [
+    { key: 'momentum',   label: 'Momentum BET' },
+    { key: 'volatility', label: 'Volatilitate' },
+    { key: 'breadth',    label: 'Market Breadth' },
+  ];
+  grid.innerHTML = items.map(function(item) {
+    var ind = indicators[item.key];
+    var score = ind ? ind.score : null;
+    var label = ind ? ind.label : 'N/A';
+    var weight = ind ? ind.weight : '';
+    var desc = ind ? ind.description : '';
+    var color = scoreColor(score);
+    var displayScore = score !== null ? Math.round(score) : '—';
+    var barWidth = score !== null ? score : 0;
+    return '<div class="ind-card">'
+      + '<div class="ind-title">' + item.label + '</div>'
+      + '<div class="ind-score ' + (score !== null ? scoreClass(score) : '') + '">' + displayScore + '</div>'
+      + '<div class="ind-label">' + label + '</div>'
+      + '<div class="ind-bar"><div class="ind-bar-fill" style="width:' + barWidth + '%;background:' + color + '"></div></div>'
+      + '<div class="ind-weight">' + weight + ' din scor</div>'
+      + '<div class="ind-desc">' + desc + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+// ── CONTEXTUAL CTA ───────────────────────────────────────────
+function renderCTA(score, label) {
+  var box = document.getElementById('ctaBox');
+  if (!box) return;
+
+  var cls = scoreCtaClass(score);
+  box.className = 'cta-box ' + cls;
+
+  var content = '';
+  if (score <= 20) {
+    content = '<h3> Frică extremă — oportunitate istorică?</h3>'
+      + '<p>Indicatorul arată panică maximă pe piața BVB. Istoric, momentele de frică extremă au precedat recuperări semnificative. Nu e garantat — dar e momentul să ai un cont pregătit.</p>'
+      + '<a href="xtb-review.html" class="btn btn-primary">Deschide cont XTB — 0% comision →</a>'
+      + '<br><a href="screener.html" style="display:inline-block;margin-top:10px;font-size:13px;color:var(--muted)">Analizează acțiunile BVB →</a>';
+  } else if (score <= 40) {
+    content = '<h3> Frică — piața e prudentă</h3>'
+      + '<p>Investitorii sunt pesimisti. Prețurile multor acțiuni BVB pot fi sub valoarea fundamentală. Bun moment pentru research, nu neapărat pentru acțiune precipitată.</p>'
+      + '<a href="screener.html" class="btn btn-secondary">Analizează acțiunile BVB →</a>'
+      + '<a href="calculatoare.html" class="btn btn-ghost" style="margin-left:8px">Calculator dividend →</a>';
+  } else if (score <= 60) {
+    content = '<h3> Neutru — piața e echilibrată</h3>'
+      + '<p>Fără semnal puternic în nicio direcție. Moment bun pentru a revizui portofoliul și a te asigura că ești diversificat corect.</p>'
+      + '<a href="calculatoare.html" class="btn btn-secondary">Simulează portofoliu →</a>'
+      + '<a href="ghiduri.html" class="btn btn-ghost" style="margin-left:8px">Ghiduri investiții →</a>';
+  } else if (score <= 80) {
+    content = '<h3> Lăcomie — piața e optimistă</h3>'
+      + '<p>Sentimentul e pozitiv, prețurile au crescut. Bun moment să verifici dacă evaluările mai au sens și să nu te lași prins în euforie.</p>'
+      + '<a href="dividende-bvb-2025.html" class="btn btn-secondary">Top dividende BVB →</a>'
+      + '<a href="xtb-vs-trading212.html" class="btn btn-ghost" style="margin-left:8px">Compară brokeri →</a>';
+  } else {
+    content = '<h3> Lăcomie extremă — atenție maximă</h3>'
+      + '<p>Piața e euforică. Valorizările pot fi întinse. Istoric, lăcomia extremă precedă corecții. Nu înseamnă că piața cade mâine — dar momentul pentru due diligence riguros.</p>'
+      + '<a href="calculatoare.html" class="btn btn-secondary">Rebalansează portofoliul →</a>'
+      + '<a href="fidelis-2025.html" class="btn btn-ghost" style="margin-left:8px">Alternativă Fidelis →</a>';
+  }
+  box.innerHTML = content;
+}
+
+// ── MAIN LOAD ────────────────────────────────────────────────
+async function loadFearGreed() {
+  var loadState   = document.getElementById('loadState');
+  var gaugeContent= document.getElementById('gaugeContent');
+  var errorState  = document.getElementById('errorState');
+
+  try {
+    var resp = await fetch(SCORE_URL + '?t=' + Date.now());
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    var data = await resp.json();
+
+    // Hide loader, show content
+    loadState.style.display   = 'none';
+    gaugeContent.style.display= 'block';
+    errorState.style.display  = 'none';
+
+    var score = data.score;
+    var labelRo = data.label_ro || '—';
+    var updated = data.updated_ro || '—';
+    var color = scoreColor(score);
+
+    // Score + label
+    var scoreEl = document.getElementById('gaugeScore');
+    var labelEl = document.getElementById('gaugeLabel');
+    var updEl   = document.getElementById('gaugeUpdated');
+
+    if (scoreEl) { scoreEl.textContent = score !== null ? Math.round(score) : '—'; scoreEl.className = 'gauge-score ' + (score !== null ? scoreClass(score) : ''); }
+    if (labelEl) { labelEl.textContent = labelRo; labelEl.className = 'gauge-label ' + (score !== null ? scoreClass(score) : ''); }
+    if (updEl)   { updEl.textContent = 'Actualizat: ' + updated; }
+
+    // Needle animation (after a short delay so transition is visible)
+    setTimeout(function() { setNeedle(score || 50); }, 200);
+
+    // Glow
+    var gsEl = document.getElementById('gaugeSection');
+    if (gsEl) gsEl.querySelector('::before') || (gsEl.style.background = gsEl.style.background);
+    var glowStyle = document.getElementById('gS') || document.createElement('style');
+    glowStyle.id = 'gS';
+    glowStyle.textContent = '#gaugeSection::before{background:' + color + '22}';
+    if (!document.getElementById('gS')) document.head.appendChild(glowStyle);
+
+    // Indicators
+    if (data.indicators) renderIndicators(data.indicators);
+
+    // Contextual CTA
+    if (score !== null) renderCTA(score, labelRo);
+
+    // Render market summary
+    renderSummary(data);
+
+    // Data quality note
+    var dq = data.data_quality || {};
+    if (dq.components_ok < dq.components_total) {
+      console.log('Data quality: ' + dq.components_ok + '/' + dq.components_total + ' components OK');
+    }
+
+  } catch (err) {
+    console.error('Fear & Greed load error:', err);
+    loadState.style.display    = 'none';
+    gaugeContent.style.display = 'none';
+    errorState.style.display   = 'block';
+    errorState.textContent = 'Date indisponibile momentan. Încearcă din nou mai târziu. (' + err.message + ')';
+  }
+}
+
+// ── EMAIL SUBMIT ──────────────────────────────────────────────
+function submitFGEmail(e) {
+  e.preventDefault();
+  // TODO: replace with real Brevo/Mailchimp API
+  document.querySelector('.email-form').style.display = 'none';
+  document.getElementById('fg-email-success').style.display = 'block';
+}
+
+
+// ── MARKET SUMMARY ───────────────────────────────────────────
+function renderSummary(data) {
+  var el = document.getElementById('marketSummary');
+  var textEl = document.getElementById('summaryText');
+  var dateEl = document.getElementById('summaryDate');
+  var factsEl = document.getElementById('summaryFactoids');
+  if (!el || !textEl) return;
+
+  var score = data.score;
+  var ind = data.indicators || {};
+  var mom = ind.momentum || {};
+  var vol = ind.volatility || {};
+  var bre = ind.breadth || {};
+  var dq  = data.data_quality || {};
+
+  // ── Build unbiased narrative ──────────────────────────────
+  var paragraphs = [];
+
+  // Lead paragraph — overall reading
+  var leadMap = {
+    extreme_fear:  'Indicatorul BVB se află în teritoriul <strong>fricii extreme</strong> — cel mai jos nivel de sentiment înregistrat. Piața reflectă pesimism generalizat, cu presiune de vânzare dominantă.',
+    fear:          'Indicatorul BVB semnalează <strong>frică</strong> în rândul investitorilor. Sentimentul general este defensiv, iar prudența domină față de oportunism.',
+    neutral:       'Indicatorul BVB se află în zona <strong>neutră</strong>, fără un semnal dominant de sentiment. Piața este în echilibru relativ între cumpărători și vânzători.',
+    greed:         'Indicatorul BVB se află în zona de <strong>lăcomie</strong> — sentimentul investitorilor este optimist, cu o tendință de asumare a riscului mai mare decât media istorică.',
+    extreme_greed: 'Indicatorul BVB atinge <strong>lăcomie extremă</strong> — nivelul maxim de euforie măsurat. Piața este condusă de optimism intens, potențial depășind fundamentele.'
+  };
+
+  var zone = score <= 20 ? 'extreme_fear' : score <= 40 ? 'fear' : score <= 60 ? 'neutral' : score <= 80 ? 'greed' : 'extreme_greed';
+  paragraphs.push(leadMap[zone]);
+
+  // Momentum paragraph
+  if (mom.score !== null && mom.score !== undefined && mom.pct_vs_sma !== undefined) {
+    var momDir = mom.pct_vs_sma >= 0 ? 'cu ' + Math.abs(mom.pct_vs_sma).toFixed(1) + '% <strong>peste</strong>' : 'cu ' + Math.abs(mom.pct_vs_sma).toFixed(1) + '% <strong>sub</strong>';
+    var momCtx = '';
+    if (Math.abs(mom.pct_vs_sma) > 15) {
+      momCtx = mom.pct_vs_sma > 0
+        ? ' Abaterea semnificativă față de medie indică o piață care a depășit tiparul de creștere obișnuit pe termen mediu.'
+        : ' Abaterea semnificativă față de medie indică o piață care a corectat puternic față de valorile recente.';
+    } else if (Math.abs(mom.pct_vs_sma) > 5) {
+      momCtx = ' Deviația este moderată, compatibilă cu un trend în desfășurare fără semne de exagerare extremă.';
+    } else {
+      momCtx = ' Prețul oscilează aproape de medie, sugerând o piață fără direcție clară pe termen mediu.';
+    }
+    paragraphs.push('<strong>Momentum:</strong> Indicele BET se tranzacționează ' + momDir + ' media sa mobilă pe 125 de zile (' + (mom.sma_125 || '—') + ' puncte față de ' + (mom.price || '—') + ' puncte actuale).' + momCtx);
+  }
+
+  // Volatility paragraph
+  if (vol.score !== null && vol.score !== undefined && vol.annualized_vol_pct !== undefined) {
+    var vPct = vol.annualized_vol_pct.toFixed(1);
+    var vCtx = '';
+    if (vol.annualized_vol_pct < 12) {
+      vCtx = 'Volatilitate extrem de scăzută — piața este calmă, cu mișcări zilnice reduse. Aceasta poate reflecta complacență sau poate precede o mișcare bruscă.';
+    } else if (vol.annualized_vol_pct < 20) {
+      vCtx = 'Volatilitate scăzută față de media istorică — piața se mișcă ordonat, fără panică sau euforie vizibilă în oscilațiile zilnice.';
+    } else if (vol.annualized_vol_pct < 30) {
+      vCtx = 'Volatilitate moderată, în parametri normali pentru BVB. Mișcările zilnice sunt consistente cu un regim de piață echilibrat.';
+    } else if (vol.annualized_vol_pct < 40) {
+      vCtx = 'Volatilitate ridicată — piața înregistrează oscilații zilnice semnificative. Incertitudinea în rândul participanților este ridicată.';
+    } else {
+      vCtx = 'Volatilitate extremă — mișcările zilnice sunt mult peste norma istorică. Mediu de tranzacționare instabil, cu risc crescut.';
+    }
+    paragraphs.push('<strong>Volatilitate:</strong> ' + vCtx + ' Volatilitatea anualizată pe 20 de zile este de <strong>' + vPct + '%</strong>.');
+  }
+
+  // Breadth paragraph
+  if (bre.score !== null && bre.score !== undefined && bre.above_sma50 !== undefined) {
+    var bAbove = bre.above_sma50;
+    var bTotal = bre.total_stocks;
+    var bCtx = '';
+    if (bre.score >= 75) {
+      bCtx = 'Participarea largă a titlurilor în trend ascendent sugerează că avansul pieței are o bază solidă, nu e condus de câteva acțiuni mari.';
+    } else if (bre.score >= 50) {
+      bCtx = 'Majoritatea titlurilor sunt în trend pozitiv, dar participarea nu este unanimă — există divergențe între sectoare sau companii individuale.';
+    } else if (bre.score >= 25) {
+      bCtx = 'Sub jumătate din titluri sunt în trend pozitiv. Avansul general al pieței, dacă există, este susținut de un număr restrâns de companii.';
+    } else {
+      bCtx = 'Marea majoritate a titlurilor sunt în trend negativ — presiunea de vânzare este larg distribuită în piață, fără excepții semnificative.';
+    }
+    paragraphs.push('<strong>Breadth:</strong> ' + bAbove + ' din ' + bTotal + ' acțiuni BVB analizate se tranzacționează peste propria medie pe 50 de zile (' + bre.score.toFixed(1) + '%). ' + bCtx);
+  }
+
+  // Method note if incomplete
+  if (data.method && data.method.indexOf('breadth only') !== -1) {
+    paragraphs.push('<em style="color:var(--muted);font-size:13px">Notă: Indicatorul BET nu a putut fi descărcat astăzi — scorul se bazează exclusiv pe breadth. Datele de momentum și volatilitate vor fi disponibile la următoarea actualizare.</em>');
+  }
+
+  textEl.innerHTML = paragraphs.map(function(p) {
+    return '<p style="margin-bottom:12px">' + p + '</p>';
+  }).join('');
+
+  // Factoids
+  var facts = [];
+  if (mom.price) facts.push({label: 'BET curent', val: mom.price + ' pct.'});
+  if (mom.sma_125) facts.push({label: 'SMA 125 zile', val: mom.sma_125 + ' pct.'});
+  if (vol.annualized_vol_pct) facts.push({label: 'Volatilitate 20z', val: vol.annualized_vol_pct.toFixed(1) + '%'});
+  if (bre.above_sma50 !== undefined) facts.push({label: 'Titluri în trend +', val: bre.above_sma50 + '/' + bre.total_stocks});
+
+  factsEl.innerHTML = facts.map(function(f) {
+    return '<div style="background:rgba(0,0,0,.2);border-radius:8px;padding:10px 12px">'
+      + '<div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:3px">' + f.label + '</div>'
+      + '<div style="font-size:16px;font-weight:700;font-family:var(--font-display);color:var(--text)">' + f.val + '</div>'
+      + '</div>';
+  }).join('');
+
+  if (dateEl) dateEl.textContent = 'Date din: ' + (data.updated_ro || '');
+  el.style.display = 'block';
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  loadFearGreed();
+});
+</script>
+<script defer src="/cookie-consent.js"></script>
+</body>
+</html>

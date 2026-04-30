@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8"/>
+<style data-critical="true">
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+ --black: #080B0F;
+ --dark: #0D1117;
+ --card: #111820;
+ --card2: #141E28;
+ --border: #1E2A38;
+ --accent: #00D4FF;
+ --accent2: #00FF94;
+ --gold: #FFB800;
+ --red: #FF4D6D;
+ --text: #E8EDF2;
+ --muted: #6B7A8D;
+ --font-display: 'Plus Jakarta Sans', sans-serif;
+ --font-body: 'DM Sans', sans-serif;
+ --nav-h: 56px;
+ --ticker-h: 76px;
+ --offset: 132px; 
+}
+@media (min-width: 768px) {
+ :root {
+ --nav-h: 72px;
+ --offset: 148px;
+ }
+}
+html { scroll-behavior: smooth; font-size: 15px; }
+body {
+ background: var(--black);
+ color: var(--text);
+ font-family: var(--font-body);
+ line-height: 1.6;
+ overflow-x: hidden;
+ -webkit-font-smoothing: antialiased;
+ width: 100%;
+ max-width: 100vw;
+}
+body::before {
+ content: '';
+ position: fixed; inset: 0;
+ background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+ pointer-events: none; z-index: 0; opacity: 0.5;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+img { max-width: 100%; height: auto; display: block; }
+h1, h2, h3, h4 {
+ font-family: var(--font-display);
+ -webkit-font-smoothing: antialiased;
+ letter-spacing: -0.01em;
+ line-height: 1.18;
+}
+h1 { font-size: clamp(18px, 2vw, 28px); font-weight: 700; }
+h2 { font-size: clamp(18px, 2.5vw, 28px); font-weight: 700; }
+h3 { font-size: clamp(15px, 2vw, 20px); font-weight: 600; }
+h4 { font-size: 14px; font-weight: 700; }
+p { color: rgba(232,237,242,.82); line-height: 1.75; font-size: 15px; }
+nav {
+ position: fixed; top: 0; left: 0; right: 0;
+ z-index: 200;
+ height: var(--nav-h);
+ display: flex; align-items: center; justify-content: space-between;
+ padding: 0 20px;
+ background: rgba(8,11,15,0.92);
+ backdrop-filter: blur(24px);
+ border-bottom: 1px solid var(--border);
+}
+@media (min-width: 768px) { nav { padding: 0 48px; } }
+@media (min-width: 1280px) { nav { padding: 0 64px; } }
+.nav-logo {
+ font-family: var(--font-display);
+ font-size: 18px; font-weight: 800; letter-spacing: -0.02em;
+ color: var(--text); text-decoration: none;
+ display: flex; align-items: center; gap: 8px;
+ flex-shrink: 0;
+}
+@media (min-width: 768px) { .nav-logo { font-size: 22px; } }
+.nav-logo span { color: var(--accent); }
+.nav-logo:hover { text-decoration: none; }
+.nav-dot {
+ width: 8px; height: 8px;
+ background: var(--accent2); border-radius: 50%;
+ animation: pulse 2s ease-in-out infinite; flex-shrink: 0;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+.nav-links {
+ display: none;
+ align-items: center; gap: 28px; list-style: none;
+}
+@media (min-width: 768px) { .nav-links { display: flex; } }
+.nav-links a { color: var(--muted); font-size: 14px; font-weight: 500; transition: color .2s; text-decoration: none; }
+.nav-links a:hover { color: var(--text); }
+.nav-cta {
+ background: var(--accent) !important;
+ color: var(--black) !important;
+ padding: 9px 18px; border-radius: 6px;
+ font-weight: 700 !important; font-size: 13px !important;
+}
+.nav-cta:hover { opacity: .85; }
+.hamburger {
+ display: flex; flex-direction: column; gap: 5px;
+ background: none; border: none; cursor: pointer; padding: 6px;
+}
+@media (min-width: 768px) { .hamburger { display: none; } }
+.hamburger span {
+ display: block; width: 22px; height: 2px;
+ background: var(--text); border-radius: 2px;
+ transition: all .3s;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.mobile-nav {
+ display: none; position: fixed;
+ top: var(--nav-h); left: 0; right: 0;
+ background: rgba(8,11,15,.98);
+ border-bottom: 1px solid var(--border);
+ z-index: 199; flex-direction: column;
+ padding: 8px 0 16px;
+ transform: translateY(-10px); opacity: 0;
+ transition: transform .25s, opacity .25s;
+}
+.mobile-nav.open {
+ display: flex; transform: translateY(0); opacity: 1;
+}
+.mobile-nav a {
+ display: block; padding: 14px 24px;
+ color: var(--text); font-size: 15px; font-weight: 500;
+ border-bottom: 1px solid rgba(30,42,56,.5);
+ text-decoration: none; transition: background .15s;
+}
+.mobile-nav a:last-child { border-bottom: none; }
+.mobile-nav a:hover { background: rgba(0,212,255,.05); }
+.mobile-nav .mobile-cta {
+ margin: 12px 24px 0;
+ background: var(--accent); color: var(--black) !important;
+ border-radius: 8px; text-align: center; font-weight: 700 !important;
+ border-bottom: none !important;
+}
+.ticker-bar {
+ position: sticky;
+ top: var(--nav-h);
+ z-index: 150;
+ height: var(--ticker-h);
+ background: rgba(8,11,15,.98);
+ border-bottom: 1px solid var(--border);
+ overflow: hidden;
+}
+.ticker-bar .tradingview-widget-container,
+.ticker-bar .tradingview-widget-container__widget { height: 100% !important; }
+.section-inner { max-width: 1280px; margin: 0 auto; padding: 0 20px; }
+.reveal,.reveal-left,.reveal-right,.reveal-scale{
+ opacity:0;
+ transition:opacity .65s cubic-bezier(.4,0,.2,1),transform .65s cubic-bezier(.4,0,.2,1);
+ will-change:opacity,transform;
+}
+.reveal{transform:translateY(28px)}
+.reveal-left{transform:translateX(-28px)}
+.reveal-right{transform:translateX(28px)}
+.reveal-scale{transform:scale(.96)}
+.reveal.visible,.reveal-left.visible,.reveal-right.visible,.reveal-scale.visible{
+ opacity:1;transform:none;
+}
+@keyframes forceVisible { to { opacity: 1; tran
+.btn {
+ display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+ font-family: var(--font-display); font-weight: 700;
+ border-radius: 8px; cursor: pointer;
+ text-decoration: none; transition: opacity .2s, transform .15s;
+ white-space: nowrap;
+}
+.btn:hover { opacity: .85; transform: translateY(-1px); text-decoration: none; }
+.btn:active { transform: translateY(0); }
+.btn-primary { background: var(--accent); color: var(--black); padding: 13px 24px; font-size: 14px; }
+.btn-secondary { background: rgba(0,212,255,.1); border: 1px solid rgba(0,212,255,.25); color: var(--accent); padding: 12px 22px; font-size: 14px; }
+.btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 11px 20px; font-size: 13px; }
+.btn-ghost:hover { border-color: var(--text); color: var(--text); }
+.btn-green { background: rgba(0,255,148,.1); border: 1px solid rgba(0,255,148,.25); color: var(--accent2); padding: 12px 22px; font-size: 14px; }
+.btn-full { width: 100%; }
+.btn-sm { padding: 8px 14px; font-size: 12px; }
+.btn-lg { padding: 16px 32px; font-size: 16px; }
+</style>
+
+<meta name="description" content="Ghid complet deducere fiscală 400 EUR investiții bursă 2026 (OUG 8/2026): cine beneficiază, cum funcționează, documente necesare, ce brokeri sunt eligibili și calculator economie."/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Deducere Fiscală 400 EUR Investiții Bursă 2026 — Ghid Complet OUG 8/2026 | GhidBursa.ro</title>
+<meta content="deducere fiscala investitii bursa 2026, deducere 400 euro actiuni, OUG 8 2026 investitii, scutire impozit bursa Romania, deducere salariu investitii BVB" name="keywords"/>
+<link href="https://www.ghidbursa.ro/deducere-fiscala-investitii-2026.html" rel="canonical"/>
+<meta content="Deducere Fiscală 400 EUR Investiții Bursă 2026 | GhidBursa.ro" property="og:title"/>
+<meta content="Tot ce trebuie să știi despre deducerea de 400 EUR pentru investiții la bursă, introdusă prin OUG 8/2026. Calculator economie inclus." property="og:description"/>
+<meta content="website" property="og:type"/>
+<meta content="https://www.ghidbursa.ro/deducere-fiscala-investitii-2026.html" property="og:url"/>
+<meta content="ro_RO" property="og:locale"/>
+<meta content="GhidBursa.ro" property="og:site_name"/>
+<meta content="summary" name="twitter:card"/>
+<meta name="robots" content="index, follow"/>
+<meta name="author" content="GhidBursa.ro"/>
+<meta name="theme-color" content="#080B0F"/>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Deducere Fiscală 400 EUR Investiții Bursă 2026 — Ghid Complet OUG 8/2026","description":"Ghid complet despre deducerea fiscală de 400 EUR pentru investiții la bursă, introdusă prin OUG 8/2026 din martie 2026.","datePublished":"2026-03-19","dateModified": "2026-03-19","author":{"@type":"Organization","name":"GhidBursa.ro"},"publisher":{"@type":"Organization","name":"GhidBursa.ro","url":"https://www.ghidbursa.ro"}}</script>
+<script type="application/ld+json">{"dateModified": "2026-03-19", "@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Cine poate beneficia de deducerea de 400 EUR pentru investiții?","acceptedAnswer":{"@type":"Answer","text":"Pot beneficia salariații cu contract individual de muncă (la funcția de bază) și PFA-urile care determină venitul în sistem real. Pensionarii și persoanele fără venituri impozabile nu sunt eligibili."}},{"@type":"Question","name":"Ce instrumente financiare sunt eligibile pentru deducere?","acceptedAnswer":{"@type":"Answer","text":"Sunt eligibile acțiunile, obligațiunile și ETF-urile tranzacționate pe piețe reglementate, prin brokeri autorizați. Nu sunt eligibile: depozitele bancare, fondurile mutuale clasice, criptomonedele, CFD-urile."}},{"@type":"Question","name":"Ce brokeri sunt eligibili pentru deducerea OUG 8/2026?","acceptedAnswer":{"@type":"Answer","text":"Sunt sigur eligibili brokerii cu subsidiară sau sediu permanent în România, autorizați de ASF: XTB România, Tradeville, BT Capital, BRD. Brokerii fără sediu în România (IBKR, Trading 212) au eligibilitate incertă."}},{"@type":"Question","name":"Care este economia reală din deducerea de 400 EUR?","acceptedAnswer":{"@type":"Answer","text":"Economia fiscală maximă este aproximativ 200 RON/an (40 EUR). Deducerea reduce baza impozabilă cu până la 2.000 RON, iar impozitul pe venit salvat este 10% din această sumă, deci maxim ~200 RON."}},{"@type":"Question","name":"Cum aplici deducerea de 400 EUR prin angajator?","acceptedAnswer":{"@type":"Answer","text":"Prezinți angajatorului (HR/contabilitate) documentul justificativ de la broker, care atestă tranzacțiile realizate (data decontării, tipul instrumentului, valoarea). Angajatorul aplică deducerea la calculul impozitului din luna respectivă."}}]}</script>
+<link href="favicon.svg" rel="icon" type="image/svg+xml"/>
+
+<link href="shared.css?v=12" rel="stylesheet"/>
+<link href="mobile.css?v=12" rel="stylesheet"/>
+<style>
+.page{padding:calc(var(--nav-h) + 28px) 0 60px}
+.main-col{max-width:740px}
+.article-cat{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px}
+.cat-gold{color:var(--gold)}
+.article-meta{font-size:12px;color:var(--muted);margin-bottom:28px}
+h1{font-size:clamp(20px,2.5vw,30px);font-weight:700;margin-bottom:10px;line-height:1.2}
+h2{font-size:clamp(16px,2vw,22px);font-weight:700;margin:32px 0 14px;padding-top:8px}
+h3{font-size:16px;font-weight:700;margin:24px 0 10px}
+p{margin-bottom:14px;font-size:15px;line-height:1.75;color:rgba(232,237,242,.88)}
+ul,ol{margin:0 0 16px 20px}
+li{font-size:15px;line-height:1.75;color:rgba(232,237,242,.88);margin-bottom:4px}
+code{background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.2);border-radius:4px;padding:2px 7px;font-size:13px;color:var(--accent);font-family:monospace}
+.warning{background:rgba(255,184,0,.07);border:1px solid rgba(255,184,0,.25);border-left:3px solid var(--gold);border-radius:10px;padding:16px 20px;margin:20px 0}
+.warning-title{font-weight:700;color:var(--gold);font-size:13px;margin-bottom:6px;letter-spacing:.04em;text-transform:uppercase}
+.info-box{background:rgba(0,212,255,.06);border:1px solid rgba(0,212,255,.2);border-left:3px solid var(--accent);border-radius:10px;padding:16px 20px;margin:20px 0}
+.info-box p{margin:0;font-size:13px;line-height:1.7;color:rgba(232,237,242,.88)}
+.success-box{background:rgba(0,255,148,.06);border:1px solid rgba(0,255,148,.2);border-left:3px solid var(--accent2);border-radius:10px;padding:16px 20px;margin:20px 0}
+.success-box p{margin:0;font-size:13px;line-height:1.7}
+.data-table{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0 24px}
+.data-table th{background:var(--card2);font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding:9px 12px;text-align:left;border-bottom:1px solid var(--border)}
+.data-table td{padding:10px 12px;border-bottom:1px solid rgba(30,42,56,.7);vertical-align:top}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tr:hover td{background:rgba(255,255,255,.02)}
+.green{color:var(--accent2);font-weight:700}
+.gold{color:var(--gold);font-weight:700}
+.red{color:var(--red)}
+.check{color:var(--accent2)}
+.cross{color:var(--red)}
+/* Calculator */
+.calc-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin:24px 0}
+.calc-box h3{font-size:15px;font-weight:700;margin-bottom:18px}
+.calc-field{margin-bottom:14px}
+.calc-field label{display:block;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.calc-field input,.calc-field select{width:100%;background:var(--dark);border:1px solid var(--border);color:var(--text);padding:10px 13px;border-radius:8px;font-size:15px;font-family:var(--font-body);outline:none;transition:border-color .2s}
+.calc-field input:focus,.calc-field select:focus{border-color:var(--accent)}
+.calc-btn{background:var(--accent);color:var(--black);border:none;border-radius:8px;padding:12px 28px;font-family:var(--font-display);font-size:14px;font-weight:700;cursor:pointer;transition:opacity .2s}
+.calc-btn:hover{opacity:.85}
+.calc-result{margin-top:18px;background:var(--dark);border:1px solid var(--border);border-radius:10px;padding:16px}
+.calc-result-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px}
+.calc-result-row:last-child{border-bottom:none;padding-top:10px;margin-top:4px}
+.calc-result-row .lbl{color:var(--muted)}
+.calc-result-row .val{font-weight:700}
+.calc-result-big{font-family:var(--font-display);font-size:24px;font-weight:700;color:var(--accent2)}
+/* Broker eligibility cards */
+.broker-elig-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0 24px}
+@media(max-width:600px){.broker-elig-grid{grid-template-columns:1fr}}
+.broker-elig-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px}
+.broker-elig-card.eligible{border-color:rgba(0,255,148,.25);background:rgba(0,255,148,.04)}
+.broker-elig-card.uncertain{border-color:rgba(255,184,0,.25);background:rgba(255,184,0,.04)}
+.broker-elig-name{font-family:var(--font-display);font-size:15px;font-weight:700;margin-bottom:4px}
+.broker-elig-status{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
+.broker-elig-status.ok{color:var(--accent2)}
+.broker-elig-status.warn{color:var(--gold)}
+.broker-elig-note{font-size:12px;color:var(--muted);line-height:1.5}
+/* Steps */
+.steps{display:flex;flex-direction:column;gap:12px;margin:16px 0 24px}
+.step{display:flex;gap:14px;align-items:flex-start}
+.step-num{width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--black);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.step-body h4{font-size:14px;font-weight:700;margin-bottom:4px}
+.step-body p{margin:0;font-size:13px;color:var(--muted);line-height:1.6}
+/* Sidebar */
+.page-layout{display:grid;grid-template-columns:1fr;gap:16px;align-items:start}@media(min-width:900px){.page-layout{grid-template-columns:1fr 280px;gap:24px}}
+@media(max-width:900px){.page-layout{grid-template-columns:1fr}}
+.sidebar-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;position:sticky;top:calc(var(--offset) + 12px)}
+.sidebar-box h4{font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+.sidebar-box ul{margin:0;padding:0;list-style:none}
+.sidebar-box ul li{padding:6px 0;border-bottom:1px solid var(--border);font-size:13px}
+.sidebar-box ul li:last-child{border-bottom:none}
+.sidebar-box ul li a{color:var(--text)}
+.sidebar-box ul li a:hover{color:var(--accent)}
+.related-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-top:14px}
+.related-box h4{font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.related-link{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--text);text-decoration:none}
+.related-link:last-child{border-bottom:none}
+.related-link:hover{color:var(--accent)}
+</style>
+<link rel="stylesheet" href="/fonts/fonts.css"/>
+<link rel="preload" href="/fonts/plus-jakarta-sans-700.woff2" as="font" type="font/woff2" crossorigin="anonymous" fetchpriority="high"/>
+<link rel="stylesheet" href="/cookie-consent.css"/>
+<style>@media(max-width:767px){.article-meta{flex-direction:column;gap:6px;font-size:12px}.sidebar,.side-card{position:static!important}.page{overflow-x:hidden}}</style>
+</head>
+<body>
+
+<nav>
+<a class="nav-logo" href="index.html"><div class="nav-dot"></div>Ghid<span>Bursa</span>.ro</a>
+<ul class="nav-links">
+<li><a href="brokeri.html">Brokeri</a></li>
+<li><a href="ghiduri.html">Ghiduri</a></li>
+<li><a href="screener.html">Screener BVB</a></li>
+<li><a href="calculatoare.html">Calculatoare</a></li>
+<li><a href="newsletter.html">Newsletter</a></li>
+<li><a class="nav-cta" href="brokeri.html">Compară brokeri →</a></li>
+</ul>
+<button aria-label="Meniu" class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
+</nav>
+<div class="mobile-nav" id="mobileNav">
+<a href="index.html">Acasă</a>
+<a href="brokeri.html">Brokeri</a>
+<a href="ghiduri.html">Ghiduri</a>
+<a href="screener.html">Screener BVB</a>
+<a href="calculatoare.html">Calculatoare</a>
+<a href="newsletter.html">Newsletter</a>
+<a href="fear-greed.html">Sentiment BVB</a>
+<a href="fidelis-2025.html">Fidelis 2026</a>
+<a href="glosar.html">Glosar</a>
+<a href="despre-noi.html">Contact</a>
+<a class="mobile-cta" href="brokeri.html">Compară brokeri →</a>
+</div>
+
+<div class="section-inner">
+<div class="page">
+<div class="breadcrumb"><a href="index.html">Acasă</a> › <a href="ghiduri.html">Ghiduri</a> › <span>Deducere fiscală investiții 2026</span></div>
+
+<div class="page-layout">
+<div class="main-col">
+
+<div class="article-cat cat-gold">Fiscalitate · Noutate 2026</div>
+<h1>400 EUR deducere fiscală pentru investițiile tale BVB. 8/2026</h1>
+<div class="article-meta">Publicat: 19 martie 2026 · 8 min lectură · Sursa: OUG 8/2026, Codul Fiscal</div>
+
+<div class="warning reveal">
+  <div class="warning-title">⚡ Aplicabil din 1 martie 2026</div>
+  <p>Facilitatea fiscală se aplică investițiilor <strong>plătite și decontate starting 1 martie 2026</strong>. Tranzacțiile din ianuarie–februarie 2026 nu sunt eligibile.</p>
+</div>
+
+<p>Guvernul României a introdus prin <strong>OUG 8/2026</strong> o facilitate fiscală nouă pentru persoanele fizice care investesc la bursă: poți deduce din impozitul pe venit <strong>până la 400 EUR (aproximativ 2.000 RON) pe an</strong> pentru sumele investite în acțiuni, obligațiuni sau ETF-uri.</p>
+
+<p>Nu e o noutate revoluționară — economia directă e de aproximativ 200 RON pe an. Dar e un prim pas concret al României spre stimulente fiscale similare cu cele din Franța (PEA), UK (ISA) sau Suedia (ISK). Și dacă tot investești, de ce să nu iei bonusul?</p>
+
+<div class="info-box reveal">
+  <p><strong>Pe scurt:</strong> Dacă investești 2.000 RON/an în acțiuni BVB sau ETF-uri prin un broker autorizat ASF, baza ta impozabilă scade cu 2.000 RON, economisind ~200 RON la impozitul pe venit. Nu e mult, dar e gratuit și durează 5 minute.</p>
+</div>
+
+<h2>Cine poate beneficia</h2>
+
+<p>Facilitatea se aplică la <strong>două categorii</strong> de contribuabili:</p>
+
+<ul>
+  <li><strong>Angajați cu CIM</strong> — deducerea se aplică <em>doar la funcția de bază</em>, prin angajator, pe baza documentelor de la broker</li>
+  <li><strong>PFA în sistem real</strong> — sumele investite sunt cheltuieli deductibile limitat la calculul venitului net anual</li>
+</ul>
+
+<p><strong>Nu pot beneficia:</strong> pensionarii, persoanele fără venituri impozabile, cei care investesc prin platforme neautorizate ASF, și — probabil — cei care investesc exclusiv prin brokeri fără sediu permanent în România.</p>
+
+<h2>Ce instrumente sunt eligibile</h2>
+
+<table class="data-table reveal">
+<thead><tr><th>Instrument</th><th>Eligibil?</th><th>Exemplu</th></tr></thead>
+<tbody>
+<tr><td>Acțiuni pe piețe reglementate</td><td class="check">✓ DA</td><td>TLV, SNP, H2O pe BVB; Apple, MSFT pe NYSE</td></tr>
+<tr><td>Obligațiuni pe piețe reglementate</td><td class="check">✓ DA</td><td>Obligațiuni corporative listate la BVB</td></tr>
+<tr><td>ETF-uri tranzacționate la bursă</td><td class="check">✓ DA</td><td>iShares Core MSCI World, Vanguard S&P 500</td></tr>
+<tr><td>Titluri de stat Fidelis</td><td class="check">✓ DA</td><td>Fidelis RON/EUR (deja scutite de impozit)</td></tr>
+<tr><td>Depozite bancare</td><td class="cross">✗ NU</td><td>—</td></tr>
+<tr><td>Fonduri mutuale clasice (deschise)</td><td class="cross">✗ NU</td><td>—</td></tr>
+<tr><td>Criptomonede</td><td class="cross">✗ NU</td><td>BTC, ETH etc.</td></tr>
+<tr><td>CFD-uri</td><td class="cross">✗ NU</td><td>Contracte pe diferență</td></tr>
+</tbody>
+</table>
+
+<h2>Cât economisești — Calculator</h2>
+
+<div class="calc-box reveal">
+  <h3>💰 Calculator deducere fiscală 2026</h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div class="calc-field">
+      <label>Salariu brut lunar (RON)</label>
+      <input type="number" id="calc-salary" value="7000" min="3300" max="100000" step="100"/>
+    </div>
+    <div class="calc-field">
+      <label>Sumă investită lunar (RON)</label>
+      <input type="number" id="calc-invest" value="200" min="0" max="10000" step="50"/>
+    </div>
+  </div>
+  <button class="calc-btn" onclick="calcDeducere()">Calculează economia →</button>
+  <div class="calc-result" id="calc-result" style="display:none">
+    <div class="calc-result-row"><span class="lbl">Sumă investită/an</span><span class="val" id="r-annual">—</span></div>
+    <div class="calc-result-row"><span class="lbl">Sumă deductibilă (max ~2.000 RON)</span><span class="val" id="r-deductible">—</span></div>
+    <div class="calc-result-row"><span class="lbl">Reducere bază impozabilă</span><span class="val" id="r-base">—</span></div>
+    <div class="calc-result-row" style="border-top:1px solid var(--border)">
+      <span class="lbl" style="font-weight:700;color:var(--text)">Economie impozit/an</span>
+      <span class="calc-result-big" id="r-saving">—</span>
+    </div>
+  </div>
+</div>
+
+<h2>Ce brokeri sunt eligibili</h2>
+
+<p>Legea cere ca investițiile să fie realizate prin <strong>intermediari autorizați, conform Codului Fiscal</strong> — practic entități cu sediu sau sucursală în România, autorizate de ASF.</p>
+
+<div class="broker-elig-grid reveal">
+  <div class="broker-elig-card eligible">
+    <div class="broker-elig-name">XTB România</div>
+    <div class="broker-elig-status ok">✓ Eligibil — ASF autorizat</div>
+    <div class="broker-elig-note">Subsidiară românească, autorizată direct de ASF. Furnizează documente justificative pentru deducere.</div>
+  </div>
+  <div class="broker-elig-card eligible">
+    <div class="broker-elig-name">Tradeville</div>
+    <div class="broker-elig-status ok">✓ Eligibil — broker RO</div>
+    <div class="broker-elig-note">Broker românesc autorizat ASF. Cel mai simplu proces de deducere — companie locală.</div>
+  </div>
+  <div class="broker-elig-card eligible">
+    <div class="broker-elig-name">BT Capital Partners</div>
+    <div class="broker-elig-status ok">✓ Eligibil — subsidiară BT</div>
+    <div class="broker-elig-note">Subsidiara de brokeraj a Băncii Transilvania, autorizată ASF.</div>
+  </div>
+  <div class="broker-elig-card uncertain">
+    <div class="broker-elig-name">Interactive Brokers</div>
+    <div class="broker-elig-status warn">⚠ Eligibilitate incertă</div>
+    <div class="broker-elig-note">Nu are sediu permanent în România. Eligibilitatea pentru OUG 8/2026 e discutabilă. Consultați un specialist fiscal.</div>
+  </div>
+  <div class="broker-elig-card uncertain">
+    <div class="broker-elig-name">Trading 212</div>
+    <div class="broker-elig-status warn">⚠ Eligibilitate incertă</div>
+    <div class="broker-elig-note">Operează prin pasaport european, fără sediu permanent în RO. Eligibilitate neclară conform OUG 8/2026.</div>
+  </div>
+  <div class="broker-elig-card uncertain">
+    <div class="broker-elig-name">eToro</div>
+    <div class="broker-elig-status warn">⚠ Eligibilitate incertă</div>
+    <div class="broker-elig-note">Similar Trading 212 — operează din Cipru fără sediu permanent în România.</div>
+  </div>
+</div>
+
+<div class="info-box">
+  <p><strong>Concluzie brokeri:</strong> Dacă vrei deducerea sigur, folosește <a href="xtb-review.html" style="color:var(--accent)">XTB România</a> sau un broker românesc pur (Tradeville, BT Capital). Ei furnizează și documentele justificative necesare angajatorului.</p>
+</div>
+
+<h2>Cum aplici — pas cu pas</h2>
+
+<div class="steps reveal">
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h4>Investești prin broker eligibil</h4>
+      <p>Cumperi acțiuni, obligațiuni sau ETF-uri prin XTB România, Tradeville sau BT Capital. Suma investită lunar trebuie să fie decontată în luna respectivă.</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h4>Obții documentul justificativ de la broker</h4>
+      <p>Brokerul îți emite o confirmare a tranzacției care conține: datele tale de identificare, data decontării, tipul instrumentului, valoarea investită și confirmarea că emitentul e autorizat.</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h4>Trimiți documentul la HR/contabilitate</h4>
+      <p>Angajatorul aplică deducerea la calculul impozitului din luna respectivă. Important: urmăresc plafonul anual cumulat — nu poți depăși ~2.000 RON/an total.</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h4>Impozitul tău pe venit scade automat</h4>
+      <p>Veți vedea diferența în fluturașul de salariu din luna următoare tranzacției. Economia maximă: ~200 RON/an dacă investești cel puțin 2.000 RON/an.</p>
+    </div>
+  </div>
+</div>
+
+<h2>Aspecte importante pe care trebuie să le știi</h2>
+
+<h3>Plafonul se aplică per persoană, nu per broker</h3>
+<p>Dacă ai conturi la mai mulți brokeri, totalul deductibil rămâne 400 EUR/an. Nu poți deduce 400 EUR la XTB și încă 400 EUR la Tradeville — e un plafon global.</p>
+
+<h3>Confidențialitate față de angajator</h3>
+<p>Documentul de la broker arată <em>unde</em> și <em>cât</em> ai investit. HR-ul companiei tale va vedea aceste informații. Pentru unii aceasta e inacceptabil pentru ~200 RON economie. O strategie: investești exact 400 EUR dintr-o singură tranzacție o dată pe an — limitezi informațiile divulgate.</p>
+
+<h3>Schimbarea locului de muncă</h3>
+<p>Dacă îți schimbi angajatorul în cursul anului, noul angajator trebuie să verifice plafonul deja utilizat pe baza documentelor de la angajatorul anterior.</p>
+
+<h3>PFA — declarare prin Declarația Unică</h3>
+<p>PFA-urile în sistem real includ sumele investite ca cheltuieli deductibile limitat în Declarația Unică (D212), cu documentele de la broker ca anexe.</p>
+
+<h2>Merită să te complici?</h2>
+
+<table class="data-table reveal">
+<thead><tr><th>Situație</th><th>Merită?</th><th>De ce</th></tr></thead>
+<tbody>
+<tr><td>Deja investești lunar prin XTB/Tradeville</td><td class="check">✓ DA</td><td>Efort zero — doar trimiți un document la HR o dată pe lună</td></tr>
+<tr><td>Vrei să începi să investești</td><td class="check">✓ DA</td><td>Bonus suplimentar la un obicei financiar bun</td></tr>
+<tr><td>Investești exclusiv prin IBKR/T212</td><td class="gold">⚠ Discutabil</td><td>Eligibilitate incertă + efort de documentare</td></tr>
+<tr><td>Vrei privacy totală față de angajator</td><td class="cross">✗ NU</td><td>~200 RON nu justifică divulgarea portofoliului</td></tr>
+</tbody>
+</table>
+
+<div class="success-box reveal">
+  <p><strong>Concluzia GhidBursa.ro:</strong> Deducerea de 400 EUR nu e un stimulent care îți schimbă viața — economia e ~200 RON/an. Dar dacă folosești deja XTB sau un broker autorizat și nu te deranjează să trimiți un document la HR, e un bonus gratuit. Valoarea reală vine din <em>obiceiul de a investi</em>, nu din deducere în sine.</p>
+</div>
+
+<h2>Întrebări frecvente</h2>
+
+<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:28px">
+  <details style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px">
+    <summary style="font-size:14px;font-weight:700;cursor:pointer;color:var(--text);list-style:none">Pot deduce dividendele primite, nu doar sumele investite?</summary>
+    <p style="margin-top:10px;font-size:13px;color:rgba(232,237,242,.82)">Nu. Deducerea se aplică exclusiv sumelor investite (prețul de achiziție al instrumentelor), nu dividendelor primite. Dividendele sunt supuse impozitului de 8% reținut la sursă, indiferent.</p>
+  </details>
+  <details style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px">
+    <summary style="font-size:14px;font-weight:700;cursor:pointer;color:var(--text);list-style:none">Se cumulează cu deducerea pentru pensie facultativă (Pilonul III)?</summary>
+    <p style="margin-top:10px;font-size:13px;color:rgba(232,237,242,.82)">Da, dar au plafoane separate. Poți deduce până la 400 EUR/an pentru investiții bursiere (OUG 8/2026) și separat până la 400 EUR/an pentru contribuțiile la fondul de pensii facultative. Plafonul total deductibil crește.</p>
+  </details>
+  <details style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px">
+    <summary style="font-size:14px;font-weight:700;cursor:pointer;color:var(--text);list-style:none">Ce se întâmplă dacă vând acțiunile imediat după cumpărare?</summary>
+    <p style="margin-top:10px;font-size:13px;color:rgba(232,237,242,.82)">Legea nu impune o perioadă minimă de deținere pentru a beneficia de deducere. Suma deductibilă e valoarea <em>investită</em> (cumpărată), nu valoarea deținută. Atenție însă: câștigurile din vânzare sunt impozitate separat (3% sub un an, 1% peste un an deținere — conform modificărilor 2026).</p>
+  </details>
+  <details style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px">
+    <summary style="font-size:14px;font-weight:700;cursor:pointer;color:var(--text);list-style:none">Titlurile de stat Fidelis sunt eligibile?</summary>
+    <p style="margin-top:10px;font-size:13px;color:rgba(232,237,242,.82)">Da — obligațiunile de stat (inclusiv Fidelis) sunt instrumente eligibile conform OUG 8/2026. Combinat cu scutirea de impozit pe câștig și dobânzile atractive, Fidelis rămâne una dintre cele mai eficiente investiții fiscal din România.</p>
+  </details>
+</div>
+
+<div style="background:linear-gradient(135deg,rgba(0,212,255,.07),rgba(0,255,148,.04));border:1px solid rgba(0,212,255,.15);border-radius:16px;padding:24px;margin-top:32px;text-align:center">
+  <div style="font-size:20px;margin-bottom:8px">🚀</div>
+  <h3 style="font-size:16px;margin-bottom:8px">Vrei să începi să investești și să beneficiezi de deducere?</h3>
+  <p style="font-size:13px;color:var(--muted);max-width:400px;margin:0 auto 16px">XTB România este autorizat ASF, furnizează documentele pentru deducere și are 0% comision pentru primele 100.000 EUR tranzacționate lunar.</p>
+  <a href="xtb-review.html" class="btn btn-primary" style="margin-right:10px">Review XTB complet →</a>
+  <a href="brokeri.html" class="btn btn-secondary">Compară toți brokerii →</a>
+</div>
+
+</div><!-- /main-col -->
+
+<div>
+  <div class="sidebar-box reveal">
+    <h4>Cuprins</h4>
+    <ul>
+      <li><a href="#" onclick="return false">Ce este deducerea de 400 EUR</a></li>
+      <li><a href="#" onclick="return false">Cine poate beneficia</a></li>
+      <li><a href="#" onclick="return false">Instrumente eligibile</a></li>
+      <li><a href="#" onclick="return false">Calculator economie</a></li>
+      <li><a href="#" onclick="return false">Ce brokeri sunt eligibili</a></li>
+      <li><a href="#" onclick="return false">Cum aplici — pas cu pas</a></li>
+      <li><a href="#" onclick="return false">Merită?</a></li>
+      <li><a href="#" onclick="return false">Întrebări frecvente</a></li>
+    </ul>
+  </div>
+  <div class="related-box reveal">
+    <h4>Ghiduri fiscale corelate</h4>
+    <a href="impozit-actiuni-anaf.html" class="related-link">📋 Impozit pe acțiuni 2026</a>
+    <a href="declaratie-d212-anaf.html" class="related-link">📄 Declarația D212 ANAF</a>
+    <a href="fidelis-2025.html" class="related-link">🏛️ Ghid Fidelis 2026</a>
+    <a href="simulator-investitii.html" class="related-link">📊 Simulator BVB vs alternative</a>
+    <a href="xtb-review.html" class="related-link">⭐ Review XTB România</a>
+  </div>
+</div>
+
+</div><!-- /page-layout -->
+</div><!-- /page -->
+</div><!-- /section-inner -->
+
+<footer>
+<a href="index.html" style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:16px;color:var(--text)">Ghid<span style="color:var(--accent)">Bursa</span>.ro</a>
+<div class="footer-links">
+  <a href="unsubscribe.html">Dezabonare newsletter</a>
+  <a href="brokeri.html">Brokeri</a><a href="ghiduri.html">Ghiduri</a>
+  <a href="screener.html">Screener BVB</a><a href="calculatoare.html">Calculatoare</a>
+  <a href="newsletter.html">Newsletter</a><a href="fear-greed.html">Sentiment BVB</a>
+  <a href="calendar-dividende.html">Dividende</a><a href="glosar.html">Glosar</a>
+  <a href="legal.html#termeni">Termeni</a><a href="legal.html#disclaimer">Disclaimer</a>
+  <a href="despre-noi.html">Contact</a>
+</div>
+<span>© 2026 GhidBursa.ro</span>
+<p class="footer-disclaimer">Investițiile implică riscuri. Conținutul GhidBursa.ro este informativ și nu constituie consultanță financiară autorizată. Informațiile despre facilitatea fiscală OUG 8/2026 sunt orientative — consultați un specialist fiscal pentru situația dvs. specifică.</p>
+</footer>
+
+<script defer src="shared.js"></script>
+<script>
+const MAX_DEDUCTIBLE = 2040; // ~400 EUR in RON
+const TAX_RATE = 0.10;
+
+function calcDeducere() {
+  const salary = parseFloat(document.getElementById('calc-salary').value) || 7000;
+  const monthly = parseFloat(document.getElementById('calc-invest').value) || 200;
+  const annual = monthly * 12;
+  const deductible = Math.min(annual, MAX_DEDUCTIBLE);
+  const saving = Math.round(deductible * TAX_RATE);
+
+  document.getElementById('r-annual').textContent = annual.toLocaleString('ro-RO') + ' RON';
+  document.getElementById('r-deductible').textContent = deductible.toLocaleString('ro-RO') + ' RON' + (annual > MAX_DEDUCTIBLE ? ' (limitat la plafon)' : '');
+  document.getElementById('r-base').textContent = '− ' + deductible.toLocaleString('ro-RO') + ' RON din baza impozabilă';
+  document.getElementById('r-saving').textContent = '~' + saving.toLocaleString('ro-RO') + ' RON/an';
+
+  document.getElementById('calc-result').style.display = 'block';
+}
+
+// Auto-run on load
+calcDeducere();
+</script>
+<script defer src="/cookie-consent.js"></script>
+</body>
+</html>

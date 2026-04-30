@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+
+<html lang="ro">
+<head>
+<link href="favicon.svg" rel="icon" type="image/svg+xml"/>
+<link href="favicon.svg" rel="shortcut icon"/>
+<meta charset="utf-8"/>
+<style data-critical="true">
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+ --black: #080B0F;
+ --dark: #0D1117;
+ --card: #111820;
+ --card2: #141E28;
+ --border: #1E2A38;
+ --accent: #00D4FF;
+ --accent2: #00FF94;
+ --gold: #FFB800;
+ --red: #FF4D6D;
+ --text: #E8EDF2;
+ --muted: #6B7A8D;
+ --font-display: 'Plus Jakarta Sans', sans-serif;
+ --font-body: 'DM Sans', sans-serif;
+ --nav-h: 56px;
+ --ticker-h: 76px;
+ --offset: 132px; 
+}
+@media (min-width: 768px) {
+ :root {
+ --nav-h: 72px;
+ --offset: 148px;
+ }
+}
+html { scroll-behavior: smooth; font-size: 15px; }
+body {
+ background: var(--black);
+ color: var(--text);
+ font-family: var(--font-body);
+ line-height: 1.6;
+ overflow-x: hidden;
+ -webkit-font-smoothing: antialiased;
+ width: 100%;
+ max-width: 100vw;
+}
+body::before {
+ content: '';
+ position: fixed; inset: 0;
+ background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+ pointer-events: none; z-index: 0; opacity: 0.5;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+img { max-width: 100%; height: auto; display: block; }
+h1, h2, h3, h4 {
+ font-family: var(--font-display);
+ -webkit-font-smoothing: antialiased;
+ letter-spacing: -0.01em;
+ line-height: 1.18;
+}
+h1 { font-size: clamp(18px, 2vw, 28px); font-weight: 700; }
+h2 { font-size: clamp(18px, 2.5vw, 28px); font-weight: 700; }
+h3 { font-size: clamp(15px, 2vw, 20px); font-weight: 600; }
+h4 { font-size: 14px; font-weight: 700; }
+p { color: rgba(232,237,242,.82); line-height: 1.75; font-size: 15px; }
+nav {
+ position: fixed; top: 0; left: 0; right: 0;
+ z-index: 200;
+ height: var(--nav-h);
+ display: flex; align-items: center; justify-content: space-between;
+ padding: 0 20px;
+ background: rgba(8,11,15,0.92);
+ backdrop-filter: blur(24px);
+ border-bottom: 1px solid var(--border);
+}
+@media (min-width: 768px) { nav { padding: 0 48px; } }
+@media (min-width: 1280px) { nav { padding: 0 64px; } }
+.nav-logo {
+ font-family: var(--font-display);
+ font-size: 18px; font-weight: 800; letter-spacing: -0.02em;
+ color: var(--text); text-decoration: none;
+ display: flex; align-items: center; gap: 8px;
+ flex-shrink: 0;
+}
+@media (min-width: 768px) { .nav-logo { font-size: 22px; } }
+.nav-logo span { color: var(--accent); }
+.nav-logo:hover { text-decoration: none; }
+.nav-dot {
+ width: 8px; height: 8px;
+ background: var(--accent2); border-radius: 50%;
+ animation: pulse 2s ease-in-out infinite; flex-shrink: 0;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+.nav-links {
+ display: none;
+ align-items: center; gap: 28px; list-style: none;
+}
+@media (min-width: 768px) { .nav-links { display: flex; } }
+.nav-links a { color: var(--muted); font-size: 14px; font-weight: 500; transition: color .2s; text-decoration: none; }
+.nav-links a:hover { color: var(--text); }
+.nav-cta {
+ background: var(--accent) !important;
+ color: var(--black) !important;
+ padding: 9px 18px; border-radius: 6px;
+ font-weight: 700 !important; font-size: 13px !important;
+}
+.nav-cta:hover { opacity: .85; }
+.hamburger {
+ display: flex; flex-direction: column; gap: 5px;
+ background: none; border: none; cursor: pointer; padding: 6px;
+}
+@media (min-width: 768px) { .hamburger { display: none; } }
+.hamburger span {
+ display: block; width: 22px; height: 2px;
+ background: var(--text); border-radius: 2px;
+ transition: all .3s;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.mobile-nav {
+ display: none; position: fixed;
+ top: var(--nav-h); left: 0; right: 0;
+ background: rgba(8,11,15,.98);
+ border-bottom: 1px solid var(--border);
+ z-index: 199; flex-direction: column;
+ padding: 8px 0 16px;
+ transform: translateY(-10px); opacity: 0;
+ transition: transform .25s, opacity .25s;
+}
+.mobile-nav.open {
+ display: flex; transform: translateY(0); opacity: 1;
+}
+.mobile-nav a {
+ display: block; padding: 14px 24px;
+ color: var(--text); font-size: 15px; font-weight: 500;
+ border-bottom: 1px solid rgba(30,42,56,.5);
+ text-decoration: none; transition: background .15s;
+}
+.mobile-nav a:last-child { border-bottom: none; }
+.mobile-nav a:hover { background: rgba(0,212,255,.05); }
+.mobile-nav .mobile-cta {
+ margin: 12px 24px 0;
+ background: var(--accent); color: var(--black) !important;
+ border-radius: 8px; text-align: center; font-weight: 700 !important;
+ border-bottom: none !important;
+}
+.ticker-bar {
+ position: sticky;
+ top: var(--nav-h);
+ z-index: 150;
+ height: var(--ticker-h);
+ background: rgba(8,11,15,.98);
+ border-bottom: 1px solid var(--border);
+ overflow: hidden;
+}
+.ticker-bar .tradingview-widget-container,
+.ticker-bar .tradingview-widget-container__widget { height: 100% !important; }
+.section-inner { max-width: 1280px; margin: 0 auto; padding: 0 20px; }
+.reveal,.reveal-left,.reveal-right,.reveal-scale{
+ opacity:0;
+ transition:opacity .65s cubic-bezier(.4,0,.2,1),transform .65s cubic-bezier(.4,0,.2,1);
+ will-change:opacity,transform;
+}
+.reveal{transform:translateY(28px)}
+.reveal-left{transform:translateX(-28px)}
+.reveal-right{transform:translateX(28px)}
+.reveal-scale{transform:scale(.96)}
+.reveal.visible,.reveal-left.visible,.reveal-right.visible,.reveal-scale.visible{
+ opacity:1;transform:none;
+}
+@keyframes forceVisible { to { opacity: 1; tran
+.btn {
+ display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+ font-family: var(--font-display); font-weight: 700;
+ border-radius: 8px; cursor: pointer;
+ text-decoration: none; transition: opacity .2s, transform .15s;
+ white-space: nowrap;
+}
+.btn:hover { opacity: .85; transform: translateY(-1px); text-decoration: none; }
+.btn:active { transform: translateY(0); }
+.btn-primary { background: var(--accent); color: var(--black); padding: 13px 24px; font-size: 14px; }
+.btn-secondary { background: rgba(0,212,255,.1); border: 1px solid rgba(0,212,255,.25); color: var(--accent); padding: 12px 22px; font-size: 14px; }
+.btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 11px 20px; font-size: 13px; }
+.btn-ghost:hover { border-color: var(--text); color: var(--text); }
+.btn-green { background: rgba(0,255,148,.1); border: 1px solid rgba(0,255,148,.25); color: var(--accent2); padding: 12px 22px; font-size: 14px; }
+.btn-full { width: 100%; }
+.btn-sm { padding: 8px 14px; font-size: 12px; }
+.btn-lg { padding: 16px 32px; font-size: 16px; }
+</style>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>H2O — Hidroelectrica: Preț Live BVB, Dividende, Analiză 2026 | GhidBursa.ro</title>
+<meta name="description" content="Acțiunea H2O — Hidroelectrica: preț live BVB, P/E, dividend yield și analiză fundamentală 2026. Date actualizate zilnic pentru investitori."/>
+
+<style>
+.nav-pill{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:7px 14px;font-size:13px}
+.nav-pill-ticker{font-family:var(--font-display);font-weight:700;font-size:14px}
+.nav-pill-price{font-weight:700}
+.nav-pill-change{font-size:12px;font-weight:600}
+.nav-pill-change.up{color:var(--accent2)}.nav-pill-change.down{color:var(--red)}.nav-pill-change.flat{color:var(--muted)}
+.nav-pill-dot{width:6px;height:6px;border-radius:50%;background:var(--muted)}
+.nav-pill-dot.live{background:var(--accent2);animation:pulse 1.5s ease-in-out infinite}
+
+.page{max-width:1180px;margin:0 auto;padding:calc(var(--nav-h) + 20px) 32px 80px}@media (min-width:768px){.page{padding:calc(var(--nav-h) + 24px) 40px 80px}}
+.co-header{display:grid;grid-template-columns:1fr;gap:16px;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border);align-items:start}@media(min-width:768px){.co-header{grid-template-columns:1fr auto;gap:24px;margin-bottom:24px;padding-bottom:24px}}
+
+.breadcrumb a:hover{color:var(--accent)}
+.co-top{display:flex;align-items:center;gap:14px;margin-bottom:10px}
+.co-logo{width:50px;height:50px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:14px;color:white;flex-shrink:0}
+.co-name{font-family:var(--font-display);font-size:28px;font-weight:700;letter-spacing:-.01em;line-height:1}
+.co-fullname{font-size:13px;color:var(--muted);margin-top:3px}
+.co-tags{display:flex;gap:7px;flex-wrap:wrap}
+.tag{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:4px;border:1px solid transparent}
+
+/* PRICE HERO — right side of header */
+.price-hero{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:14px;width:100%}@media(min-width:768px){.price-hero{padding:20px 24px}}
+.ph-top{display:flex;align-items:center;justify-content:space-between}
+.ph-ticker{font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--accent)}
+.ph-live{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)}
+.ph-dot{width:6px;height:6px;border-radius:50%;background:var(--muted);flex-shrink:0;transition:background .4s}
+.ph-dot.live{background:var(--accent2);animation:pulse 1.5s ease-in-out infinite}
+.ph-price-row{display:flex;align-items:baseline;gap:10px}
+.ph-price{font-family:var(--font-display);font-size:38px;font-weight:700;letter-spacing:-.01em;line-height:1}
+.ph-currency{font-size:14px;color:var(--muted);font-weight:500}
+.ph-change{font-size:14px;font-weight:700;padding:3px 8px;border-radius:5px}
+.ph-change.up{color:var(--accent2);background:rgba(0,255,148,.08)}
+.ph-change.down{color:var(--red);background:rgba(255,77,109,.08)}
+.ph-change.flat{color:var(--muted);background:rgba(107,122,141,.08)}
+.ph-divider{height:1px;background:var(--border)}
+.ph-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.ph-metric{}
+.ph-metric-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.ph-metric-val{font-family:var(--font-display);font-size:18px;font-weight:700;-webkit-font-smoothing:antialiased}
+.ph-metric-val.g{color:var(--accent2)}.ph-metric-val.go{color:var(--gold)}
+
+/* TABS */
+.tabs{display:flex;gap:3px;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:10px;padding:4px;width:fit-content;margin-bottom:20px}
+.tab-btn{padding:9px 18px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border-radius:7px;border:none;background:transparent;font-family:var(--font-body);transition:all .2s;white-space:nowrap}
+.tab-btn.active{background:var(--border);color:var(--text)}
+.tab-content{display:none}.tab-content.active{display:block}
+
+/* MAIN LAYOUT */
+.main-layout{display:grid;grid-template-columns:1fr 300px;gap:18px}@media (max-width:900px){.main-layout{grid-template-columns:1fr}}
+
+/* CHART PANELS */
+.chart-panel{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:14px}
+.panel-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px}
+.panel-title{font-family:var(--font-display);font-size:14px;font-weight:700}
+.period-btns{display:flex;gap:3px}
+.pbtn{font-size:12px;font-weight:600;padding:5px 10px;border-radius:5px;border:none;background:transparent;color:var(--muted);cursor:pointer;font-family:var(--font-body);transition:all .2s}
+.pbtn.active{background:var(--border);color:var(--text)}
+
+/* SIDEBAR */
+.sidebar{display:flex;flex-direction:column;gap:14px}
+.s-card{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:18px}
+.s-card h3{font-family:var(--font-display);font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+.m-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px}
+.m-row:last-child{border-bottom:none;padding-bottom:0}
+.m-label{color:var(--muted)}.m-val{font-weight:700;text-align:right;font-size:13px}
+.m-val.g{color:var(--accent2)}.m-val.go{color:var(--gold)}.m-val.r{color:var(--red)}
+.m-val.sm{font-size:11px;max-width:160px;line-height:1.4}
+.cta-card{background:linear-gradient(135deg,rgba(0,212,255,.06),rgba(0,255,148,.04));border:1px solid rgba(0,212,255,.18);border-radius:13px;padding:18px}
+.cta-card h3{font-family:var(--font-display);font-size:14px;font-weight:700;margin-bottom:6px}
+.cta-card p{font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.5}
+.btn-main{display:block;background:var(--accent);color:var(--black);font-family:var(--font-display);font-weight:700;font-size:13px;padding:12px;border-radius:7px;text-decoration:none;text-align:center;transition:opacity .2s;margin-bottom:8px}
+.btn-main:hover{opacity:.85}
+.btn-alt{display:block;background:rgba(0,255,148,.08);border:1px solid rgba(0,255,148,.2);color:var(--accent2);font-family:var(--font-display);font-weight:700;font-size:12px;padding:10px;border-radius:7px;text-decoration:none;text-align:center;transition:background .2s}
+.btn-alt:hover{background:rgba(0,255,148,.16)}
+.disc{font-size:10px;color:var(--muted);margin-top:8px;line-height:1.5;opacity:.6}
+.about-text{font-size:13px;color:rgba(232,237,242,.8);line-height:1.7}
+.about-text a{color:var(--accent);text-decoration:none}
+.about-text a:hover{text-decoration:underline}
+
+/* SIMILAR */
+.similar-wrap{margin-top:16px}
+.similar-wrap h3{font-family:var(--font-display);font-size:16px;font-weight:700;margin-bottom:12px}
+.similar-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}@media(min-width:640px){.similar-grid{grid-template-columns:repeat(4,1fr);gap:10px}}
+.sim-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;text-decoration:none;color:inherit;transition:border-color .2s,transform .15s;display:block}
+.sim-card:hover{border-color:rgba(0,212,255,.3);transform:translateY(-2px)}
+.sim-t{font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--accent);margin-bottom:3px}
+.sim-n{font-size:11px;color:var(--muted);margin-bottom:8px}
+.sim-cap{font-size:12px;color:rgba(232,237,242,.6);margin-bottom:3px}
+.sim-div{font-size:12px;color:var(--accent2);font-weight:600}
+.risk-box{background:rgba(255,184,0,.04);border:1px solid rgba(255,184,0,.12);border-radius:8px;padding:13px 16px;margin-top:14px;font-size:12px;color:var(--muted);line-height:1.6}
+.risk-box a{color:var(--accent);text-decoration:none}
+
+footer a:hover{color:var(--accent)}
+
+ .live-updated {
+  animation: liveFlash 0.6s ease;
+ }
+ @keyframes liveFlash {
+  0% { background: rgba(0,255,148,0.2); }
+  100% { background: transparent; }
+ }
+@keyframes spin{to{transform:rotate(360deg)}}
+.div-hist-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:14px}
+.div-hist-table th{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding:6px 10px;text-align:left;border-bottom:1px solid var(--border)}
+.div-hist-table td{padding:9px 10px;border-bottom:1px solid rgba(30,42,56,.6);vertical-align:middle}
+.div-hist-table tr:last-child td{border-bottom:none}
+.div-hist-table tr:hover td{background:rgba(255,255,255,.02)}
+.dh-yield{font-weight:700;color:var(--accent2)}
+.dh-dps{font-weight:700;color:var(--text)}
+.dh-bar{display:inline-block;height:5px;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;vertical-align:middle;margin-left:8px;opacity:.7}
+.dh-note{font-size:11px;color:var(--muted);margin-top:10px;line-height:1.5}
+</style>
+<link href="shared.css?v=12" rel="stylesheet"/>
+<link href="mobile.css?v=12" rel="stylesheet"/>
+<link href="https://www.ghidbursa.ro/actiune-h2o.html" rel="canonical"/>
+<meta content="website" property="og:type"/>
+<meta content="H2O — Hidroelectrica: Preț Live BVB, Dividende, Analiză 2026 | GhidBursa.ro" property="og:title"/>
+<meta content="Analiză completă Hidroelectrica (H2O) 2026. Preț live BVB, istoric dividende, P/E ~11.2x, capitalizare ~62 mld RON. Grafic TradingView și indicatori cheie pentr" property="og:description"/>
+<meta content="https://www.ghidbursa.ro/actiune-h2o.html" property="og:url"/>
+<meta content="GhidBursa.ro" property="og:site_name"/>
+<meta content="summary" name="twitter:card"/>
+<meta content="H2O — Hidroelectrica: Preț Live BVB, Dividende, Analiză 2026 | GhidBursa.ro" name="twitter:title"/>
+<meta content="Analiză completă Hidroelectrica (H2O) 2026. Preț live BVB, istoric dividende, P/E ~11.2x, capitalizare ~62 mld RON. Grafic TradingView și indicatori cheie pentr" name="twitter:description"/>
+<meta property="og:image" content="https://www.ghidbursa.ro/og-image.png"/>
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta property="og:locale" content="ro_RO"/>
+  <meta property="og:site_name" content="GhidBursa.ro"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="@GhidBursa"/>
+  <meta name="twitter:image" content="https://www.ghidbursa.ro/og-image.png"/>
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"/>
+  <meta name="author" content="GhidBursa.ro"/>
+  <meta http-equiv="content-language" content="ro"/>
+  <meta name="theme-color" content="#080B0F"/>
+  <link rel="dns-prefetch" href="//s3.tradingview.com"/>
+    <style>
+.similare-list{display:flex;flex-direction:column;gap:4px}
+.similare-link{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;background:rgba(255,255,255,.02);border:1px solid var(--border);text-decoration:none;transition:border-color .2s,background .2s}
+.similare-link:hover{border-color:rgba(0,212,255,.3);background:rgba(0,212,255,.04);text-decoration:none}
+.similare-ticker{font-family:var(--font-display);font-size:13px;font-weight:700;color:var(--accent);min-width:40px}
+.similare-name{font-size:12px;color:var(--muted)}
+</style>
+<link rel="stylesheet" href="/fonts/fonts.css"/>
+<link rel="preload" href="/fonts/plus-jakarta-sans-700.woff2" as="font" type="font/woff2" crossorigin="anonymous" fetchpriority="high"/>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Corporation", "@id": "https://www.ghidbursa.ro/actiune-h2o.html#company", "name": "Hidroelectrica S.A.", "alternateName": ["H2O", "Hidroelectrica"], "tickerSymbol": "H2O", "description": "Hidroelectrica este cel mai mare producător de energie electrică din surse regenerabile din România, listat la BVB din iulie 2023. Face parte din indicele BET.", "foundingDate": "1998", "url": "https://www.hidroelectrica.ro", "sameAs": ["https://www.wikidata.org/wiki/Q1614443", "https://www.hidroelectrica.ro", "https://ro.wikipedia.org/wiki/Hidroelectrica"], "address": {"@type": "PostalAddress", "addressLocality": "București", "addressCountry": "RO"}, "numberOfEmployees": {"@type": "QuantitativeValue", "value": 5000}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FinancialProduct", "@id": "https://www.ghidbursa.ro/actiune-h2o.html#stock", "name": "Acțiune Hidroelectrica (H2O) – BVB", "description": "Hidroelectrica este cel mai mare producător de energie electrică din surse regenerabile din România, listat la BVB din iulie 2023. Face parte din indicele BET.", "url": "https://www.ghidbursa.ro/actiune-h2o.html", "dateModified": "2026-03-19", "provider": {"@type": "Organization", "name": "GhidBursa.ro", "url": "https://www.ghidbursa.ro"}, "category": "Acțiune ordinară", "additionalProperty": [{"@type": "PropertyValue", "name": "Simbol BVB", "value": "H2O"}, {"@type": "PropertyValue", "name": "Indice", "value": "BET, BET-TR, BET-NG"}, {"@type": "PropertyValue", "name": "Sector", "value": "Utilități – Energie hidro"}, {"@type": "PropertyValue", "name": "ISIN", "value": "ROH2OACNOR5"}, {"@type": "PropertyValue", "name": "Monedă tranzacționare", "value": "RON"}], "isRelatedTo": {"@id": "https://www.ghidbursa.ro/actiune-h2o.html#company"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Dataset", "@id": "https://www.ghidbursa.ro/actiune-h2o.html#dividende", "name": "Istoric dividende Hidroelectrica (H2O) 2020–2026", "description": "Tabel cu dividendele istorice plătite de Hidroelectrica (H2O) la BVB, inclusiv valoarea dividend pe acțiune, randamentul și data ex-dividend.", "url": "https://www.ghidbursa.ro/actiune-h2o.html", "dateModified": "2026-03-19", "creator": {"@type": "Organization", "name": "GhidBursa.ro", "url": "https://www.ghidbursa.ro"}, "temporalCoverage": "2020/2026", "spatialCoverage": {"@type": "Place", "name": "România"}, "about": {"@id": "https://www.ghidbursa.ro/actiune-h2o.html#company"}, "inLanguage": "ro", "license": "https://creativecommons.org/licenses/by/4.0/", "keywords": ["H2O dividende", "Hidroelectrica dividend BVB", "dividend yield Romania BVB"], "isAccessibleForFree": true}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebPage", "@id": "https://www.ghidbursa.ro/actiune-h2o.html", "name": "H2O – Hidroelectrica: Preț Live BVB, Dividende, Analiză 2026", "url": "https://www.ghidbursa.ro/actiune-h2o.html", "inLanguage": "ro", "dateModified": "2026-03-19", "about": {"@id": "https://www.ghidbursa.ro/actiune-h2o.html#company"}, "speakable": {"@type": "SpeakableSpecification", "cssSelector": ["h1", ".price-hero-box", ".m-row", ".ph-metric"]}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Acasă", "item": "https://www.ghidbursa.ro"}, {"@type": "ListItem", "position": 2, "name": "Acțiuni BVB", "item": "https://www.ghidbursa.ro/screener.html"}, {"@type": "ListItem", "position": 3, "name": "Hidroelectrica (H2O)", "item": "https://www.ghidbursa.ro/actiune-h2o.html"}]}</script>
+<link rel="stylesheet" href="/cookie-consent.css"/>
+</head>
+<body class="no-ticker">
+<nav>
+<a class="nav-logo" href="index.html"><div class="nav-dot"></div>Ghid<span>Bursa</span>.ro</a>
+<ul class="nav-links">
+<li><a href="brokeri.html">Brokeri</a></li>
+<li><a href="ghiduri.html">Ghiduri</a></li>
+<li><a href="screener.html">Screener BVB</a></li>
+<li><a href="calculatoare.html">Calculatoare</a></li>
+<li><a href="newsletter.html">Newsletter</a></li>
+<li><a class="nav-cta" href="brokeri.html">Compară brokeri →</a></li>
+</ul>
+<button aria-label="Meniu" class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
+</nav>
+<div class="mobile-nav" id="mobileNav">
+<a href="index.html">Acasă</a>
+<a href="brokeri.html">Brokeri</a>
+<a href="ghiduri.html">Ghiduri</a>
+<a href="screener.html">Screener BVB</a>
+<a href="calculatoare.html">Calculatoare</a>
+<a href="newsletter.html">Newsletter</a>
+<a href="fear-greed.html">Sentiment BVB</a>
+<a href="fidelis-2025.html">Fidelis 2026</a>
+<a href="glosar.html">Glosar</a>
+<a href="despre-noi.html">Contact</a>
+<a class="mobile-cta" href="brokeri.html">Compară brokeri →</a>
+</div>
+<div class="page">
+<!-- COMPANY HEADER -->
+<div class="co-header">
+<div>
+<div class="breadcrumb">
+<a href="index.html">Acasă</a> ›
+    <a href="screener.html">Acțiuni BVB</a> ›
+    H2O — Hidroelectrica
+   </div>
+<div class="co-top">
+<div class="co-logo" style="background:transparent;padding:0;overflow:hidden;display:flex;align-items:center;justify-content:center"><img alt="H2O" data-fb-color="#023E8A" data-fb-size="50" data-fb-ticker="H2O" data-src-png="https://s3-symbol-logo.tradingview.com/speeh-hidroelectrica-sa--600.png" data-src-svg="https://s3-symbol-logo.tradingview.com/hidroelectrica--big.svg" height="50" loading="lazy" onerror="this.onerror=null;this.style.display='none';var d=document.createElement('div');d.style='width:50px;height:50px;border-radius:11px;background:#023E8A;display:inline-flex;align-items:center;justify-content:center;font-family:Plus Jakarta Sans,sans-serif;font-weight:700;font-size:14px;color:white;flex-shrink:0';d.textContent='H2O';this.parentNode.insertBefore(d,this);" src="https://s3-symbol-logo.tradingview.com/speeh-hidroelectrica-sa--600.png" style="border-radius:11px;object-fit:contain;background:rgba(255,255,255,.07);flex-shrink:0;" width="50"/></div>
+<div>
+<h1 class="co-name">Hidroelectrica (H2O)</h1>
+<div class="co-fullname">Societatea Națională Hidroelectrica S.A.</div>
+<div class="co-tagline" style="font-size:13px;color:var(--muted);margin-top:6px;line-height:1.5;max-width:420px">Cea mai mare companie de pe BVB. Energie verde cu costuri reduse.</div>
+</div>
+</div>
+<div class="co-tags" style="margin-top:10px">
+<span class="tag" style="background:rgba(255,184,0,.08);border-color:rgba(255,184,0,.2);color:var(--gold)">Energie — Hidro</span>
+<span class="tag" style="background:rgba(0,212,255,.08);border-color:rgba(0,212,255,.2);color:var(--accent)">BVB Main Market</span>
+<span class="tag" style="background:rgba(0,255,148,.08);border-color:rgba(0,255,148,.2);color:var(--accent2)">Indice BET ✓</span>
+<span class="tag" style="background:rgba(107,122,141,.08);border-color:rgba(107,122,141,.2);color:var(--muted)">Pondere BET ~18%</span>
+</div>
+</div>
+<!-- PRICE HERO: uses TradingView Single Quote widget for live price -->
+<div class="price-hero reveal">
+<div class="ph-top">
+<span class="ph-ticker">H2O</span>
+<div class="ph-live">
+<div class="ph-dot" id="phDot"></div>
+<span id="phLabel">Se încarcă...</span>
+</div>
+</div>
+<!-- Live price populated by Yahoo Finance JS -->
+<!-- TradingView Single Quote Widget — shows live price natively -->
+<div style="margin:-6px 0">
+<div class="tradingview-widget-container tv-lazy" style="height:80px;width:100%">
+<div class="tradingview-widget-container__widget" style="height:100%;width:100%"></div>
+<script async="" src="https://s3.tradingview.com/external-embedding/embed-widget-single-quote.js" type="text/javascript">
+ {"symbol":"BVB:H2O","width":"100%","locale":"ro","colorTheme":"dark","isTransparent":true}
+ </script>
+</div>
+</div>
+<div class="ph-divider"></div>
+<div class="ph-metrics">
+<div class="ph-metric">
+<div class="ph-metric-label">Dividend <span id="divLiveTag" style="font-size:9px;color:var(--accent2)"></span></div>
+<div class="ph-metric-val g" id="metricDivHero">~4.9%</div>
+</div>
+<div class="ph-metric">
+<div class="ph-metric-label">P/E <span id="peLiveTag" style="font-size:9px;color:var(--accent2)"></span></div>
+<div class="ph-metric-val go" id="metricPEHero">~11.2x</div>
+</div>
+<div class="ph-metric">
+<div class="ph-metric-label">Capitalizare</div>
+<div class="ph-metric-val" style="font-size:15px">~62 mld</div>
+</div>
+</div>
+</div>
+</div>
+<!-- TABS -->
+<div class="tabs">
+<button class="tab-btn active" onclick="switchTab('grafic',this)">Grafic Live</button>
+<button class="tab-btn" onclick="switchTab('tehnic',this)">Analiză Tehnică</button>
+<button class="tab-btn" onclick="switchTab('fundamentale',this)">Fundamentale</button>
+<button class="tab-btn" onclick="switchTab('despre',this)">Profil</button>
+</div>
+<!-- ═══ TAB: GRAFIC ═══ -->
+<div class="tab-content active reveal" id="tab-grafic">
+<div class="main-layout reveal">
+<div>
+<div class="chart-panel reveal">
+<div class="panel-header" style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px 10px"><div class="panel-title">Grafic avansat H2O — BVB (date live)</div><span class="live-badge"><span class="live-dot"></span> Live</span></div>
+<div id="tvChartWrap" style="height:520px;width:100%">
+<div class="tradingview-widget-container tv-lazy" style="height:100%;width:100%">
+<div class="tradingview-widget-container__widget" style="height:calc(100% - 30px);width:100%"></div>
+<div class="tradingview-widget-copyright" style="font-size:11px;padding:5px 0;color:var(--muted)">
+<a href="https://www.tradingview.com/symbols/BVB-H2O/" rel="noopener nofollow" style="color:var(--accent);text-decoration:none" target="_blank">H2O chart</a> by TradingView
+ </div>
+<script async="" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" type="text/javascript">
+ {"symbol":"BVB:H2O","interval":"D","timezone":"Europe/Bucharest","theme":"dark","style":"1","locale":"ro","backgroundColor":"#111820","gridColor":"rgba(30,42,56,0.9)","allow_symbol_change":false,"calendar":false,"hide_side_toolbar":true,"hide_top_toolbar":false,"hide_legend":false,"hide_volume":false,"save_image":false,"autosize":true}
+ </script>
+</div>
+</div>
+</div>
+<div class="risk-box reveal">
+     Graficele sunt furnizate de TradingView. Datele de preț sunt în timp real sau cu delay de 15 minute. Investițiile implică riscuri. Nu constituie recomandare de investiție. Verificați datele oficiale pe <a href="https://iris.bvb.ro" target="_blank">iris.bvb.ro</a>.
+    </div>
+<div class="similar-wrap reveal"><h3>Companii similare pe BVB</h3><div class="similar-grid"><a class="sim-card" href="actiune-snp.html"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><img alt="SNP" data-fb-color="#E8593C" data-fb-size="28" data-fb-ticker="SNP" data-src-png="https://s3-symbol-logo.tradingview.com/omv-petrom-sa-reg-s--600.png" data-src-svg="https://s3-symbol-logo.tradingview.com/omv-petrom--big.svg" height="28" loading="lazy" src="https://s3-symbol-logo.tradingview.com/omv-petrom-sa-reg-s--600.png" style="border-radius:6px;object-fit:contain;background:rgba(255,255,255,.07);flex-shrink:0" width="28"/><div class="sim-t" style="margin-bottom:0">SNP</div></div><div class="sim-n">OMV Petrom</div><div class="sim-cap" data-live="cap">—</div><div class="sim-div" data-live="div">—</div></a><a class="sim-card" href="actiune-sng.html"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><img alt="SNG" data-fb-color="#FF8C00" data-fb-size="28" data-fb-ticker="SNG" data-src-png="https://s3-symbol-logo.tradingview.com/societatea-national-gdr-regs--600.png" data-src-svg="https://s3-symbol-logo.tradingview.com/romgaz--big.svg" height="28" loading="lazy" onerror="this.onerror=null;this.style.display='none';var d=document.createElement('div');d.style='width:28px;height:28px;border-radius:6px;background:#FF8C00;display:inline-flex;align-items:center;justify-content:center;font-family:Plus Jakarta Sans,sans-serif;font-weight:700;font-size:8px;color:white;flex-shrink:0';d.textContent='SNG';this.parentNode.insertBefore(d,this);" src="https://s3-symbol-logo.tradingview.com/societatea-national-gdr-regs--600.png" style="border-radius:6px;object-fit:contain;background:rgba(255,255,255,.07);flex-shrink:0" width="28"/><div class="sim-t" style="margin-bottom:0">SNG</div></div><div class="sim-n">Romgaz</div><div class="sim-cap" data-live="cap">—</div><div class="sim-div" data-live="div">—</div></a><a class="sim-card" href="actiune-tel.html"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><img alt="TEL" data-fb-color="#002060" data-fb-size="28" data-fb-ticker="TEL" data-src-png="https://s3-symbol-logo.tradingview.com/cntee-transelectrica-bucuresti--600.png" data-src-svg="https://s3-symbol-logo.tradingview.com/transelectrica--big.svg" height="28" loading="lazy" onerror="this.onerror=null;this.style.display='none';var d=document.createElement('div');d.style='width:28px;height:28px;border-radius:6px;background:#002060;display:inline-flex;align-items:center;justify-content:center;font-family:Plus Jakarta Sans,sans-serif;font-weight:700;font-size:8px;color:white;flex-shrink:0';d.textContent='TEL';this.parentNode.insertBefore(d,this);" src="https://s3-symbol-logo.tradingview.com/cntee-transelectrica-bucuresti--600.png" style="border-radius:6px;object-fit:contain;background:rgba(255,255,255,.07);flex-shrink:0" width="28"/><div class="sim-t" style="margin-bottom:0">TEL</div></div><div class="sim-n">Transelectrica</div><div class="sim-cap" data-live="cap">—</div><div class="sim-div" data-live="div">—</div></a><a class="sim-card" href="actiune-el.html"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><img alt="EL" data-fb-color="#002060" data-fb-size="28" data-fb-ticker="EL" data-src-png="https://s3-symbol-logo.tradingview.com/electrica-sa-gdr-reg-s--600.png" data-src-svg="https://s3-symbol-logo.tradingview.com/electrica--big.svg" height="28" loading="lazy" onerror="this.onerror=null;this.style.display='none';var d=document.createElement('div');d.style='width:28px;height:28px;border-radius:6px;background:#002060;display:inline-flex;align-items:center;justify-content:center;font-family:Plus Jakarta Sans,sans-serif;font-weight:700;font-size:8px;color:white;flex-shrink:0';d.textContent='EL';this.parentNode.insertBefore(d,this);" src="https://s3-symbol-logo.tradingview.com/electrica-sa-gdr-reg-s--600.png" style="border-radius:6px;object-fit:contain;background:rgba(255,255,255,.07);flex-shrink:0" width="28"/><div class="sim-t" style="margin-bottom:0">EL</div></div><div class="sim-n">Electrica</div><div class="sim-cap" data-live="cap">—</div><div class="sim-div" data-live="div">—</div></a></div></div>
+</div>
+<!-- SIDEBAR -->
+<div class="sidebar">
+<div class="s-card similare-widget" id="similare-widget">
+<h3>Companii similare</h3>
+<div class="similare-list">
+<a href="actiune-snp.html" class="similare-link"><span class="similare-ticker">SNP</span><span class="similare-name">OMV Petrom</span></a>
+<a href="actiune-sng.html" class="similare-link"><span class="similare-ticker">SNG</span><span class="similare-name">Romgaz</span></a>
+<a href="actiune-tgn.html" class="similare-link"><span class="similare-ticker">TGN</span><span class="similare-name">Transgaz</span></a>
+<a href="actiune-el.html" class="similare-link"><span class="similare-ticker">EL</span><span class="similare-name">Electrica</span></a>
+</div>
+</div>
+<div class="s-card reveal">
+<h3>Indicatori cheie</h3>
+<div class="m-row"><span class="m-label">P/E (Preț/Profit)</span><span class="m-val go">~11.2x</span></div>
+<div class="m-row"><span class="m-label">Dividend yield est.</span><span class="m-val g">~4.9%</span></div>
+<div class="m-row"><span class="m-label">Dividend/acțiune est.</span><span class="m-val">~2.80 RON</span></div>
+<div class="m-row"><span class="m-label">Capitalizare bursieră</span><span class="m-val">~62 mld RON</span></div>
+<div class="m-row"><span class="m-label">Free float</span><span class="m-val">~20%</span></div>
+<div class="m-row"><span class="m-label">Pondere BET</span><span class="m-val">~18%</span></div>
+<div class="m-row"><span class="m-label">Angajați</span><span class="m-val">~4.000</span></div>
+<div class="m-row"><span class="m-label">Fondată</span><span class="m-val">1997</span></div>
+<div class="m-row"><span class="m-label">Acționariat</span><span class="m-val sm">Statul Român (80%), fonduri internaționale</span></div>
+<div class="m-row"><span class="m-label">ISIN / Simbol</span><span class="m-val">H2O / BVB</span></div>
+</div>
+<div class="cta-card"><div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><img alt="XTB" loading="lazy" src="https://s3-symbol-logo.tradingview.com/xtb--600.png" style="height:28px;width:28px;object-fit:contain;border-radius:6px;background:transparent;flex-shrink:0"/><h3>Cumpără H2O</h3></div>
+
+<p>XTB — comision 0% pe acțiuni BVB până la 100.000 EUR/lună.</p>
+<a class="btn-main" href="xtb-review.html">Deschide cont XTB gratuit →</a>
+<a class="btn-alt" href="trading212-review.html">Trading 212 — 0% comision</a>
+<div class="disc">Link afiliere — poate genera comision. Investițiile implică riscuri.</div>
+</div>
+<div class="s-card">
+<h3>Analiză avansată</h3>
+<div class="about-text">
+<p style="margin-bottom:10px">Cel mai mare producător de energie electrică din România, lider în energie hidro din Europa de Est.</p>
+<a href="https://simplywall.st/stocks/ro/utilities/bvb-h2o/hidroelectrica-shares" target="_blank">→ Simply Wall St — sănătate financiară H2O</a><br/>
+<a href="https://iris.bvb.ro" style="margin-top:6px;display:inline-block" target="_blank">→ Rapoarte oficiale pe IRIS BVB</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- ═══ TAB: TEHNIC ═══ -->
+<div class="tab-content" id="tab-tehnic">
+<div class="tech-panel-wrap">
+<div style="display:grid;grid-template-columns:1fr;gap:16px">
+<div>
+<div class="panel-header" style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px 10px;border-bottom:1px solid var(--border)"><div class="panel-title">Analiză Tehnică H2O — Semnale automate</div></div>
+<div class="tradingview-widget-container tv-lazy" style="height:450px;width:100%">
+<div class="tradingview-widget-container__widget" style="height:calc(100% - 32px);width:100%"></div>
+<div class="tradingview-widget-copyright" style="font-size:10px;padding:4px 0;color:var(--muted)"><a href="https://www.tradingview.com/symbols/BVB-H2O/" rel="noopener nofollow" style="color:var(--accent);text-decoration:none" target="_blank">H2O pe TradingView</a></div>
+<script async="" src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" type="text/javascript">
+      {"interval":"1D","width":"100%","isTransparent":true,"height":450,"symbol":"BVB:H2O","showIntervalTabs":true,"displayMode":"multiple","locale":"ro","colorTheme":"dark"}
+      </script>
+</div>
+</div>
+<div class="info-box" style="margin:0 20px 16px">
+<div class="box-title">Cum citești semnalele</div>
+<p><strong>CUMPĂRĂ (BUY)</strong> = indicatorii tehnici sugerează presiune de cumpărare. <strong>VINDE (SELL)</strong> = presiune de vânzare. <strong>NEUTRU</strong> = lipsă semnal clar. Analizele tehnice sunt orientative — nu înlocuiesc analiza fundamentală sau consultanța financiară.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="tab-content" id="tab-fundamentale">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+<div class="s-card">
+<h3>Evaluare bursieră</h3>
+<div class="m-row"><span class="m-label">P/E (Preț/Profit)</span><span class="m-val go">~11.2x</span></div>
+<div class="m-row"><span class="m-label">Capitalizare bursieră</span><span class="m-val">~62 mld RON</span></div>
+<div class="m-row"><span class="m-label">Free float</span><span class="m-val">~20%</span></div>
+<div class="m-row"><span class="m-label">Pondere în BET</span><span class="m-val">~18%</span></div>
+</div>
+<div class="s-card">
+<h3>Dividende</h3>
+<div class="m-row"><span class="m-label">Randament est. 2026</span><span class="m-val g">~4.9%</span></div>
+<div class="m-row"><span class="m-label">Dividend/acțiune est.</span><span class="m-val">~2.80 RON</span></div>
+<div class="m-row"><span class="m-label">Frecvență plată</span><span class="m-val">Anual / Semi</span></div>
+<div class="m-row"><span class="m-label">Impozit dividend RO</span><span class="m-val go">8% (reținut la sursă)</span></div>
+</div>
+<div class="s-card">
+<h3>Companie</h3>
+<div class="m-row"><span class="m-label">Sector</span><span class="m-val">Energie — Hidro</span></div>
+<div class="m-row"><span class="m-label">Angajați</span><span class="m-val">~4.000</span></div>
+<div class="m-row"><span class="m-label">Fondată</span><span class="m-val">1997</span></div>
+<div class="m-row"><span class="m-label">Site oficial</span><span class="m-val"><a href="https://www.hidroelectrica.ro" style="color:var(--accent)" target="_blank">hidroelectrica.ro</a></span></div>
+</div>
+<div class="s-card">
+<h3>Surse date oficiale</h3>
+<div class="about-text" style="display:flex;flex-direction:column;gap:10px;padding-top:4px">
+<a href="https://iris.bvb.ro" target="_blank"> IRIS BVB — rapoarte financiare</a>
+<a href="https://www.bvb.ro" target="_blank">BVB.ro — profil companie</a>
+<a href="https://www.hidroelectrica.ro" target="_blank"> Site oficial Hidroelectrica</a>
+<a href="https://simplywall.st/stocks/ro/utilities/bvb-h2o/hidroelectrica-shares" target="_blank">Simply Wall St — analiză</a>
+</div>
+</div>
+</div>
+
+<div class="s-card" style="grid-column:1/-1">
+<h3>Istoric dividende — date reale Yahoo Finance</h3>
+<div id="div-history-loading" style="font-size:13px;color:var(--muted);padding:14px 0">
+  <span style="display:inline-block;width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;vertical-align:middle;margin-right:8px"></span>
+  Se încarcă datele din Yahoo Finance...
+</div>
+<div id="div-history-container"></div>
+</div>
+
+<div class="risk-box" style="margin-top:16px">
+   ● <strong>Prețul live</strong> este furnizat de TradingView în timp real. P/E, dividend yield, capitalizare bursieră și celelalte date fundamentale sunt actualizate zilnic via Yahoo Finance. Verificați datele oficiale pe <a href="https://iris.bvb.ro" target="_blank">iris.bvb.ro</a> înainte de orice decizie de investiție. Nu constituie consultanță financiară.
+  </div>
+</div>
+<!-- ═══ TAB: PROFIL ═══ -->
+<div class="tab-content" id="tab-despre">
+<div style="display:grid;grid-template-columns:1fr;gap:16px" data-desktop-cols="1fr 300px">
+<div class="s-card">
+<h3>Despre Hidroelectrica</h3>
+<div class="about-text">
+<p style="margin-bottom:14px;font-size:15px;line-height:1.8">Cel mai mare producător de energie electrică din România, lider în energie hidro din Europa de Est.</p>
+<p style="margin-bottom:14px;font-size:14px;line-height:1.7">Hidroelectrica este listată la <strong style="color:var(--text)">Bursa de Valori București (BVB)</strong> sub simbolul <strong style="color:var(--accent)">H2O</strong> și face parte din indicele principal <strong style="color:var(--text)">BET</strong>, cu o pondere de aproximativ ~18%.</p>
+<p style="font-size:14px;line-height:1.7">Compania activează în sectorul <strong style="color:var(--text)">Energie — Hidro</strong> și are <strong style="color:var(--text)">~4.000</strong> angajați. Free float-ul este de aproximativ <strong style="color:var(--text)">~20%</strong>, restul acțiunilor fiind deținute de <strong style="color:var(--text)">Statul Român (80%), fonduri internaționale</strong>.</p>
+</div>
+</div>
+<div class="s-card">
+<h3>Date rapide</h3>
+<div class="m-row"><span class="m-label">Simbol BVB</span><span class="m-val" style="color:var(--accent)">H2O</span></div>
+<div class="m-row"><span class="m-label">Piața</span><span class="m-val">BVB Main Market</span></div>
+<div class="m-row"><span class="m-label">Indice</span><span class="m-val g">BET ✓</span></div>
+<div class="m-row"><span class="m-label">Sector</span><span class="m-val" style="font-size:11px">Energie — Hidro</span></div>
+<div class="m-row"><span class="m-label">Fondată</span><span class="m-val">1997</span></div>
+<div class="m-row"><span class="m-label">Angajați</span><span class="m-val">~4.000</span></div>
+<div class="m-row"><span class="m-label">Free float</span><span class="m-val">~20%</span></div>
+<div class="m-row"><span class="m-label">Capitalizare</span><span class="m-val">~62 mld RON</span></div>
+<div class="m-row"><span class="m-label">Site</span><span class="m-val"><a href="https://www.hidroelectrica.ro" style="color:var(--accent)" target="_blank">hidroelectrica.ro</a></span></div>
+</div>
+</div>
+</div>
+</div>
+<footer>
+<a href="index.html" style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:16px;color:var(--text)">Ghid<span style="color:var(--accent)">Bursa</span>.ro</a>
+<div class="footer-links">
+      <a href="unsubscribe.html">Dezabonare newsletter</a>
+<a href="brokeri.html">Brokeri</a>
+<a href="ghiduri.html">Ghiduri</a>
+<a href="screener.html">Screener BVB</a>
+<a href="calculatoare.html">Calculatoare</a>
+<a href="newsletter.html">Newsletter</a>
+<a href="fear-greed.html">Sentiment BVB</a>
+<a href="calendar-dividende.html">Dividende</a>
+<a href="glosar.html">Glosar</a>
+<a href="legal.html#termeni">Termeni</a>
+<a href="legal.html#disclaimer">Disclaimer</a>
+<a href="despre-noi.html">Contact</a>
+</div>
+<span>© 2026 GhidBursa.ro</span>
+<p class="footer-disclaimer">Investițiile implică riscuri. Conținutul GhidBursa.ro este informativ și nu constituie consultanță financiară. Verificați toate informațiile înainte de a lua decizii de investiție.</p>
+</footer>
+<script>
+ var _tvSymbol = "BVB:H2O";
+
+(function(){
+ // Tab switching
+ window.switchTab = function(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(function(t){t.classList.remove('active')});
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active')});
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+ };
+
+ // Period buttons (visual only — TV widget handles its own interval)
+ 
+ // ── Timeframe control for TradingView async widget ──
+ var _chartSymbol = "BVB:H2O";
+ var _chartInterval = "D";
+ 
+ function setChartInterval(interval, btn) {
+  document.querySelectorAll('.pbtn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  _chartInterval = interval;
+  rebuildChart(interval);
+ }
+
+ function rebuildChart(interval) {
+  var intervalMap = {
+   'D':'5', 'W':'60', 'M':'240', '3M':'D', '12M':'W', '60M':'M'
+  };
+  var tvInterval = intervalMap[interval] || 'D';
+  var wrap = document.getElementById('tvChartWrap');
+  if (!wrap) return;
+  
+  // Remove old widget completely
+  wrap.innerHTML = '';
+  
+  // Build new widget HTML
+  var container = document.createElement('div');
+  container.className = 'tradingview-widget-container';
+  container.style.cssText = 'height:100%;width:100%';
+  
+  var inner = document.createElement('div');
+  inner.className = 'tradingview-widget-container__widget';
+  inner.style.cssText = 'height:calc(100% - 32px);width:100%';
+  container.appendChild(inner);
+  
+  var credit = document.createElement('div');
+  credit.className = 'tradingview-widget-copyright';
+  credit.style.cssText = 'font-size:11px;padding:5px 0;color:#6B7A8D';
+  credit.innerHTML = '<a href="https://www.tradingview.com/symbols/BVB-H2O/" rel="noopener nofollow" target="_blank" style="color:#00D4FF;text-decoration:none">H2O chart</a> by TradingView';
+  container.appendChild(credit);
+  
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
+  script.async = true;
+  script.text = JSON.stringify({
+   "symbol": _chartSymbol,
+   "interval": tvInterval,
+   "timezone": "Europe/Bucharest",
+   "theme": "dark",
+   "style": "1",
+   "locale": "ro",
+   "backgroundColor": "#111820",
+   "gridColor": "rgba(30,42,56,0.8)",
+   "allow_symbol_change": false,
+   "calendar": false,
+   "hide_side_toolbar": true,
+   "hide_top_toolbar": false,
+   "hide_legend": false,
+   "hide_volume": false,
+   "save_image": false,
+   "autosize": true
+  });
+  container.appendChild(script);
+  wrap.appendChild(container);
+ }
+
+
+ // Mark live dot as active after TradingView widget loads
+ setTimeout(function(){
+  var d = document.getElementById('phDot');
+  var l = document.getElementById('phLabel');
+  if(d){ d.classList.add('live'); }
+  if(l){ l.textContent = '● '; l.style.color = 'var(--accent2)'; }
+  var nd = document.getElementById('navDot');
+  if(nd) nd.classList.add('live');
+ }, 3500);
+})();
+
+ // ── Yahoo Finance live data for H2O ──────────────
+ (async function fetchYahooLive() {
+  const YAHOO_SYM = 'H2O.RO';
+  // Fields: price, change%, P/E, dividendYield, marketCap, 52w high/low, volume
+  const url = 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + YAHOO_SYM
+   + '&fields=regularMarketPrice,regularMarketChangePercent,regularMarketChange,'
+   + 'marketCap,trailingPE,dividendYield,trailingAnnualDividendRate,'
+   + 'fiftyTwoWeekHigh,fiftyTwoWeekLow,regularMarketVolume,shortName';
+  try {
+   const res = await fetch(url, {signal: AbortSignal.timeout(7000)});
+   const json = await res.json();
+   const q = json?.quoteResponse?.result?.[0];
+   if (!q) throw new Error('No data');
+
+   // ── Price display ──
+   const priceEl = document.getElementById('livePrice');
+   if (priceEl) {
+    const p = q.regularMarketPrice;
+    const chg = q.regularMarketChangePercent;
+    const chgAbs = q.regularMarketChange;
+    const sign = chg >= 0 ? '+' : '';
+    const arrow = chg >= 0 ? '▲' : '▼';
+    const cls = chg >= 0 ? 'var(--accent2)' : '#FF4D6D';
+    priceEl.innerHTML =
+     '<span style="font-family:var(--font-display);font-size:32px;font-weight:700;color:var(--text)">'
+     + (p < 1 ? p.toFixed(4) : p.toFixed(2))
+     + ' <span style="font-size:14px;color:var(--muted)">RON</span></span>'
+     + '<div style="display:flex;align-items:center;gap:8px;margin-top:6px">'
+     + '<span style="color:'+ cls +';font-weight:700;font-size:14px">'+ arrow +' '+ sign + chg.toFixed(2) +'%</span>'
+     + '<span style="color:var(--muted);font-size:12px">azi</span>'
+     + '<span style="font-size:10px;background:rgba(0,255,148,0.1);color:var(--accent2);padding:2px 7px;border-radius:10px;font-weight:700">● LIVE</span>'
+     + '</div>';
+   }
+   const dotEl = document.getElementById('phDot');
+   if (dotEl) dotEl.classList.add('live');
+   const labelEl = document.getElementById('phLabel');
+   if (labelEl) labelEl.textContent = 'Date live';
+
+   // ── Key metrics update ──
+   function setMetric(id, val, format) {
+    const el = document.getElementById(id);
+    if (!el || val == null) return;
+    el.textContent = format(val);
+    el.classList.add('live-updated');
+   }
+
+   // P/E
+   if (q.trailingPE && q.trailingPE > 0 && q.trailingPE < 500) {
+    setMetric('metricPE', q.trailingPE, v => v.toFixed(1) + 'x');
+    setMetric('metricPEHero', q.trailingPE, v => '~' + v.toFixed(1) + 'x');
+   }
+
+   // Dividend yield %
+   if (q.dividendYield != null) {
+    const divPct = (q.dividendYield * 100).toFixed(1);
+    setMetric('metricDiv', q.dividendYield, v => (v*100).toFixed(1) + '%');
+    setMetric('metricDivHero', q.dividendYield, v => '~' + (v*100).toFixed(1) + '%');
+   }
+
+   // Market cap → mld RON (approx: divide by 1B then by ~4.97 USD/RON)
+   if (q.marketCap) {
+    const capRON = (q.marketCap / 1e9 / 4.97).toFixed(1);
+    setMetric('metricCap', parseFloat(capRON), v => '~' + v + ' mld RON');
+    setMetric('metricCapHero', parseFloat(capRON), v => '~' + v + ' mld RON');
+   }
+
+   // 52 week range
+   if (q.fiftyTwoWeekHigh) setMetric('metric52H', q.fiftyTwoWeekHigh, v => v.toFixed(4 > v ? 4 : 2) + ' RON');
+   if (q.fiftyTwoWeekLow) setMetric('metric52L', q.fiftyTwoWeekLow, v => v.toFixed(4 > v ? 4 : 2) + ' RON');
+
+   // Volume
+   if (q.regularMarketVolume) {
+    const vol = q.regularMarketVolume;
+    const volStr = vol > 1e6 ? (vol/1e6).toFixed(1)+'M' : vol > 1e3 ? (vol/1e3).toFixed(0)+'K' : vol;
+    setMetric('metricVol', volStr, v => v);
+   }
+
+   console.log('✓ GhidBursa: Live data loaded for H2O:', q.regularMarketPrice, 'RON');
+  } catch(e) {
+   console.warn('GhidBursa: Yahoo Finance unavailable for H2O:', e.message);
+   const labelEl = document.getElementById('phLabel');
+   if (labelEl) labelEl.textContent = 'Date orientative';
+  }
+ })();
+
+</script>
+<script defer="" src="shared.js"></script>
+<script>
+(function(){
+  function tryLogo(img){
+    var png=img.getAttribute('data-src-png');
+    var svg=img.getAttribute('data-src-svg');
+    var color=img.getAttribute('data-fb-color');
+    var ticker=img.getAttribute('data-fb-ticker');
+    var size=parseInt(img.getAttribute('data-fb-size')||'32');
+    var br=Math.round(size*0.22);
+    img.src=png;
+    img.onerror=function(){
+      if(img.src.indexOf('--600.png')>-1){
+        img.onerror=function(){
+          var fb=document.createElement('div');
+          fb.style.cssText='width:'+size+'px;height:'+size+'px;border-radius:'+br+'px;background:'+color+';display:inline-flex;align-items:center;justify-content:center;font-family:"Plus Jakarta Sans",sans-serif;font-weight:800;font-size:'+Math.max(7,Math.round(size/3.5))+'px;color:white;flex-shrink:0;vertical-align:middle';
+          fb.textContent=ticker;
+          img.parentNode.replaceChild(fb,img);
+        };
+        img.src=svg;
+      }
+    };
+  }
+  document.querySelectorAll('img[data-src-png]').forEach(tryLogo);
+})();
+</script>
+<script src="stocks-loader.js?v=1" defer></script>
+
+<script>
+(function(){
+  if(!('IntersectionObserver' in window)) return;
+  var observer = new IntersectionObserver(function(entries, obs){
+    entries.forEach(function(entry){
+      if(!entry.isIntersecting) return;
+      obs.unobserve(entry.target);
+      var el = entry.target;
+      var cfg = el.getAttribute('data-tv-config');
+      var src = el.getAttribute('data-tv-src');
+      if(!cfg || !src) return;
+      el.removeAttribute('data-tv-config');
+      el.removeAttribute('data-tv-src');
+      var widget = el.querySelector('.tradingview-widget-container__widget');
+      if(!widget) return;
+      var s = document.createElement('script');
+      s.src = src;
+      s.async = true;
+      s.type = 'text/javascript';
+      s.text = cfg;
+      el.appendChild(s);
+    });
+  }, {rootMargin:'300px'});
+  document.querySelectorAll('.tv-lazy').forEach(function(el){ observer.observe(el); });
+})();
+</script>
+<script defer src="/cookie-consent.js"></script>
+</body>
+</html>

@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+
+<html lang="ro">
+<head>
+<link href="favicon.svg" rel="icon" type="image/svg+xml"/>
+<link href="favicon.svg" rel="shortcut icon"/>
+<meta charset="utf-8"/>
+<style data-critical="true">
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+ --black: #080B0F;
+ --dark: #0D1117;
+ --card: #111820;
+ --card2: #141E28;
+ --border: #1E2A38;
+ --accent: #00D4FF;
+ --accent2: #00FF94;
+ --gold: #FFB800;
+ --red: #FF4D6D;
+ --text: #E8EDF2;
+ --muted: #6B7A8D;
+ --font-display: 'Plus Jakarta Sans', sans-serif;
+ --font-body: 'DM Sans', sans-serif;
+ --nav-h: 56px;
+ --ticker-h: 76px;
+ --offset: 132px; 
+}
+@media (min-width: 768px) {
+ :root {
+ --nav-h: 72px;
+ --offset: 148px;
+ }
+}
+html { scroll-behavior: smooth; font-size: 15px; }
+body {
+ background: var(--black);
+ color: var(--text);
+ font-family: var(--font-body);
+ line-height: 1.6;
+ overflow-x: hidden;
+ -webkit-font-smoothing: antialiased;
+ width: 100%;
+ max-width: 100vw;
+}
+body::before {
+ content: '';
+ position: fixed; inset: 0;
+ background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+ pointer-events: none; z-index: 0; opacity: 0.5;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+img { max-width: 100%; height: auto; display: block; }
+h1, h2, h3, h4 {
+ font-family: var(--font-display);
+ -webkit-font-smoothing: antialiased;
+ letter-spacing: -0.01em;
+ line-height: 1.18;
+}
+h1 { font-size: clamp(18px, 2vw, 28px); font-weight: 700; }
+h2 { font-size: clamp(18px, 2.5vw, 28px); font-weight: 700; }
+h3 { font-size: clamp(15px, 2vw, 20px); font-weight: 600; }
+h4 { font-size: 14px; font-weight: 700; }
+p { color: rgba(232,237,242,.82); line-height: 1.75; font-size: 15px; }
+nav {
+ position: fixed; top: 0; left: 0; right: 0;
+ z-index: 200;
+ height: var(--nav-h);
+ display: flex; align-items: center; justify-content: space-between;
+ padding: 0 20px;
+ background: rgba(8,11,15,0.92);
+ backdrop-filter: blur(24px);
+ border-bottom: 1px solid var(--border);
+}
+@media (min-width: 768px) { nav { padding: 0 48px; } }
+@media (min-width: 1280px) { nav { padding: 0 64px; } }
+.nav-logo {
+ font-family: var(--font-display);
+ font-size: 18px; font-weight: 800; letter-spacing: -0.02em;
+ color: var(--text); text-decoration: none;
+ display: flex; align-items: center; gap: 8px;
+ flex-shrink: 0;
+}
+@media (min-width: 768px) { .nav-logo { font-size: 22px; } }
+.nav-logo span { color: var(--accent); }
+.nav-logo:hover { text-decoration: none; }
+.nav-dot {
+ width: 8px; height: 8px;
+ background: var(--accent2); border-radius: 50%;
+ animation: pulse 2s ease-in-out infinite; flex-shrink: 0;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+.nav-links {
+ display: none;
+ align-items: center; gap: 28px; list-style: none;
+}
+@media (min-width: 768px) { .nav-links { display: flex; } }
+.nav-links a { color: var(--muted); font-size: 14px; font-weight: 500; transition: color .2s; text-decoration: none; }
+.nav-links a:hover { color: var(--text); }
+.nav-cta {
+ background: var(--accent) !important;
+ color: var(--black) !important;
+ padding: 9px 18px; border-radius: 6px;
+ font-weight: 700 !important; font-size: 13px !important;
+}
+.nav-cta:hover { opacity: .85; }
+.hamburger {
+ display: flex; flex-direction: column; gap: 5px;
+ background: none; border: none; cursor: pointer; padding: 6px;
+}
+@media (min-width: 768px) { .hamburger { display: none; } }
+.hamburger span {
+ display: block; width: 22px; height: 2px;
+ background: var(--text); border-radius: 2px;
+ transition: all .3s;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.mobile-nav {
+ display: none; position: fixed;
+ top: var(--nav-h); left: 0; right: 0;
+ background: rgba(8,11,15,.98);
+ border-bottom: 1px solid var(--border);
+ z-index: 199; flex-direction: column;
+ padding: 8px 0 16px;
+ transform: translateY(-10px); opacity: 0;
+ transition: transform .25s, opacity .25s;
+}
+.mobile-nav.open {
+ display: flex; transform: translateY(0); opacity: 1;
+}
+.mobile-nav a {
+ display: block; padding: 14px 24px;
+ color: var(--text); font-size: 15px; font-weight: 500;
+ border-bottom: 1px solid rgba(30,42,56,.5);
+ text-decoration: none; transition: background .15s;
+}
+.mobile-nav a:last-child { border-bottom: none; }
+.mobile-nav a:hover { background: rgba(0,212,255,.05); }
+.mobile-nav .mobile-cta {
+ margin: 12px 24px 0;
+ background: var(--accent); color: var(--black) !important;
+ border-radius: 8px; text-align: center; font-weight: 700 !important;
+ border-bottom: none !important;
+}
+.ticker-bar {
+ position: sticky;
+ top: var(--nav-h);
+ z-index: 150;
+ height: var(--ticker-h);
+ background: rgba(8,11,15,.98);
+ border-bottom: 1px solid var(--border);
+ overflow: hidden;
+}
+.ticker-bar .tradingview-widget-container,
+.ticker-bar .tradingview-widget-container__widget { height: 100% !important; }
+.section-inner { max-width: 1280px; margin: 0 auto; padding: 0 20px; }
+.reveal,.reveal-left,.reveal-right,.reveal-scale{
+ opacity:0;
+ transition:opacity .65s cubic-bezier(.4,0,.2,1),transform .65s cubic-bezier(.4,0,.2,1);
+ will-change:opacity,transform;
+}
+.reveal{transform:translateY(28px)}
+.reveal-left{transform:translateX(-28px)}
+.reveal-right{transform:translateX(28px)}
+.reveal-scale{transform:scale(.96)}
+.reveal.visible,.reveal-left.visible,.reveal-right.visible,.reveal-scale.visible{
+ opacity:1;transform:none;
+}
+@keyframes forceVisible { to { opacity: 1; tran
+.btn {
+ display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+ font-family: var(--font-display); font-weight: 700;
+ border-radius: 8px; cursor: pointer;
+ text-decoration: none; transition: opacity .2s, transform .15s;
+ white-space: nowrap;
+}
+.btn:hover { opacity: .85; transform: translateY(-1px); text-decoration: none; }
+.btn:active { transform: translateY(0); }
+.btn-primary { background: var(--accent); color: var(--black); padding: 13px 24px; font-size: 14px; }
+.btn-secondary { background: rgba(0,212,255,.1); border: 1px solid rgba(0,212,255,.25); color: var(--accent); padding: 12px 22px; font-size: 14px; }
+.btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 11px 20px; font-size: 13px; }
+.btn-ghost:hover { border-color: var(--text); color: var(--text); }
+.btn-green { background: rgba(0,255,148,.1); border: 1px solid rgba(0,255,148,.25); color: var(--accent2); padding: 12px 22px; font-size: 14px; }
+.btn-full { width: 100%; }
+.btn-sm { padding: 8px 14px; font-size: 12px; }
+.btn-lg { padding: 16px 32px; font-size: 16px; }
+</style>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ghiduri Investiții BVB 2026 — Fidelis, Dividende, ANAF | GhidBursa.ro</title>
+<meta name="description" content="Ghiduri gratuite pentru investitori la BVB: Fidelis 2026, impozit acțiuni, dividende, ETF BET, portofoliu pentru începători și altele."/>
+
+<link href="shared.css?v=12" rel="stylesheet"/>
+<link href="mobile.css?v=12" rel="stylesheet"/>
+<style>
+.guides-header { padding: calc(var(--offset) + 32px) 0 40px; }
+.guides-header h1 { font-size: clamp(28px,6vw,48px); margin-bottom: 12px; }
+.guides-header p { font-size: 16px; color: var(--muted); max-width: 520px; line-height: 1.7; }
+
+.cat-filter { display: flex; gap: 8px; flex-wrap: wrap; margin: 28px 0; }
+.cat-btn {
+  padding: 8px 18px; border-radius: 20px; font-size: 13px; font-weight: 600;
+  border: 1px solid var(--border); background: transparent; color: var(--muted);
+  cursor: pointer; font-family: var(--font-body); transition: all .2s;
+}
+.cat-btn.active, .cat-btn:hover {
+  background: rgba(0,212,255,.1); border-color: rgba(0,212,255,.35); color: var(--accent);
+}
+
+.guide-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+@media(min-width:640px) { .guide-grid { grid-template-columns: 1fr 1fr; } }
+@media(min-width:1024px) { .guide-grid { grid-template-columns: repeat(3, 1fr); } }
+
+.guide-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 14px; padding: 24px;
+  text-decoration: none; color: inherit;
+  display: flex; flex-direction: column; gap: 10px;
+  transition: border-color .2s, transform .2s;
+}
+.guide-card:hover { border-color: rgba(0,212,255,.35); transform: translateY(-2px); text-decoration: none; }
+.guide-card-icon { font-size: 28px; }
+.guide-card-cat { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.guide-card h3 { font-size: 17px; font-weight: 700; line-height: 1.3; color: var(--text); }
+.guide-card p { font-size: 13px; color: var(--muted); line-height: 1.6; flex: 1; }
+.guide-card-meta { font-size: 11px; color: var(--muted); display: flex; gap: 12px; margin-top: auto; padding-top: 10px; border-top: 1px solid var(--border); }
+.guide-card .read-more { color: var(--accent); font-size: 13px; font-weight: 700; }
+
+.featured-card {
+  grid-column: 1 / -1;
+  display: grid; grid-template-columns: 1fr;
+  background: linear-gradient(135deg, rgba(0,212,255,.07), rgba(0,255,148,.04));
+  border-color: rgba(0,212,255,.2);
+}
+@media(min-width:768px) {
+  .featured-card { grid-template-columns: 1.2fr 0.8fr; gap: 40px; align-items: stretch; padding: 40px; }
+}
+.featured-card .featured-label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent2); margin-bottom: 8px; }
+.featured-card h3 { font-size: clamp(20px,3vw,28px); }
+.featured-card p { font-size: 15px; }
+</style>
+<link href="https://www.ghidbursa.ro/ghiduri.html" rel="canonical"/>
+<meta content="website" property="og:type"/>
+<meta content="Ghiduri Investiții BVB 2026 — Fidelis, Dividende, ANAF | GhidBursa.ro" property="og:title"/>
+<meta content="Toate ghidurile despre investiții la BVB: Fidelis 2026, declarație D212 ANAF, dividende, ETF, portofoliu pentru începători și impozit pe acțiuni." property="og:description"/>
+<meta content="https://www.ghidbursa.ro/ghiduri.html" property="og:url"/>
+<meta content="GhidBursa.ro" property="og:site_name"/>
+<meta content="summary" name="twitter:card"/>
+<meta content="Ghiduri Investiții BVB 2026 — Fidelis, Dividende, ANAF | GhidBursa.ro" name="twitter:title"/>
+<meta content="Toate ghidurile despre investiții la BVB: Fidelis 2026, declarație D212 ANAF, dividende, ETF, portofoliu pentru începători și impozit pe acțiuni." name="twitter:description"/>
+<script type="application/ld+json">
+{"dateModified": "2026-03-19", "@context":"https://schema.org","@type":"WebPage","name":"Ghiduri Investiții BVB 2026 — Fidelis, Dividende, ANAF | GhidBursa.ro","description":"Toate ghidurile despre investiții la BVB: Fidelis 2026, declarație D212 ANAF, dividende, ETF, portofoliu pentru începători și impozit pe acțiuni.","url":"https://www.ghidbursa.ro/ghiduri.html","isPartOf":{"@type":"WebSite","name":"GhidBursa.ro","url":"https://www.ghidbursa.ro"}}
+</script>
+<meta property="og:image" content="https://www.ghidbursa.ro/og-image.png"/>
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta property="og:locale" content="ro_RO"/>
+  <meta property="og:site_name" content="GhidBursa.ro"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="@GhidBursa"/>
+  <meta name="twitter:image" content="https://www.ghidbursa.ro/og-image.png"/>
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"/>
+  <meta name="author" content="GhidBursa.ro"/>
+  <meta http-equiv="content-language" content="ro"/>
+  <meta name="theme-color" content="#080B0F"/>
+  <link rel="dns-prefetch" href="//s3.tradingview.com"/>
+    <link rel="stylesheet" href="/fonts/fonts.css"/>
+<link rel="preload" href="/fonts/plus-jakarta-sans-700.woff2" as="font" type="font/woff2" crossorigin="anonymous" fetchpriority="high"/>
+<link rel="stylesheet" href="/cookie-consent.css"/>
+</head>
+<body class="no-ticker">
+<nav>
+<a class="nav-logo" href="index.html"><div class="nav-dot"></div>Ghid<span>Bursa</span>.ro</a>
+<ul class="nav-links">
+<li><a href="brokeri.html">Brokeri</a></li>
+<li><a href="ghiduri.html">Ghiduri</a></li>
+<li><a href="screener.html">Screener BVB</a></li>
+<li><a href="calculatoare.html">Calculatoare</a></li>
+<li><a href="newsletter.html">Newsletter</a></li>
+<li><a class="nav-cta" href="brokeri.html">Compară brokeri →</a></li>
+</ul>
+<button aria-label="Meniu" class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
+</nav>
+<div class="mobile-nav" id="mobileNav">
+<a href="index.html">Acasă</a>
+<a href="brokeri.html">Brokeri</a>
+<a href="ghiduri.html">Ghiduri</a>
+<a href="screener.html">Screener BVB</a>
+<a href="calculatoare.html">Calculatoare</a>
+<a href="newsletter.html">Newsletter</a>
+<a href="fear-greed.html">Sentiment BVB</a>
+<a href="fidelis-2025.html">Fidelis 2026</a>
+<a href="glosar.html">Glosar</a>
+<a href="despre-noi.html">Contact</a>
+<a class="mobile-cta" href="brokeri.html">Compară brokeri →</a>
+</div>
+<div class="page-wrap">
+<div class="breadcrumb"><a href="index.html">Acasă</a> › <span>Ghiduri investiții</span></div>
+<div class="guides-header reveal">
+<div class="tag tag-green" style="margin-bottom:14px"> Conținut gratuit</div>
+<h1>Informația care face diferența.</h1>
+<p>Ghiduri clare despre BVB, Fidelis, impozite și brokeri. Scrise pentru investitorul român, nu pentru Google.</p>
+</div>
+<div class="cat-filter">
+<button class="cat-btn active" onclick="filterGuides('all',this)">Toate</button>
+<button class="cat-btn" onclick="filterGuides('fiscal',this)">Fiscal</button>
+<button class="cat-btn" onclick="filterGuides('titluri',this)">Titluri de stat</button>
+<button class="cat-btn" onclick="filterGuides('investitii',this)">Investiții BVB</button>
+<button class="cat-btn" onclick="filterGuides('dividende',this)">Dividende</button>
+</div>
+<div class="guide-grid" id="guideGrid">
+<!-- FEATURED -->
+<a class="guide-card featured-card reveal" data-cat="titluri" href="fidelis-2025.html">
+<div>
+<div class="featured-label">Cel mai citit ghid</div>
+<div class="guide-card-cat" style="color:var(--gold)">Titluri de stat · Actualizat 2026</div>
+<h3>Fidelis 2026 — Ghidul Complet</h3>
+<p>Dobânzi actuale RON și EUR, cum cumperi online în 30 de minute, avantajul impozitului 0% și comparație cu depozitele bancare. Tot ce trebuie să știi.</p>
+<div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+<span class="tag tag-green">Impozit 0%</span>
+<span class="tag tag-gold">~6.5% RON</span>
+<span class="tag tag-blue">Garantat de stat</span>
+</div>
+<div style="margin-top:20px;padding:16px;background:rgba(0,0,0,.2);border-radius:10px;border:1px solid rgba(255,255,255,.05)">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+<div><div style="font-size:22px;font-weight:800;color:var(--accent);font-family:'Plus Jakarta Sans',sans-serif">6.5%</div><div style="font-size:11px;color:var(--muted);margin-top:2px">Randament RON</div></div>
+<div><div style="font-size:22px;font-weight:800;color:var(--accent2);font-family:'Plus Jakarta Sans',sans-serif">0%</div><div style="font-size:11px;color:var(--muted);margin-top:2px">Impozit</div></div>
+<div><div style="font-size:22px;font-weight:800;color:var(--gold);font-family:'Plus Jakarta Sans',sans-serif">5 ani</div><div style="font-size:11px;color:var(--muted);margin-top:2px">Scadență max</div></div>
+<div><div style="font-size:22px;font-weight:800;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif">100%</div><div style="font-size:11px;color:var(--muted);margin-top:2px">Garantat stat</div></div>
+</div>
+</div>
+<a class="btn btn-primary" href="fidelis-2025.html" style="margin-top:20px;width:fit-content">Citește ghidul →</a>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;justify-content:space-between">
+<div style="background:rgba(0,0,0,.25);border-radius:12px;padding:20px;border:1px solid rgba(255,184,0,.1)">
+<div style="font-size:11px;color:var(--muted);margin-bottom:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em">Fidelis vs Depozit bancar</div>
+<div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--border)"><span style="color:var(--muted)">Fidelis RON 3 ani</span><span style="color:var(--accent2);font-weight:700">~6.0% net</span></div>
+<div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--border)"><span style="color:var(--muted)">Depozit bancar</span><span style="color:var(--muted)">~4.0% net</span></div>
+<div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--border)"><span style="color:var(--muted)">Impozit Fidelis</span><span style="color:var(--accent2);font-weight:700">0%</span></div>
+<div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0"><span style="color:var(--muted)">Impozit depozit</span><span style="color:var(--red)">10%</span></div>
+</div>
+<div style="background:rgba(0,0,0,.25);border-radius:12px;padding:20px;border:1px solid rgba(0,212,255,.1)">
+<div style="font-size:11px;color:var(--muted);margin-bottom:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em">Ce cumperi cu Fidelis</div>
+<div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--border)"><span style="color:var(--muted)">Scadențe disponibile</span><span style="color:var(--text);font-weight:600">1, 3, 5 ani</span></div>
+<div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--border)"><span style="color:var(--muted)">Monede</span><span style="color:var(--text);font-weight:600">RON + EUR</span></div>
+<div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--border)"><span style="color:var(--muted)">Garanție</span><span style="color:var(--accent2);font-weight:700">Statul Român</span></div>
+<div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0"><span style="color:var(--muted)">Unde cumperi</span><span style="color:var(--text);font-weight:600">XTB · Bancă</span></div>
+</div>
+</div>
+</a>
+<!-- D212 -->
+<a class="guide-card reveal" data-cat="fiscal" href="declaratie-d212-anaf.html">
+<div class="guide-card-cat" style="color:var(--accent)">Fiscalitate · Termen 25 mai 2026</div>
+<h3>Cum completezi Declarația D212 ANAF</h3>
+<p>Ghid pas cu pas pentru declararea câștigurilor din acțiuni BVB la ANAF. Calculator impozit inclus.</p>
+<div class="guide-card-meta">
+<span>10 min lectură</span>
+<span>Nivel: Oricine</span>
+</div>
+<span class="read-more">Citește →</span>
+</a>
+<!-- Impozit -->
+<a class="guide-card reveal delay-1" data-cat="fiscal" href="impozit-actiuni-anaf.html">
+<div class="guide-card-cat" style="color:var(--gold)">Fiscalitate</div>
+<h3>Impozit pe acțiuni România 2026</h3>
+<p>Cota 10% câștiguri, 8% dividende, CASS plafonat. Cum optimizezi legal și cum declari corect.</p>
+<div class="guide-card-meta"><span>10 min</span><span>Oricine</span></div>
+<span class="read-more">Citește →</span>
+</a>
+<!-- Dividende -->
+<a class="guide-card reveal" data-cat="dividende" href="dividende-bvb-2025.html">
+<div class="guide-card-cat" style="color:var(--accent2)">Dividende BVB</div>
+<h3>Top 10 acțiuni cu dividende mari 2026</h3>
+<p>Companiile BVB cu cel mai mare randament dividend: TGN ~9.8%, TEL ~9.1%, COTE ~8.2% și altele.</p>
+<div class="guide-card-meta"><span>7 min</span><span>Oricine</span></div>
+<span class="read-more">Citește →</span>
+</a>
+<!-- Calendar dividende -->
+<a class="guide-card reveal delay-1" data-cat="dividende" href="calendar-dividende.html">
+<div class="guide-card-cat" style="color:var(--accent2)">Dividende · Calendar</div>
+<h3>Calendar Dividende BVB 2026</h3>
+<p>Toate datele ex-dividend ale companiilor BVB în 2026. Nu rata nicio plată de dividende.</p>
+<div class="guide-card-meta"><span>5 min</span><span>Reference</span></div>
+<span class="read-more">Citește →</span>
+</a>
+<!-- ETF BET -->
+<a class="guide-card reveal delay-2" data-cat="investitii" href="etf-bet-romania.html">
+<div class="guide-card-cat" style="color:var(--accent)">ETF-uri BVB</div>
+<h3>ETF BET România — Ghid complet 2026</h3>
+<p>Investești în toate cele 20 companii BVB dintr-o singură tranzacție. Cost 0.30%/an, dividende anuale.</p>
+<div class="guide-card-meta"><span>8 min</span><span>Începători</span></div>
+<span class="read-more">Citește →</span>
+</a>
+<!-- Portofoliu -->
+<a class="guide-card reveal" data-cat="investitii" href="portofoliu-incepator.html">
+<div class="guide-card-cat" style="color:var(--accent2)">Investiții BVB</div>
+<h3>Portofoliu pentru Începători 2026</h3>
+<p>3 portofolii model: conservator, echilibrat și de creștere. De la 500 RON, instrucțiuni clare.</p>
+<div class="guide-card-meta"><span>12 min</span><span>Începători</span></div>
+<span class="read-more">Citește →</span>
+</a>
+<!-- Titluri stat -->
+<a class="guide-card reveal delay-1" data-cat="titluri" href="titluri-stat-romania.html">
+<div class="guide-card-cat" style="color:var(--gold)">Titluri de stat</div>
+<h3>Fidelis vs Tezaur vs Obligațiuni</h3>
+<p>Comparație completă între toate instrumentele de stat disponibile în România. Ce alegi și de ce.</p>
+<div class="guide-card-meta"><span>10 min</span><span>Oricine</span></div>
+<span class="read-more">Citește →</span>
+</a>
+<!-- Cum investesti -->
+<a class="guide-card reveal delay-2" data-cat="investitii" href="cum-investesti-bvb.html">
+<div class="guide-card-cat" style="color:var(--accent)">Primii pași</div>
+<h3>Cum investești la BVB — Ghid complet</h3>
+<p>De la zero la primul portofoliu BVB. Alegerea brokerului, deschiderea contului, prima tranzacție.</p>
+<div class="guide-card-meta"><span>15 min</span><span>Începători</span></div>
+<span class="read-more">Citește →</span>
+</a>
+<!-- Glosar -->
+<a class="guide-card reveal" data-cat="investitii" href="glosar.html">
+<div class="guide-card-cat" style="color:var(--accent)">Referință</div>
+<h3>Glosar termeni bursieri</h3>
+<p>25 de termeni esențiali explicați simplu: P/E, dividend yield, free float, capitalizare bursieră, indice BET și alții.</p>
+<div class="guide-card-meta"><span>Referință rapidă</span><span>Începători</span></div>
+<span class="read-more">Citește →</span>
+</a>
+<!-- Xtb vs xtb -->
+<a class="guide-card reveal delay-1" data-cat="investitii" href="xtb-vs-trading212.html">
+<div class="guide-card-cat" style="color:var(--accent)">Comparație brokeri</div>
+<h3>XTB vs Trading 212 — Care e mai bun?</h3>
+<p>Comparație detaliată între cei mai populari doi brokeri pentru investitori la BVB. Comisioane, platforme, acces la Fidelis.</p>
+<div class="guide-card-meta"><span>8 min</span><span>Oricine</span></div>
+<span class="read-more">Citește →</span>
+</a>
+
+<!-- Analiza fundamentala card -->
+<a class="guide-card reveal" href="analiza-fundamentala.html" data-cat="analiza">
+<div class="guide-card-icon">📐</div>
+<div class="guide-card-cat" style="color:var(--accent2)">Analiză · Nou 2026</div>
+<h3>Analiză fundamentală pentru investitori BVB</h3>
+<p>P/E, P/B, ROE, dividend yield — toți indicatorii explicați cu exemple reale din BVB. Calculator interactiv inline inclus.</p>
+<div class="guide-card-meta"><span>15 min</span><span>Oricine</span></div>
+<span class="read-more">Citește ghidul →</span>
+</a>
+
+<!-- Deducere card -->
+<a class="guide-card reveal" href="deducere-fiscala-investitii-2026.html" data-cat="fiscal">
+<div class="guide-card-icon">💶</div>
+<div class="guide-card-cat" style="color:var(--gold)">Fiscalitate · OUG 8/2026 · NOU</div>
+<h3>Deducere Fiscală 400 EUR pentru Investiții la Bursă 2026</h3>
+<p>Tot ce trebuie să știi despre noua facilitate fiscală: cine beneficiază, ce brokeri sunt eligibili, cum aplici și cât economisești.</p>
+<div class="guide-card-meta"><span>8 min</span><span>Salariați / PFA</span></div>
+<span class="read-more">Citește ghidul →</span>
+</a>
+
+<!-- Simulator card -->
+<a class="guide-card reveal" href="simulator-investitii.html" data-cat="tools">
+<div class="guide-card-icon">📊</div>
+<div class="guide-card-cat" style="color:var(--accent)">Tool Interactiv · Nou 2026</div>
+<h3>Simulator: BVB vs Depozite vs Fidelis vs Aur</h3>
+<p>Compară randamentul real al tuturor alternativelor de investiții din România pe orice perioadă. Cu inflație, contribuții lunare și grafic interactiv.</p>
+<div class="guide-card-meta"><span>Tool interactiv</span><span>Oricine</span></div>
+<span class="read-more">Deschide simulatorul →</span>
+</a>
+</div><!-- /guide-grid -->
+<!-- CTA -->
+<div class="reveal" style="background:linear-gradient(135deg,rgba(0,212,255,.07),rgba(0,255,148,.04));border:1px solid rgba(0,212,255,.2);border-radius:16px;padding:32px;margin-top:48px;text-align:center">
+<h3 style="font-size:22px;margin-bottom:10px">Gata să investești?</h3>
+<p style="color:var(--muted);margin-bottom:20px">Deschide cont la XTB cu 0% comision și pune în practică ce ai citit.</p>
+<a class="btn btn-primary" href="xtb-review.html">Deschide cont XTB gratuit →</a>
+<p class="disclaimer">Nu constituie consultanță financiară. Investițiile implică riscuri.</p>
+</div>
+</div>
+<footer>
+<a href="index.html" style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:16px;color:var(--text)">Ghid<span style="color:var(--accent)">Bursa</span>.ro</a>
+<div class="footer-links">
+      <a href="unsubscribe.html">Dezabonare newsletter</a>
+<a href="brokeri.html">Brokeri</a>
+<a href="ghiduri.html">Ghiduri</a>
+<a href="screener.html">Screener BVB</a>
+<a href="calculatoare.html">Calculatoare</a>
+<a href="newsletter.html">Newsletter</a>
+<a href="fear-greed.html">Sentiment BVB</a>
+<a href="calendar-dividende.html">Dividende</a>
+<a href="glosar.html">Glosar</a>
+<a href="legal.html#termeni">Termeni</a>
+<a href="legal.html#disclaimer">Disclaimer</a>
+<a href="despre-noi.html">Contact</a>
+</div>
+<span>© 2026 GhidBursa.ro</span>
+<p class="footer-disclaimer">Investițiile implică riscuri. Conținutul GhidBursa.ro este informativ și nu constituie consultanță financiară. Verificați toate informațiile înainte de a lua decizii de investiție.</p>
+</footer>
+<script defer="" src="shared.js"></script>
+<script>
+function filterGuides(cat, btn) {
+  document.querySelectorAll('.cat-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  document.querySelectorAll('.guide-card').forEach(function(card){
+    if(cat === 'all' || card.getAttribute('data-cat') === cat){
+      card.style.display = '';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+</script>
+<script defer src="/cookie-consent.js"></script>
+</body>
+</html>

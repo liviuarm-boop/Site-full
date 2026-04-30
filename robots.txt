@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /cloudflare-worker.js
+Disallow: /newsletter-worker.js
+Disallow: /fetch_data.py
+
+Sitemap: https://www.ghidbursa.ro/sitemap.xml

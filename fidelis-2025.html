@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+
+<html lang="ro">
+<head>
+<meta charset="utf-8"/>
+<style data-critical="true">
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+ --black: #080B0F;
+ --dark: #0D1117;
+ --card: #111820;
+ --card2: #141E28;
+ --border: #1E2A38;
+ --accent: #00D4FF;
+ --accent2: #00FF94;
+ --gold: #FFB800;
+ --red: #FF4D6D;
+ --text: #E8EDF2;
+ --muted: #6B7A8D;
+ --font-display: 'Plus Jakarta Sans', sans-serif;
+ --font-body: 'DM Sans', sans-serif;
+ --nav-h: 56px;
+ --ticker-h: 76px;
+ --offset: 132px; 
+}
+@media (min-width: 768px) {
+ :root {
+ --nav-h: 72px;
+ --offset: 148px;
+ }
+}
+html { scroll-behavior: smooth; font-size: 15px; }
+body {
+ background: var(--black);
+ color: var(--text);
+ font-family: var(--font-body);
+ line-height: 1.6;
+ overflow-x: hidden;
+ -webkit-font-smoothing: antialiased;
+ width: 100%;
+ max-width: 100vw;
+}
+body::before {
+ content: '';
+ position: fixed; inset: 0;
+ background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+ pointer-events: none; z-index: 0; opacity: 0.5;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+img { max-width: 100%; height: auto; display: block; }
+h1, h2, h3, h4 {
+ font-family: var(--font-display);
+ -webkit-font-smoothing: antialiased;
+ letter-spacing: -0.01em;
+ line-height: 1.18;
+}
+h1 { font-size: clamp(18px, 2vw, 28px); font-weight: 700; }
+h2 { font-size: clamp(18px, 2.5vw, 28px); font-weight: 700; }
+h3 { font-size: clamp(15px, 2vw, 20px); font-weight: 600; }
+h4 { font-size: 14px; font-weight: 700; }
+p { color: rgba(232,237,242,.82); line-height: 1.75; font-size: 15px; }
+nav {
+ position: fixed; top: 0; left: 0; right: 0;
+ z-index: 200;
+ height: var(--nav-h);
+ display: flex; align-items: center; justify-content: space-between;
+ padding: 0 20px;
+ background: rgba(8,11,15,0.92);
+ backdrop-filter: blur(24px);
+ border-bottom: 1px solid var(--border);
+}
+@media (min-width: 768px) { nav { padding: 0 48px; } }
+@media (min-width: 1280px) { nav { padding: 0 64px; } }
+.nav-logo {
+ font-family: var(--font-display);
+ font-size: 18px; font-weight: 800; letter-spacing: -0.02em;
+ color: var(--text); text-decoration: none;
+ display: flex; align-items: center; gap: 8px;
+ flex-shrink: 0;
+}
+@media (min-width: 768px) { .nav-logo { font-size: 22px; } }
+.nav-logo span { color: var(--accent); }
+.nav-logo:hover { text-decoration: none; }
+.nav-dot {
+ width: 8px; height: 8px;
+ background: var(--accent2); border-radius: 50%;
+ animation: pulse 2s ease-in-out infinite; flex-shrink: 0;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+.nav-links {
+ display: none;
+ align-items: center; gap: 28px; list-style: none;
+}
+@media (min-width: 768px) { .nav-links { display: flex; } }
+.nav-links a { color: var(--muted); font-size: 14px; font-weight: 500; transition: color .2s; text-decoration: none; }
+.nav-links a:hover { color: var(--text); }
+.nav-cta {
+ background: var(--accent) !important;
+ color: var(--black) !important;
+ padding: 9px 18px; border-radius: 6px;
+ font-weight: 700 !important; font-size: 13px !important;
+}
+.nav-cta:hover { opacity: .85; }
+.hamburger {
+ display: flex; flex-direction: column; gap: 5px;
+ background: none; border: none; cursor: pointer; padding: 6px;
+}
+@media (min-width: 768px) { .hamburger { display: none; } }
+.hamburger span {
+ display: block; width: 22px; height: 2px;
+ background: var(--text); border-radius: 2px;
+ transition: all .3s;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.mobile-nav {
+ display: none; position: fixed;
+ top: var(--nav-h); left: 0; right: 0;
+ background: rgba(8,11,15,.98);
+ border-bottom: 1px solid var(--border);
+ z-index: 199; flex-direction: column;
+ padding: 8px 0 16px;
+ transform: translateY(-10px); opacity: 0;
+ transition: transform .25s, opacity .25s;
+}
+.mobile-nav.open {
+ display: flex; transform: translateY(0); opacity: 1;
+}
+.mobile-nav a {
+ display: block; padding: 14px 24px;
+ color: var(--text); font-size: 15px; font-weight: 500;
+ border-bottom: 1px solid rgba(30,42,56,.5);
+ text-decoration: none; transition: background .15s;
+}
+.mobile-nav a:last-child { border-bottom: none; }
+.mobile-nav a:hover { background: rgba(0,212,255,.05); }
+.mobile-nav .mobile-cta {
+ margin: 12px 24px 0;
+ background: var(--accent); color: var(--black) !important;
+ border-radius: 8px; text-align: center; font-weight: 700 !important;
+ border-bottom: none !important;
+}
+.ticker-bar {
+ position: sticky;
+ top: var(--nav-h);
+ z-index: 150;
+ height: var(--ticker-h);
+ background: rgba(8,11,15,.98);
+ border-bottom: 1px solid var(--border);
+ overflow: hidden;
+}
+.ticker-bar .tradingview-widget-container,
+.ticker-bar .tradingview-widget-container__widget { height: 100% !important; }
+.section-inner { max-width: 1280px; margin: 0 auto; padding: 0 20px; }
+.reveal,.reveal-left,.reveal-right,.reveal-scale{
+ opacity:0;
+ transition:opacity .65s cubic-bezier(.4,0,.2,1),transform .65s cubic-bezier(.4,0,.2,1);
+ will-change:opacity,transform;
+}
+.reveal{transform:translateY(28px)}
+.reveal-left{transform:translateX(-28px)}
+.reveal-right{transform:translateX(28px)}
+.reveal-scale{transform:scale(.96)}
+.reveal.visible,.reveal-left.visible,.reveal-right.visible,.reveal-scale.visible{
+ opacity:1;transform:none;
+}
+@keyframes forceVisible { to { opacity: 1; tran
+.btn {
+ display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+ font-family: var(--font-display); font-weight: 700;
+ border-radius: 8px; cursor: pointer;
+ text-decoration: none; transition: opacity .2s, transform .15s;
+ white-space: nowrap;
+}
+.btn:hover { opacity: .85; transform: translateY(-1px); text-decoration: none; }
+.btn:active { transform: translateY(0); }
+.btn-primary { background: var(--accent); color: var(--black); padding: 13px 24px; font-size: 14px; }
+.btn-secondary { background: rgba(0,212,255,.1); border: 1px solid rgba(0,212,255,.25); color: var(--accent); padding: 12px 22px; font-size: 14px; }
+.btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 11px 20px; font-size: 13px; }
+.btn-ghost:hover { border-color: var(--text); color: var(--text); }
+.btn-green { background: rgba(0,255,148,.1); border: 1px solid rgba(0,255,148,.25); color: var(--accent2); padding: 12px 22px; font-size: 14px; }
+.btn-full { width: 100%; }
+.btn-sm { padding: 8px 14px; font-size: 12px; }
+.btn-lg { padding: 16px 32px; font-size: 16px; }
+</style>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Titluri de Stat Fidelis 2026 — Ghid Complet: Dobânzi, Cum Cumperi, Riscuri | GhidBursa.ro</title>
+<meta name="description" content="Ghid complet Fidelis 2026: dobânzi RON și EUR, cum cumperi online în 30 de minute, avantajul impozitului 0% și comparație cu depozitele."/>
+
+<style>
+
+.page{max-width:900px;margin:0 auto;padding:calc(var(--nav-h) + 20px) 20px 60px;display:grid;grid-template-columns:1fr;gap:24px;align-items:start}@media(min-width:900px){.page{padding:calc(var(--nav-h) + 20px) 40px 80px;grid-template-columns:1fr 280px;gap:60px}}
+.main-col{}
+
+.breadcrumb a:hover{color:var(--accent)}
+.article-cat{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:5px 12px;border-radius:4px;margin-bottom:16px}
+.cat-gold{background:rgba(255,184,0,.08);border:1px solid rgba(255,184,0,.2);color:var(--gold)}
+.cat-blue{background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);color:var(--accent)}
+.cat-green{background:rgba(0,255,148,.08);border:1px solid rgba(0,255,148,.2);color:var(--accent2)}
+h1{font-family:var(--font-display);font-size:clamp(22px,5vw,38px);font-weight:700;line-height:1.08;letter-spacing:-.01em;margin-bottom:16px;-webkit-font-smoothing:antialiased}
+.article-meta{display:flex;gap:20px;font-size:13px;color:var(--muted);padding:18px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:36px}
+h2{font-family:var(--font-display);font-size:24px;font-weight:700;letter-spacing:-.01em;margin:40px 0 16px;padding-top:40px;border-top:1px solid var(--border);-webkit-font-smoothing:antialiased}
+h2:first-of-type{border-top:none;padding-top:0;margin-top:0}
+h3{font-family:var(--font-display);font-size:18px;font-weight:700;margin:24px 0 10px;-webkit-font-smoothing:antialiased}
+p{color:rgba(232,237,242,.85);line-height:1.8;margin-bottom:16px;font-size:15px}
+strong{color:var(--text);font-weight:600}
+ul,ol{color:rgba(232,237,242,.8);padding-left:20px;margin-bottom:16px;font-size:15px}
+li{margin-bottom:8px;line-height:1.7}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.info-box{background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.15);border-radius:12px;padding:20px 24px;margin:20px 0}
+.info-box p{font-size:14px;margin:0;line-height:1.7;color:rgba(232,237,242,.85)}
+.warning{background:rgba(255,184,0,.05);border:1px solid rgba(255,184,0,.2);border-radius:12px;padding:20px 24px;margin:20px 0}
+.warning p{font-size:14px;margin:0;line-height:1.6;color:rgba(232,237,242,.75)}
+.warning-title{font-weight:700;color:var(--gold);margin-bottom:8px;font-size:13px}
+.success{background:rgba(0,255,148,.05);border:1px solid rgba(0,255,148,.2);border-radius:12px;padding:20px 24px;margin:20px 0}
+.success p{font-size:14px;margin:0;line-height:1.6}
+.success-title{font-weight:700;color:var(--accent2);margin-bottom:8px;font-size:13px}
+table.data-table{width:100%;border-collapse:collapse;border:1px solid var(--border);border-radius:12px;overflow:hidden;margin:20px 0}
+table.data-table th{background:rgba(255,255,255,.02);padding:12px 16px;text-align:left;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
+table.data-table td{padding:14px 16px;border-bottom:1px solid var(--border);font-size:14px}
+table.data-table tr:last-child td{border-bottom:none}
+table.data-table tbody tr:hover{background:rgba(255,255,255,.02)}
+.green{color:var(--accent2)}
+.gold{color:var(--gold)}
+.red{color:var(--red)}
+.sidebar{display:flex;flex-direction:column;gap:16px}
+.side-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px}
+.side-card h4{font-family:var(--font-display);font-size:14px;font-weight:700;margin-bottom:16px;-webkit-font-smoothing:antialiased}
+.side-card ul{list-style:none;padding:0;display:flex;flex-direction:column;gap:8px}
+.side-card ul li{font-size:13px;color:var(--muted)}
+.side-card ul li a{color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:8px;transition:color .2s}
+.side-card ul li a:hover{color:var(--accent)}
+.side-card ul li a::before{content:'';width:4px;height:4px;background:var(--border);border-radius:50%;flex-shrink:0}
+.btn-cta{display:block;background:var(--accent);color:var(--black);font-family:var(--font-display);font-weight:700;font-size:14px;padding:14px;border-radius:8px;text-decoration:none;text-align:center;transition:opacity .2s;margin-bottom:10px}
+.btn-cta:hover{opacity:.85}
+.btn-sec{display:block;border:1px solid var(--border);color:var(--muted);font-size:13px;padding:12px;border-radius:8px;text-decoration:none;text-align:center;transition:all .2s}
+.btn-sec:hover{border-color:var(--text);color:var(--text)}
+.disclaimer{font-size:10px;color:var(--muted);margin-top:10px;line-height:1.5;opacity:.7}</style>
+<link href="shared.css?v=12" rel="stylesheet"/>
+<link href="mobile.css?v=12" rel="stylesheet"/>
+<link href="https://www.ghidbursa.ro/fidelis-2025.html" rel="canonical"/>
+<meta content="website" property="og:type"/>
+<meta content="Titluri de Stat Fidelis 2026 — Ghid Complet: Dobânzi, Cum Cumperi, Riscuri | GhidBursa.ro" property="og:title"/>
+<meta content="Tot ce trebuie să știi despre titlurile de stat Fidelis 2026. Dobânzi actuale, cum cumperi online, diferența față de depozite bancare și impozitare 0%." property="og:description"/>
+<meta content="https://www.ghidbursa.ro/fidelis-2025.html" property="og:url"/>
+<meta content="GhidBursa.ro" property="og:site_name"/>
+<meta content="summary" name="twitter:card"/>
+<meta content="Titluri de Stat Fidelis 2026 — Ghid Complet: Dobânzi, Cum Cumperi, Riscuri | GhidBursa.ro" name="twitter:title"/>
+<meta content="Tot ce trebuie să știi despre titlurile de stat Fidelis 2026. Dobânzi actuale, cum cumperi online, diferența față de depozite bancare și impozitare 0%." name="twitter:description"/>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Titluri de Stat Fidelis 2026 — Ghid Complet: Dobânzi, Cum Cumperi, Riscuri | GhidBursa.ro","description":"Tot ce trebuie să știi despre titlurile de stat Fidelis 2026. Dobânzi actuale, cum cumperi online, diferența față de depozite bancare și impozitare 0%.","url":"https://www.ghidbursa.ro/fidelis-2025.html","author":{"@type":"Organization","name":"GhidBursa.ro","url":"https://www.ghidbursa.ro"},"publisher":{"@type":"Organization","name":"GhidBursa.ro","logo":{"@type":"ImageObject","url":"https://www.ghidbursa.ro/favicon.png"}},"dateModified": "2026-03-19"}
+</script>
+<meta property="og:image" content="https://www.ghidbursa.ro/og-image.png"/>
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta property="og:locale" content="ro_RO"/>
+  <meta property="og:site_name" content="GhidBursa.ro"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="@GhidBursa"/>
+  <meta name="twitter:image" content="https://www.ghidbursa.ro/og-image.png"/>
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"/>
+  <meta name="author" content="GhidBursa.ro"/>
+  <meta http-equiv="content-language" content="ro"/>
+  <meta name="theme-color" content="#080B0F"/>
+  <link rel="dns-prefetch" href="//s3.tradingview.com"/>
+    <link rel="stylesheet" href="/fonts/fonts.css"/>
+<link rel="preload" href="/fonts/plus-jakarta-sans-700.woff2" as="font" type="font/woff2" crossorigin="anonymous" fetchpriority="high"/>
+<link rel="stylesheet" href="/cookie-consent.css"/>
+<style>@media(max-width:767px){.article-meta{flex-direction:column;gap:6px;font-size:12px}.sidebar,.side-card{position:static!important}.page{overflow-x:hidden}}</style>
+</head>
+<body class="no-ticker">
+<nav>
+<a class="nav-logo" href="index.html"><div class="nav-dot"></div>Ghid<span>Bursa</span>.ro</a>
+<ul class="nav-links">
+<li><a href="brokeri.html">Brokeri</a></li>
+<li><a href="ghiduri.html">Ghiduri</a></li>
+<li><a href="screener.html">Screener BVB</a></li>
+<li><a href="calculatoare.html">Calculatoare</a></li>
+<li><a href="newsletter.html">Newsletter</a></li>
+<li><a class="nav-cta" href="brokeri.html">Compară brokeri →</a></li>
+</ul>
+<button aria-label="Meniu" class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
+</nav>
+<div class="mobile-nav" id="mobileNav">
+<a href="index.html">Acasă</a>
+<a href="brokeri.html">Brokeri</a>
+<a href="ghiduri.html">Ghiduri</a>
+<a href="screener.html">Screener BVB</a>
+<a href="calculatoare.html">Calculatoare</a>
+<a href="newsletter.html">Newsletter</a>
+<a href="fear-greed.html">Sentiment BVB</a>
+<a href="fidelis-2025.html">Fidelis 2026</a>
+<a href="glosar.html">Glosar</a>
+<a href="despre-noi.html">Contact</a>
+<a class="mobile-cta" href="brokeri.html">Compară brokeri →</a>
+</div>
+<div class="page">
+<div class="main-col">
+<div class="breadcrumb"><a href="index.html">Acasă</a> › <span>Titluri de stat</span></div>
+<div class="article-cat cat-gold">Titluri de stat</div>
+<h1>Fidelis 2026: dobânzi, cum cumperi, cât câștigi.</h1>
+<div class="article-meta">Actualizat: Ianuarie 2026 · 12 min lectură · Nivel: Oricine</div>
+<div class="success"><div class="success-title">✓ Ce vei ști după ce citești</div><p>Ce sunt titlurile de stat Fidelis, ce dobânzi oferă în 2025, cum le cumperi în mai puțin de 30 de minute, de ce sunt scutite de impozit și cum se compară cu depozitele bancare.</p></div>
+<h2>Ce este programul Fidelis?</h2>
+<p>Fidelis este programul prin care <strong>Statul Român împrumută bani direct de la cetățeni</strong> și le plătește dobândă. Tu dai bani statului pe o perioadă fixă (1, 3 sau 5 ani) și primești dobândă semestrială sau anuală.</p>
+<p>Este cel mai sigur instrument de investiție disponibil în România — garantat de statul român, reglementat de Ministerul Finanțelor. Mai sigur decât orice depozit bancar, deoarece depozitele sunt garantate doar până la 100.000 EUR prin FGDB, pe când titlurile de stat sunt garantate de stat fără plafon.</p>
+<h2>Dobânzile Fidelis 2026</h2>
+<p>Dobânzile variază în funcție de emisiune (seria din acel an) și maturitate. Cifrele din tabelul de mai jos sunt orientative bazate pe emisiunile recente:</p>
+<div class="table-wrap" style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table class="data-table">
+<thead><tr><th>Maturitate</th><th>Dobândă RON (est.)</th><th>Dobândă EUR (est.)</th><th>Impozit</th><th>Plată dobândă</th></tr></thead>
+<tbody>
+<tr><td><strong>1 an</strong></td><td class="green"><strong>~5.50%</strong></td><td class="green"><strong>~4.00%</strong></td><td class="green">0%</td><td>La scadență</td></tr>
+<tr><td><strong>3 ani</strong></td><td class="green"><strong>~6.00%</strong></td><td class="green"><strong>~4.25%</strong></td><td class="green">0%</td><td>Semestrial</td></tr>
+<tr><td><strong>5 ani</strong></td><td class="green"><strong>~6.50%</strong></td><td class="green"><strong>~4.50%</strong></td><td class="green">0%</td><td>Semestrial</td></tr>
+</tbody>
+</table></div>
+<div class="warning"><div class="warning-title">Dobânzile variază între emisiuni</div><p>Fidelis se emite de 2-3 ori pe an. Dobânzile de mai sus sunt estimative bazate pe emisiunile din 2024. Dobânzile exacte pentru emisiunile 2025 vor fi anunțate de Ministerul Finanțelor cu câteva săptămâni înainte de perioadele de subscriere. Urmărește mfinante.ro pentru anunțuri oficiale.</p></div>
+<h2>Avantajul decisiv: impozit 0%</h2>
+<p>Acesta este cel mai important lucru despre Fidelis: <strong>dobânzile sunt scutite de impozit prin lege</strong> (Legea nr. 135/2023). Nu plătești nimic din dobânda câștigată — spre deosebire de:</p>
+<ul>
+<li>Depozite bancare — 10% impozit pe dobândă</li>
+<li>Acțiuni BVB — 10% impozit pe câștig din vânzare + 8% pe dividende</li>
+<li>Obligațiuni corporative — 10% impozit reținut la sursă</li>
+<li>Fonduri mutuale — impozit pe câștig</li>
+</ul>
+<p>La o dobândă de 6% pe an, echivalentul unui depozit bancar care să ofere același randament net ar trebui să fie de <strong>6.67%</strong> — practic inexistent în 2025.</p>
+<h2>Fidelis vs Depozit bancar — Comparație reală</h2>
+<div class="table-wrap" style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table class="data-table">
+<thead><tr><th>Criteriu</th><th>Fidelis RON 3 ani</th><th>Depozit bancar</th></tr></thead>
+<tbody>
+<tr><td>Dobândă brută</td><td class="green">~6.00%</td><td>4.00-5.50%</td></tr>
+<tr><td>Impozit</td><td class="green">0%</td><td>10%</td></tr>
+<tr><td>Dobândă netă efectivă</td><td class="green"><strong>~6.00%</strong></td><td>3.60-4.95%</td></tr>
+<tr><td>Garanție</td><td class="green">Statul Român (nelimitat)</td><td>FGDB (max 100k EUR)</td></tr>
+<tr><td>Lichiditate</td><td class="gold">Se vinde pe BVB oricând</td><td>Blocat sau penalizat</td></tr>
+<tr><td>Unde cumperi</td><td>Prin bancă sau broker cu acces BVB</td><td>Orice bancă</td></tr>
+</tbody>
+</table></div>
+<h2>Cum cumperi Fidelis pas cu pas</h2>
+<h3>Varianta 1 — Prin broker (recomandat)</h3>
+<p><strong>Pasul 1:</strong> Accesezi Fidelis prin banca ta (BT, ING, BCR, Raiffeisen au acces direct la subscriere) sau prin orice broker autorizat ASF cu acces la BVB.</p>
+<p><strong>Pasul 2:</strong> Depui fonduri în cont — RON sau EUR, în funcție de seria Fidelis care te interesează.</p>
+<p><strong>Pasul 3:</strong> În perioada de subscriere (de obicei 2 săptămâni), plasezi ordin de cumpărare pentru seria dorită — exact ca și cumpărarea unei acțiuni.</p>
+<p><strong>Pasul 4:</strong> La data emisiunii, titlurile apar în portofoliu. Primești dobânda semestrial sau anual direct în cont.</p>
+<div class="info-box reveal"><p><strong>Comision pentru Fidelis:</strong> Brokerii autorizați ASF percep în general 0.10-0.20% din valoarea cumpărată. La 10.000 RON investiți, comisionul este de 10-20 RON — neglijabil față de dobânda anuală câștigată.</p></div>
+<h3>Varianta 2 — Prin bancă</h3>
+<p>Poți cumpăra Fidelis și direct prin băncile partenere (BCR, BRD, Banca Transilvania, ING etc.) în perioadele de subscriere. Nu ai nevoie de cont de brokeraj. Dezavantajul: nu poți vinde pe BVB dacă ai nevoie urgentă de lichiditate.</p>
+<h2>Riscuri de știut</h2>
+<ul>
+<li><strong>Risc de dobândă:</strong> Dacă dobânzile cresc după ce ai cumpărat, titlurile tale vechi devin mai puțin atractive. Prețul pe piața secundară poate scădea sub 100 (sub valoarea nominală).</li>
+<li><strong>Risc de lichiditate:</strong> Fidelis se tranzacționează pe BVB dar volumele pot fi mici — nu poți vinde întotdeauna rapid la prețul dorit.</li>
+<li><strong>Risc de inflație:</strong> Dacă inflația depășește dobânda Fidelis, câștigul real devine negativ.</li>
+<li><strong>Nu există risc de default practic</strong> — statul român nu a dat faliment și este obligat prin lege să plătească.</li>
+</ul>
+<h2>Cât să investești în Fidelis?</h2>
+<p>Nu există un răspuns universal, dar un portofoliu echilibrat pentru un investitor român cu toleranță medie la risc ar putea aloca:</p>
+<ul>
+<li><strong>30-50%</strong> — Fidelis RON (siguranță + randament bun)</li>
+<li><strong>30-40%</strong> — Acțiuni BVB (creștere + dividende)</li>
+<li><strong>10-20%</strong> — ETF-uri globale (diversificare internațională)</li>
+<li><strong>10%</strong> — Lichidități (fond de urgență)</li>
+</ul>
+</div>
+<aside class="sidebar">
+<div class="side-card">
+<h4>Cumpără Fidelis prin</h4>
+<a class="btn-cta" href="xtb-review.html">XTB — deschide cont gratuit</a>
+<a class="btn-sec" href="brokeri.html">XTB — clienți BT</a>
+<div class="disclaimer">Fidelis se poate cumpăra și prin bancă, fără broker.</div>
+</div>
+<div class="side-card">
+<h4>Articole conexe</h4>
+<ul>
+<li><a href="cum-investesti-bvb.html">Cum investești la BVB</a></li>
+<li><a href="impozit-actiuni-anaf.html">Impozit investiții România</a></li>
+<li><a href="titluri-stat-romania.html">Ghid obligațiuni de stat</a></li>
+<li><a href="portofoliu-incepator.html">Portofoliu pentru începători</a></li>
+<li><a href="dividende-bvb-2025.html">Top dividende BVB 2025</a></li>
+</ul>
+</div>
+</aside>
+</div>
+<footer>
+<a href="index.html" style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:16px;color:var(--text)">Ghid<span style="color:var(--accent)">Bursa</span>.ro</a>
+<div class="footer-links">
+      <a href="unsubscribe.html">Dezabonare newsletter</a>
+<a href="brokeri.html">Brokeri</a>
+<a href="ghiduri.html">Ghiduri</a>
+<a href="screener.html">Screener BVB</a>
+<a href="calculatoare.html">Calculatoare</a>
+<a href="newsletter.html">Newsletter</a>
+<a href="fear-greed.html">Sentiment BVB</a>
+<a href="calendar-dividende.html">Dividende</a>
+<a href="glosar.html">Glosar</a>
+<a href="legal.html#termeni">Termeni</a>
+<a href="legal.html#disclaimer">Disclaimer</a>
+<a href="despre-noi.html">Contact</a>
+</div>
+<span>© 2026 GhidBursa.ro</span>
+<p class="footer-disclaimer">Investițiile implică riscuri. Conținutul GhidBursa.ro este informativ și nu constituie consultanță financiară. Verificați toate informațiile înainte de a lua decizii de investiție.</p>
+</footer>
+<script defer="" src="shared.js"></script>
+<script defer src="/cookie-consent.js"></script>
+</body>
+</html>

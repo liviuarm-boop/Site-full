@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8"/>
+<style data-critical="true">
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+ --black: #080B0F;
+ --dark: #0D1117;
+ --card: #111820;
+ --card2: #141E28;
+ --border: #1E2A38;
+ --accent: #00D4FF;
+ --accent2: #00FF94;
+ --gold: #FFB800;
+ --red: #FF4D6D;
+ --text: #E8EDF2;
+ --muted: #6B7A8D;
+ --font-display: 'Plus Jakarta Sans', sans-serif;
+ --font-body: 'DM Sans', sans-serif;
+ --nav-h: 56px;
+ --ticker-h: 76px;
+ --offset: 132px; 
+}
+@media (min-width: 768px) {
+ :root {
+ --nav-h: 72px;
+ --offset: 148px;
+ }
+}
+html { scroll-behavior: smooth; font-size: 15px; }
+body {
+ background: var(--black);
+ color: var(--text);
+ font-family: var(--font-body);
+ line-height: 1.6;
+ overflow-x: hidden;
+ -webkit-font-smoothing: antialiased;
+ width: 100%;
+ max-width: 100vw;
+}
+body::before {
+ content: '';
+ position: fixed; inset: 0;
+ background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+ pointer-events: none; z-index: 0; opacity: 0.5;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+img { max-width: 100%; height: auto; display: block; }
+h1, h2, h3, h4 {
+ font-family: var(--font-display);
+ -webkit-font-smoothing: antialiased;
+ letter-spacing: -0.01em;
+ line-height: 1.18;
+}
+h1 { font-size: clamp(18px, 2vw, 28px); font-weight: 700; }
+h2 { font-size: clamp(18px, 2.5vw, 28px); font-weight: 700; }
+h3 { font-size: clamp(15px, 2vw, 20px); font-weight: 600; }
+h4 { font-size: 14px; font-weight: 700; }
+p { color: rgba(232,237,242,.82); line-height: 1.75; font-size: 15px; }
+nav {
+ position: fixed; top: 0; left: 0; right: 0;
+ z-index: 200;
+ height: var(--nav-h);
+ display: flex; align-items: center; justify-content: space-between;
+ padding: 0 20px;
+ background: rgba(8,11,15,0.92);
+ backdrop-filter: blur(24px);
+ border-bottom: 1px solid var(--border);
+}
+@media (min-width: 768px) { nav { padding: 0 48px; } }
+@media (min-width: 1280px) { nav { padding: 0 64px; } }
+.nav-logo {
+ font-family: var(--font-display);
+ font-size: 18px; font-weight: 800; letter-spacing: -0.02em;
+ color: var(--text); text-decoration: none;
+ display: flex; align-items: center; gap: 8px;
+ flex-shrink: 0;
+}
+@media (min-width: 768px) { .nav-logo { font-size: 22px; } }
+.nav-logo span { color: var(--accent); }
+.nav-logo:hover { text-decoration: none; }
+.nav-dot {
+ width: 8px; height: 8px;
+ background: var(--accent2); border-radius: 50%;
+ animation: pulse 2s ease-in-out infinite; flex-shrink: 0;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+.nav-links {
+ display: none;
+ align-items: center; gap: 28px; list-style: none;
+}
+@media (min-width: 768px) { .nav-links { display: flex; } }
+.nav-links a { color: var(--muted); font-size: 14px; font-weight: 500; transition: color .2s; text-decoration: none; }
+.nav-links a:hover { color: var(--text); }
+.nav-cta {
+ background: var(--accent) !important;
+ color: var(--black) !important;
+ padding: 9px 18px; border-radius: 6px;
+ font-weight: 700 !important; font-size: 13px !important;
+}
+.nav-cta:hover { opacity: .85; }
+.hamburger {
+ display: flex; flex-direction: column; gap: 5px;
+ background: none; border: none; cursor: pointer; padding: 6px;
+}
+@media (min-width: 768px) { .hamburger { display: none; } }
+.hamburger span {
+ display: block; width: 22px; height: 2px;
+ background: var(--text); border-radius: 2px;
+ transition: all .3s;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.mobile-nav {
+ display: none; position: fixed;
+ top: var(--nav-h); left: 0; right: 0;
+ background: rgba(8,11,15,.98);
+ border-bottom: 1px solid var(--border);
+ z-index: 199; flex-direction: column;
+ padding: 8px 0 16px;
+ transform: translateY(-10px); opacity: 0;
+ transition: transform .25s, opacity .25s;
+}
+.mobile-nav.open {
+ display: flex; transform: translateY(0); opacity: 1;
+}
+.mobile-nav a {
+ display: block; padding: 14px 24px;
+ color: var(--text); font-size: 15px; font-weight: 500;
+ border-bottom: 1px solid rgba(30,42,56,.5);
+ text-decoration: none; transition: background .15s;
+}
+.mobile-nav a:last-child { border-bottom: none; }
+.mobile-nav a:hover { background: rgba(0,212,255,.05); }
+.mobile-nav .mobile-cta {
+ margin: 12px 24px 0;
+ background: var(--accent); color: var(--black) !important;
+ border-radius: 8px; text-align: center; font-weight: 700 !important;
+ border-bottom: none !important;
+}
+.ticker-bar {
+ position: sticky;
+ top: var(--nav-h);
+ z-index: 150;
+ height: var(--ticker-h);
+ background: rgba(8,11,15,.98);
+ border-bottom: 1px solid var(--border);
+ overflow: hidden;
+}
+.ticker-bar .tradingview-widget-container,
+.ticker-bar .tradingview-widget-container__widget { height: 100% !important; }
+.section-inner { max-width: 1280px; margin: 0 auto; padding: 0 20px; }
+.reveal,.reveal-left,.reveal-right,.reveal-scale{
+ opacity:0;
+ transition:opacity .65s cubic-bezier(.4,0,.2,1),transform .65s cubic-bezier(.4,0,.2,1);
+ will-change:opacity,transform;
+}
+.reveal{transform:translateY(28px)}
+.reveal-left{transform:translateX(-28px)}
+.reveal-right{transform:translateX(28px)}
+.reveal-scale{transform:scale(.96)}
+.reveal.visible,.reveal-left.visible,.reveal-right.visible,.reveal-scale.visible{
+ opacity:1;transform:none;
+}
+@keyframes forceVisible { to { opacity: 1; tran
+.btn {
+ display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+ font-family: var(--font-display); font-weight: 700;
+ border-radius: 8px; cursor: pointer;
+ text-decoration: none; transition: opacity .2s, transform .15s;
+ white-space: nowrap;
+}
+.btn:hover { opacity: .85; transform: translateY(-1px); text-decoration: none; }
+.btn:active { transform: translateY(0); }
+.btn-primary { background: var(--accent); color: var(--black); padding: 13px 24px; font-size: 14px; }
+.btn-secondary { background: rgba(0,212,255,.1); border: 1px solid rgba(0,212,255,.25); color: var(--accent); padding: 12px 22px; font-size: 14px; }
+.btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 11px 20px; font-size: 13px; }
+.btn-ghost:hover { border-color: var(--text); color: var(--text); }
+.btn-green { background: rgba(0,255,148,.1); border: 1px solid rgba(0,255,148,.25); color: var(--accent2); padding: 12px 22px; font-size: 14px; }
+.btn-full { width: 100%; }
+.btn-sm { padding: 8px 14px; font-size: 12px; }
+.btn-lg { padding: 16px 32px; font-size: 16px; }
+</style>
+
+<meta name="description" content="Ghid complet analiză fundamentală acțiuni BVB 2026: P/E, P/B, ROE, dividend yield explicați cu exemple reale. Calculator P/E inclus. Pentru începători."/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Analiză Fundamentală Acțiuni BVB — Ghid Complet 2026 | GhidBursa.ro</title>
+<meta content="analiza fundamentala actiuni, PE ratio explicat, ROE BVB, cum analizezi o actiune, indicatori bursieri Romania" name="keywords"/>
+<link href="https://www.ghidbursa.ro/analiza-fundamentala.html" rel="canonical"/>
+<meta content="Analiză Fundamentală Acțiuni BVB — Ghid Complet 2026 | GhidBursa.ro" property="og:title"/>
+<meta content="P/E, P/B, ROE, dividend yield explicați cu exemple reale din BVB. Calculator P/E inline. Ghid pentru începători și investitori intermediari." property="og:description"/>
+<meta content="article" property="og:type"/>
+<meta content="https://www.ghidbursa.ro/analiza-fundamentala.html" property="og:url"/>
+<meta content="ro_RO" property="og:locale"/>
+<meta content="GhidBursa.ro" property="og:site_name"/>
+<meta content="summary" name="twitter:card"/>
+<meta name="author" content="GhidBursa.ro"/>
+<meta name="robots" content="index, follow"/>
+<meta name="theme-color" content="#080B0F"/>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Analiză Fundamentală Acțiuni BVB — Ghid Complet 2026","description":"Ghid complet pentru analiza fundamentală a acțiunilor de pe BVB: P/E, P/B, ROE, dividend yield cu exemple reale și calculator interactiv.","author":{"@type":"Organization","name":"GhidBursa.ro"},"publisher":{"@type":"Organization","name":"GhidBursa.ro","url":"https://www.ghidbursa.ro"},"url":"https://www.ghidbursa.ro/analiza-fundamentala.html","dateModified":"2026-03-19","isPartOf":{"@type":"WebSite","name":"GhidBursa.ro","url":"https://www.ghidbursa.ro"}}</script>
+<link href="favicon.svg" rel="icon" type="image/svg+xml"/>
+
+<link href="shared.css?v=12" rel="stylesheet"/>
+<link href="mobile.css?v=12" rel="stylesheet"/>
+<style>
+/* ── ARTICLE LAYOUT ── */
+.guide-hero { padding: calc(var(--nav-h) + 32px) 0 36px; }
+.guide-hero h1 { font-size: clamp(20px, 2.5vw, 32px); margin-bottom: 12px; line-height: 1.2; }
+.guide-hero .lead { font-size: 16px; color: rgba(232,237,242,.75); max-width: 620px; line-height: 1.75; margin-bottom: 20px; }
+
+.article-meta { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 32px; font-size: 12px; color: var(--muted); }
+.article-meta span { display: flex; align-items: center; gap: 5px; }
+
+.article-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+  align-items: start;
+}
+@media(min-width: 1024px) {
+  .article-grid{grid-template-columns:1fr}@media(min-width:900px){.article-grid{grid-template-columns:1fr 280px}}
+}
+
+/* ── ARTICLE BODY ── */
+.article-body { max-width: 720px; }
+.article-body h2 {
+  font-size: clamp(17px, 2vw, 22px);
+  font-weight: 700;
+  margin: 44px 0 14px;
+  padding-top: 8px;
+  color: var(--text);
+  border-top: 1px solid var(--border);
+}
+.article-body h2:first-of-type { margin-top: 0; border-top: none; }
+.article-body h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 28px 0 10px;
+  color: var(--text);
+}
+.article-body p {
+  font-size: 15px;
+  line-height: 1.8;
+  color: rgba(232,237,242,.82);
+  margin-bottom: 16px;
+}
+.article-body ul, .article-body ol {
+  margin: 12px 0 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.article-body li {
+  font-size: 15px;
+  line-height: 1.7;
+  color: rgba(232,237,242,.82);
+}
+.article-body strong { color: var(--text); font-weight: 700; }
+.article-body a { color: var(--accent); }
+.article-body a:hover { text-decoration: underline; }
+
+/* ── CALLOUT BOXES ── */
+.callout {
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin: 24px 0;
+  border-left: 3px solid;
+}
+.callout-blue {
+  background: rgba(0,212,255,.06);
+  border-color: var(--accent);
+}
+.callout-green {
+  background: rgba(0,255,148,.06);
+  border-color: var(--accent2);
+}
+.callout-gold {
+  background: rgba(255,184,0,.06);
+  border-color: var(--gold);
+}
+.callout-red {
+  background: rgba(255,77,109,.06);
+  border-color: var(--red);
+}
+.callout-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.callout-blue .callout-title { color: var(--accent); }
+.callout-green .callout-title { color: var(--accent2); }
+.callout-gold .callout-title { color: var(--gold); }
+.callout-red .callout-title { color: var(--red); }
+.callout p { margin: 0; font-size: 14px; }
+
+/* ── DATA TABLES ── */
+.data-table-wrap { overflow-x: auto; margin: 20px 0; border-radius: 12px; border: 1px solid var(--border); }
+.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.data-table th {
+  background: var(--card2);
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.data-table td {
+  padding: 11px 14px;
+  border-bottom: 1px solid rgba(30,42,56,.6);
+  color: rgba(232,237,242,.85);
+  vertical-align: middle;
+}
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: rgba(0,212,255,.025); }
+.data-table .ticker { font-family: var(--font-display); font-weight: 700; color: var(--accent); font-size: 13px; }
+.data-table .val-good { color: var(--accent2); font-weight: 700; }
+.data-table .val-ok { color: var(--gold); font-weight: 700; }
+.data-table .val-muted { color: var(--muted); }
+.data-table .note { font-size: 11px; color: var(--muted); }
+
+/* ── FORMULA BOX ── */
+.formula-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin: 16px 0;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent);
+  text-align: center;
+  letter-spacing: .01em;
+}
+.formula-box span { color: var(--muted); font-weight: 400; font-size: 12px; display: block; margin-top: 4px; font-family: var(--font-body); }
+
+/* ── INLINE CALCULATOR ── */
+.inline-calc {
+  background: var(--card);
+  border: 1px solid rgba(0,212,255,.2);
+  border-radius: 16px;
+  padding: 24px;
+  margin: 32px 0;
+}
+.inline-calc h3 {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.inline-calc .calc-sub { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
+.calc-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+@media(max-width: 480px) { .calc-fields { grid-template-columns: 1fr; } }
+.calc-field label { display: block; font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+.calc-field input, .calc-field select {
+  width: 100%;
+  background: var(--dark);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 10px 13px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: var(--font-body);
+  outline: none;
+  transition: border-color .2s;
+  -webkit-appearance: none;
+}
+.calc-field input:focus, .calc-field select:focus { border-color: var(--accent); }
+.calc-result-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 16px;
+}
+@media(max-width: 480px) { .calc-result-row { grid-template-columns: 1fr 1fr; } }
+.calc-result-card {
+  background: var(--dark);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+}
+.calc-result-card .res-val {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 3px;
+}
+.calc-result-card .res-label { font-size: 10px; color: var(--muted); font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
+.calc-result-card .res-verdict { font-size: 11px; margin-top: 4px; font-weight: 600; }
+.verdict-ieftin { color: var(--accent2); }
+.verdict-ok { color: var(--gold); }
+.verdict-scump { color: var(--red); }
+.verdict-na { color: var(--muted); }
+
+/* ── COMPARISON CARD ── */
+.compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+@media(max-width: 480px) { .compare-grid { grid-template-columns: 1fr; } }
+.compare-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+}
+.compare-card.winner { border-color: rgba(0,255,148,.3); }
+.compare-card-ticker { font-family: var(--font-display); font-size: 22px; font-weight: 700; color: var(--accent); margin-bottom: 2px; }
+.compare-card-name { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
+.compare-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(30,42,56,.6); font-size: 13px; }
+.compare-row:last-child { border-bottom: none; }
+.compare-row .label { color: var(--muted); }
+.compare-row .val { font-weight: 700; }
+.compare-row .val.w { color: var(--accent2); }
+
+/* ── TOC SIDEBAR ── */
+.toc-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  position: sticky;
+  top: calc(var(--offset) + 12px);
+}
+.toc-card h4 { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+.toc-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.toc-list li a {
+  display: block;
+  font-size: 13px;
+  color: var(--muted);
+  padding: 5px 8px;
+  border-radius: 6px;
+  transition: background .15s, color .15s;
+  text-decoration: none;
+}
+.toc-list li a:hover { background: var(--border); color: var(--text); }
+.toc-list li a.active { color: var(--accent); background: rgba(0,212,255,.08); }
+
+.related-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  margin-top: 16px;
+}
+.related-card h4 { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+.related-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--text);
+  font-size: 13px;
+  transition: background .15s;
+  margin-bottom: 2px;
+}
+.related-link:hover { background: var(--border); text-decoration: none; }
+.related-link-icon { font-size: 16px; flex-shrink: 0; }
+
+/* ── PROGRESS BAR ── */
+.read-progress { position: fixed; top: 0; left: 0; height: 2px; background: linear-gradient(90deg, var(--accent), var(--accent2)); z-index: 999; transition: width .1s; }
+</style>
+<link rel="stylesheet" href="/fonts/fonts.css"/>
+<link rel="preload" href="/fonts/plus-jakarta-sans-700.woff2" as="font" type="font/woff2" crossorigin="anonymous" fetchpriority="high"/>
+<link rel="stylesheet" href="/cookie-consent.css"/>
+<style>@media(max-width:767px){.article-meta{flex-direction:column;gap:6px;font-size:12px}.sidebar,.side-card{position:static!important}.page{overflow-x:hidden}}</style>
+</head>
+<body>
+<div class="read-progress" id="readProgress"></div>
+
+<nav>
+<a class="nav-logo" href="index.html"><div class="nav-dot"></div>Ghid<span>Bursa</span>.ro</a>
+<ul class="nav-links">
+<li><a href="brokeri.html">Brokeri</a></li>
+<li><a href="ghiduri.html" style="color:var(--text)">Ghiduri</a></li>
+<li><a href="screener.html">Screener BVB</a></li>
+<li><a href="calculatoare.html">Calculatoare</a></li>
+<li><a href="newsletter.html">Newsletter</a></li>
+<li><a class="nav-cta" href="brokeri.html">Compară brokeri →</a></li>
+</ul>
+<button aria-label="Meniu" class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
+</nav>
+
+<div class="mobile-nav" id="mobileNav">
+<a href="index.html">Acasă</a>
+<a href="brokeri.html">Brokeri</a>
+<a href="ghiduri.html">Ghiduri</a>
+<a href="screener.html">Screener BVB</a>
+<a href="calculatoare.html">Calculatoare</a>
+<a href="newsletter.html">Newsletter</a>
+<a href="fear-greed.html">Sentiment BVB</a>
+<a href="fidelis-2025.html">Fidelis 2026</a>
+<a href="glosar.html">Glosar</a>
+<a href="despre-noi.html">Contact</a>
+<a class="mobile-cta" href="brokeri.html">Compară brokeri →</a>
+</div>
+
+<div class="section-inner">
+
+  <!-- HERO -->
+  <div class="guide-hero reveal">
+    <div class="breadcrumb"><a href="index.html">Acasă</a> › <a href="ghiduri.html">Ghiduri</a> › <span>Analiză fundamentală</span></div>
+    <div class="tag tag-blue" style="margin-bottom:14px">Ghid · Actualizat martie 2026</div>
+    <h1>Cum știi dacă o acțiune merită cumpărată.</h1>
+    <p class="lead">Cum evaluezi dacă o acțiune e ieftină sau scumpă, ce spun cifrele din rapoartele financiare și cum compari două companii față în față. Cu exemple reale din BVB și un calculator interactiv.</p>
+    <div class="article-meta">
+      <span>🕐 15 min lectură</span>
+      <span>📊 Date reale 2025–2026</span>
+      <span>🎯 Nivel: Începători și intermediari</span>
+    </div>
+  </div>
+
+  <div class="article-grid">
+
+    <!-- ARTICLE BODY -->
+    <article class="article-body">
+
+      <!-- 1 -->
+      <h2 id="ce-este">Ce este analiza fundamentală și de ce contează la BVB</h2>
+      <p>Când cumperi o acțiune, cumperi o bucată dintr-o companie reală — cu venituri, profit, datorii și perspective de creștere. <strong>Analiza fundamentală</strong> înseamnă să te uiți la aceste cifre și să judeci dacă prețul din piață reflectă corect valoarea companiei, sau dacă există o discrepanță pe care o poți exploata.</p>
+      <p>Pe BVB, analiza fundamentală are o relevanță aparte din cel puțin două motive. În primul rând, piața este mai puțin acoperită de analiști profesioniști față de NYSE sau Frankfurt — informația circulă mai lent, iar inefficiențele de preț persistă mai mult. În al doilea rând, multe companii din BET sunt companii mature, profitabile, cu politici clare de dividend — exact tipul de companii care se pretează cel mai bine la analiza fundamentală clasică.</p>
+
+      <div class="callout callout-blue">
+        <div class="callout-title">📌 Analiză fundamentală vs. analiză tehnică</div>
+        <p>Analiza fundamentală se uită la <em>ce valorează</em> compania. Analiza tehnică se uită la <em>cum se mișcă</em> prețul. Nu sunt incompatibile — mulți investitori le folosesc pe amândouă — dar pentru un portofoliu de tipul „cumperi și ții", fundamentele contează mai mult decât graficele.</p>
+      </div>
+
+      <!-- 2 -->
+      <h2 id="indicatori-evaluare">Indicatori de evaluare — ce plătești față de ce primești</h2>
+      <p>Primul set de indicatori răspunde la o întrebare simplă: <em>cât de scump sau ieftin este prețul curent față de performanța financiară a companiei?</em></p>
+
+      <h3>P/E — Price-to-Earnings</h3>
+      <p>Cel mai folosit indicator din lume. Formula:</p>
+      <div class="formula-box">P/E = Preț acțiune ÷ Profit net per acțiune (EPS)<span>Exemplu: acțiunea costă 21 RON, EPS = 2,5 RON → P/E = 8,4</span></div>
+      <p>P/E îți spune câți ani de profit plătești pentru a cumpăra compania la prețul curent. Un P/E de 8 înseamnă că plătești echivalentul a 8 ani de profit — dacă profitul rămâne constant. Un P/E de 25 înseamnă că piața anticipează o creștere semnificativă a profitului în viitor.</p>
+
+      <div class="callout callout-gold">
+        <div class="callout-title">⚠️ P/E nu funcționează singur</div>
+        <p>Un P/E mic nu înseamnă automat că acțiunea e ieftină. Poate fi mic pentru că profiturile sunt în scădere, compania are probleme structurale sau sectorul e în declin. Întotdeauna compară P/E-ul cu media sectorului și cu istoricul companiei.</p>
+      </div>
+
+      <p>Pe BVB în 2025–2026, P/E-urile sunt în general mai mici față de piețele occidentale — piața tranzacționează cu un discount față de Europa de Vest, considerat normal pentru o piață emergentă:</p>
+
+      <div class="data-table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Companie</th><th>Ticker</th><th>P/E (2025)</th><th>Sector</th><th>Observație</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><a href="actiune-snp.html">OMV Petrom</a></td><td class="ticker">SNP</td><td class="val-good">4,8×</td><td>Energie</td><td class="note">Companiile petroliere au P/E mic structural</td></tr>
+            <tr><td><a href="actiune-tlv.html">Banca Transilvania</a></td><td class="ticker">TLV</td><td class="val-good">8,2×</td><td>Banking</td><td class="note">Sub media băncilor europene (~10–12×)</td></tr>
+            <tr><td><a href="actiune-brd.html">BRD Groupe SG</a></td><td class="ticker">BRD</td><td class="val-good">7,8×</td><td>Banking</td><td class="note">Similar cu TLV</td></tr>
+            <tr><td><a href="actiune-sng.html">Romgaz</a></td><td class="ticker">SNG</td><td class="val-good">5,1×</td><td>Energie</td><td class="note">Profit mare, capex mic</td></tr>
+            <tr><td><a href="actiune-h2o.html">Hidroelectrica</a></td><td class="ticker">H2O</td><td class="val-ok">11,2×</td><td>Utilități</td><td class="note">Premium față de celelalte utilitare BVB</td></tr>
+            <tr><td><a href="actiune-tgn.html">Transgaz</a></td><td class="ticker">TGN</td><td class="val-good">6,3×</td><td>Utilități</td><td class="note">Reglementat, dividend mare</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>P/B — Price-to-Book</h3>
+      <p>Compară prețul din piață cu valoarea contabilă (activele minus datoriile). Formula:</p>
+      <div class="formula-box">P/B = Capitalizare bursieră ÷ Capitaluri proprii<span>Sau: Preț acțiune ÷ Valoare contabilă per acțiune</span></div>
+      <p>P/B sub 1 înseamnă că piața prețuiește compania mai puțin decât valoarea contabilă a activelor sale — teoretic o oportunitate, practic adesea un semnal că activele nu sunt productive. P/B de 1–2 este normal pentru companii stabile. Peste 3–4 indică o primă mare pentru creștere sau brand.</p>
+      <p>La bănci, P/B este indicatorul preferat față de P/E, pentru că valoarea activelor este mai ușor de măsurat și mai stabilă decât profitul anual. <a href="actiune-tlv.html">TLV</a> tranzacționează în jur de 1,4× P/B, <a href="actiune-brd.html">BRD</a> în jur de 1,2× — ambele sub media băncilor din Europa de Vest (1,5–2×), ceea ce susține argumentul de undervaluation.</p>
+
+      <h3>EV/EBITDA — pentru comparații cross-sector</h3>
+      <p>Enterprise Value împărțit la EBITDA (profit înainte de dobânzi, impozite, depreciere). Mai complex, dar util când compari companii cu structuri de capital foarte diferite sau din sectoare capital-intensive.</p>
+      <p>Un EV/EBITDA de 5–7× este considerat decent pentru companii mature. Sub 4× poate indica o oportunitate sau o capcană de valoare. Peste 12–15× implică așteptări mari de creștere.</p>
+
+      <!-- INLINE CALCULATOR -->
+      <div class="inline-calc reveal" id="pe-calculator">
+        <h3>🧮 Calculator indicatori de evaluare</h3>
+        <p class="calc-sub">Introdu datele unei companii și calculează instant P/E, P/B și randamentul câștigului.</p>
+        <div class="calc-fields">
+          <div class="calc-field">
+            <label>Preț curent (RON)</label>
+            <input type="number" id="ci-price" value="21.40" min="0.01" step="0.01" oninput="calcIndicators()"/>
+          </div>
+          <div class="calc-field">
+            <label>EPS — Profit/acțiune (RON)</label>
+            <input type="number" id="ci-eps" value="2.61" min="0.01" step="0.01" oninput="calcIndicators()"/>
+          </div>
+          <div class="calc-field">
+            <label>Valoare contabilă/acțiune (RON)</label>
+            <input type="number" id="ci-bv" value="15.28" min="0.01" step="0.01" oninput="calcIndicators()"/>
+          </div>
+          <div class="calc-field">
+            <label>Compară cu sectorul</label>
+            <select id="ci-sector" onchange="calcIndicators()">
+              <option value="banking">Banking (P/E mediu: 9×)</option>
+              <option value="energie">Energie (P/E mediu: 6×)</option>
+              <option value="utilitati">Utilități (P/E mediu: 10×)</option>
+              <option value="telecom">Telecom (P/E mediu: 15×)</option>
+              <option value="imobiliare">Imobiliare (P/E mediu: 18×)</option>
+            </select>
+          </div>
+        </div>
+        <div class="calc-result-row" id="ci-results">
+          <div class="calc-result-card">
+            <div class="res-val" id="ci-pe-val">—</div>
+            <div class="res-label">P/E</div>
+            <div class="res-verdict" id="ci-pe-verdict"></div>
+          </div>
+          <div class="calc-result-card">
+            <div class="res-val" id="ci-pb-val">—</div>
+            <div class="res-label">P/B</div>
+            <div class="res-verdict" id="ci-pb-verdict"></div>
+          </div>
+          <div class="calc-result-card">
+            <div class="res-val" id="ci-ey-val">—</div>
+            <div class="res-label">Earnings Yield</div>
+            <div class="res-verdict" id="ci-ey-verdict"></div>
+          </div>
+        </div>
+        <p style="font-size:11px;color:var(--muted);margin-top:12px;margin-bottom:0">Valorile implicite sunt pentru TLV (Banca Transilvania) — poți înlocui cu orice companie. <a href="screener.html">Screenerul BVB</a> are datele actualizate zilnic.</p>
+      </div>
+
+      <!-- 3 -->
+      <h2 id="indicatori-profitabilitate">Indicatori de profitabilitate — calitatea companiei</h2>
+      <p>Dacă indicatorii de evaluare îți spun <em>cât plătești</em>, indicatorii de profitabilitate îți spun <em>ce cumperi</em>. O companie ieftină cu profitabilitate în scădere poate fi o capcană. O companie aparent scumpă cu profitabilitate ridicată și în creștere poate fi o oportunitate.</p>
+
+      <h3>ROE — Return on Equity</h3>
+      <p>Cât profit generează compania pentru fiecare leu investit de acționari. Formula:</p>
+      <div class="formula-box">ROE = Profit net ÷ Capitaluri proprii × 100<span>Exemplu: Profit 500M RON, Capital propriu 3B RON → ROE = 16,7%</span></div>
+      <p>Un ROE peste 15% este considerat bun. Peste 20% este excelent și indică un avantaj competitiv real. Sub 8–10% ridică semne de întrebare despre eficiența managementului sau a modelului de business.</p>
+      <p>Pe BVB, <a href="actiune-sng.html">Romgaz (SNG)</a> are un ROE de ~25%, <a href="actiune-snp.html">OMV Petrom (SNP)</a> de ~22% — ambele indică companii care generează profit consistent din capitalul acționarilor. La polul opus, companiile cu ROE sub 10% merită analizate cu mai multă atenție.</p>
+
+      <h3>ROA — Return on Assets</h3>
+      <p>Similar cu ROE, dar raportează profitul la totalul activelor (nu doar la capitalul propriu). Mai relevant pentru comparații între companii cu grade de îndatorare diferite. Un ROA de 5–10% este decent pentru industria grea; băncile funcționează normal cu ROA de 1–2% (au mult capital, deci active mari).</p>
+
+      <h3>Marja netă</h3>
+      <p>Câți bani rămân profit din fiecare leu de venit. Formula: Profit net ÷ Venituri totale × 100.</p>
+      <p>Marjele variază enorm pe sector: o bancă poate avea marjă netă de 30–40%, un retailer de 2–5%, o companie industrială de 8–15%. De aceea compari <em>mereu cu sectorului propriu</em>, nu absolut.</p>
+
+      <div class="callout callout-green">
+        <div class="callout-title">✅ Regulă practică</div>
+        <p>Caută companii cu ROE stabil sau în creștere pe 3–5 ani, nu doar un an bun. Profitabilitatea consistentă bate profitabilitatea ridicată dar volatilă. Poți verifica evoluția multi-anuală în rapoartele anuale de pe <strong>bvb.ro → Societăți listate → Rapoarte financiare</strong>.</p>
+      </div>
+
+      <!-- 4 -->
+      <h2 id="dividende">Dividende și cash flow — bani reali vs. profit contabil</h2>
+      <p>Profitul net este o cifră contabilă care poate fi influențată de politici de amortizare, ajustări non-cash și alte elemente. <strong>Cash flow-ul operațional</strong> — banii care intră efectiv în companie din activitatea de bază — este mai greu de manipulat și mai relevant pentru un investitor orientat pe dividende.</p>
+
+      <h3>Dividend yield și rata de distribuție</h3>
+      <p>Dividend yield = Dividend anual per acțiune ÷ Preț × 100. Pe BVB sunt unele dintre cele mai mari randamente din Europa emergentă:</p>
+
+      <div class="data-table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Companie</th><th>Dividend yield est. 2026</th><th>Rată distribuție</th><th>Sustenabilitate</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><a href="actiune-tgn.html">Transgaz (TGN)</a></td><td class="val-good">~9,8%</td><td>~70%</td><td class="val-ok">Reglementat, stabil</td></tr>
+            <tr><td><a href="actiune-tel.html">Transelectrica (TEL)</a></td><td class="val-good">~9,1%</td><td>~75%</td><td class="val-ok">Reglementat, stabil</td></tr>
+            <tr><td><a href="actiune-cote.html">Conpet (COTE)</a></td><td class="val-good">~8,2%</td><td>~80%</td><td class="val-ok">Monopol, flux stabil</td></tr>
+            <tr><td><a href="actiune-brd.html">BRD</a></td><td class="val-good">~7,2%</td><td>~65%</td><td class="val-good">Profitabilitate ridicată</td></tr>
+            <tr><td><a href="actiune-sng.html">Romgaz (SNG)</a></td><td class="val-good">~6,8%</td><td>~55%</td><td class="val-good">Cash flow solid</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p><strong>Rata de distribuție</strong> (payout ratio) arată ce procent din profit se plătește ca dividend. O rată de 50–70% este sustenabilă pentru companii mature. Peste 90% ridică semne de întrebare — de unde vine creșterea viitoare? Sub 30% poate indica fie reinvestire agresivă, fie politică conservatoare de capital.</p>
+
+      <div class="callout callout-red">
+        <div class="callout-title">🚩 Semnale de alarmă la dividende</div>
+        <p>Dividend yield foarte mare (peste 12–15%) poate indica că piața anticipează o tăiere a dividendului. Verifică dacă dividendul acoperit de cash flow, nu doar de profit contabil. Un dividend plătit din datorii nu este sustenabil.</p>
+      </div>
+
+      <!-- 5 -->
+      <h2 id="bilant">Bilanțul contabil în 5 minute</h2>
+      <p>Nu trebuie să fii contabil ca să extragi informații utile dintr-un raport anual. Iată ce merită urmărit în maximum 5 minute de lectură.</p>
+
+      <h3>Datoria netă și gradul de îndatorare</h3>
+      <p>Datoria netă = Total datorii financiare − Numerar și echivalente. Compară-o cu EBITDA. Dacă datoria netă / EBITDA este sub 2×, compania are o structură financiară sănătoasă. Peste 4× devine îngrijorător. Companiile cu datorii mari sunt mult mai vulnerabile în recesiuni sau la creșterea dobânzilor.</p>
+      <p>Pe BVB, majoritatea companiilor din BET au datorie netă redusă sau chiar poziție de numerar netă pozitivă — un avantaj structural față de companiile cu același profil din alte piețe.</p>
+
+      <h3>Evoluția veniturilor și profitului pe 3–5 ani</h3>
+      <p>Nu te uita doar la ultimul an — uită-te la trend. O companie cu venituri în creștere constantă de 8–12% pe an merită un P/E mai mare decât una cu venituri stagnante. Tendința contează mai mult decât nivelul absolut al unui singur an.</p>
+
+      <h3>Calitatea câștigurilor</h3>
+      <p>Verifică dacă profitul net este susținut de cash flow operațional real. Formula simplă: Cash flow operațional ÷ Profit net. Dacă raportul este sub 0,7 în mod constant, câștigurile contabile pot fi umflate de ajustări non-cash.</p>
+
+      <!-- 6 -->
+      <h2 id="exemplu-practic">Exemplu practic — TLV vs. BRD față în față</h2>
+      <p>Ambele sunt bănci românești mari, ambele plătesc dividende, ambele sunt lichide pe BVB. Cum le compari? Iată o radiografie rapidă pe baza datelor din 2025:</p>
+
+      <div class="compare-grid">
+        <div class="compare-card winner">
+          <div class="compare-card-ticker">TLV</div>
+          <div class="compare-card-name">Banca Transilvania</div>
+          <div class="compare-row"><span class="label">P/E</span><span class="val">8,2×</span></div>
+          <div class="compare-row"><span class="label">P/B</span><span class="val">1,4×</span></div>
+          <div class="compare-row"><span class="label">ROE</span><span class="val w">17%</span></div>
+          <div class="compare-row"><span class="label">Dividend yield</span><span class="val">4,8%</span></div>
+          <div class="compare-row"><span class="label">Capitalizare</span><span class="val">36,8 mld RON</span></div>
+          <div class="compare-row"><span class="label">Creștere venituri</span><span class="val w">+18% YoY</span></div>
+        </div>
+        <div class="compare-card">
+          <div class="compare-card-ticker">BRD</div>
+          <div class="compare-card-name">BRD Groupe SG</div>
+          <div class="compare-row"><span class="label">P/E</span><span class="val">7,8×</span></div>
+          <div class="compare-row"><span class="label">P/B</span><span class="val">1,2×</span></div>
+          <div class="compare-row"><span class="label">ROE</span><span class="val">15%</span></div>
+          <div class="compare-row"><span class="label">Dividend yield</span><span class="val w">7,2%</span></div>
+          <div class="compare-row"><span class="label">Capitalizare</span><span class="val">9,5 mld RON</span></div>
+          <div class="compare-row"><span class="label">Creștere venituri</span><span class="val">+9% YoY</span></div>
+        </div>
+      </div>
+
+      <p><strong>Ce ne spune comparația?</strong> BRD este mai ieftină pe P/E și P/B, și plătește un dividend aproape dublu. TLV are ROE mai mare și crește mai rapid — piața plătește un premium pentru asta. Alegerea dintre ele depinde de ce cauți: dacă vrei venit din dividende azi, BRD e mai atractivă. Dacă vrei companie cu creștere mai mare pe termen lung, TLV are argumente mai solide. Niciuna nu e greșit de cumpărat — sunt tipare diferite de investiție.</p>
+
+      <div class="callout callout-blue">
+        <div class="callout-title">💡 Poți face această comparație rapid</div>
+        <p>Screenerul nostru BVB are datele actualizate zilnic pentru toate companiile din BET. Poți filtra și sorta după P/E, dividend yield, ROE și altele — <a href="screener.html">deschide screenerul →</a></p>
+      </div>
+
+      <!-- 7 -->
+      <h2 id="limite">Limitele analizei fundamentale — ce nu îți spune</h2>
+      <p>Analiza fundamentală este un instrument puternic, dar nu omniscient. Câteva lucruri importante pe care nu le capturează:</p>
+      <ul>
+        <li><strong>Nu îți spune când.</strong> O acțiune poate fi fundamental ieftină și să rămână așa 2–3 ani. Piețele pot subevalua companii pe perioade lungi.</li>
+        <li><strong>Nu protejează de riscul de sector sau macro.</strong> O bancă bine administrată poate fi lovită de o criză de credit. O companie energetică solidă poate fi afectată de prețul internațional al petrolului.</li>
+        <li><strong>Datele sunt istorice, viitorul e incert.</strong> P/E calculat pe profiturile trecute. Dacă profiturile viitoare sunt mai mici, un P/E de 8 poate deveni efectiv un P/E de 15.</li>
+        <li><strong>Nu surprinde calitatea managementului.</strong> Două companii cu același P/E pot avea management complet diferit — un aspect greu de cuantificat în cifre, dar crucial pe termen lung.</li>
+        <li><strong>Pe BVB specific: lichiditate redusă.</strong> Unele companii mai mici au volume zilnice de tranzacționare mici — poți fi prins cu o poziție greu de lichidat, chiar dacă fundamentele sunt bune.</li>
+      </ul>
+
+      <!-- 8 -->
+      <h2 id="unde-gasesti-datele">Unde găsești datele pentru analiză</h2>
+      <p>Nu trebuie să calculezi totul manual — există surse bune și gratuite:</p>
+      <ul>
+        <li><strong><a href="screener.html">Screenerul GhidBursa.ro</a></strong> — P/E, P/B, dividend yield, capitalizare, YTD pentru toate companiile din BET, actualizate zilnic</li>
+        <li><strong>BVB.ro → Societăți listate</strong> — rapoarte financiare anuale și semestriale oficiale, prezentări pentru investitori</li>
+        <li><strong>Investing.com / Macrotrends.net</strong> — date istorice pe mai mulți ani, utile pentru analiza trendului</li>
+        <li><strong>Rapoartele anuale ale companiei</strong> — secțiunea "Mesajul CEO" și "Perspective" îți dau context calitativ pe care cifrele nu îl transmit</li>
+      </ul>
+
+      <div class="callout callout-green">
+        <div class="callout-title">✅ Workflow recomandat</div>
+        <p>Începe cu screenerul pentru a filtra companiile pe criterii de bază (P/E sub 12, ROE peste 12%, dividend yield peste 4%). Apoi deschide raportul anual al celor 2–3 companii care ies în evidență și citește 30 de minute pentru context calitativ. Abia după asta decizi dacă merită o poziție în portofoliu.</p>
+      </div>
+
+      <!-- FINAL NOTE -->
+      <div style="background:linear-gradient(135deg,rgba(0,212,255,.06),rgba(0,255,148,.04));border:1px solid rgba(0,212,255,.15);border-radius:16px;padding:24px;margin-top:40px">
+        <h3 style="margin:0 0 8px;font-size:16px">Pasul următor</h3>
+        <p style="font-size:14px;margin-bottom:16px">Ai înțeles indicatorii — acum aplică-i pe date reale. Screenerul BVB are toate cifrele discutate în acest ghid, actualizate zilnic.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <a href="screener.html" class="btn btn-primary" style="font-size:13px">Deschide screenerul BVB →</a>
+          <a href="calculatoare.html" class="btn btn-secondary" style="font-size:13px">Calculatoare investiții</a>
+        </div>
+      </div>
+
+    </article>
+
+    <!-- SIDEBAR -->
+    <aside>
+      <div class="toc-card reveal">
+        <h4>Cuprins</h4>
+        <ul class="toc-list">
+          <li><a href="#ce-este" id="toc-ce-este">Ce este analiza fundamentală</a></li>
+          <li><a href="#indicatori-evaluare" id="toc-evaluare">P/E, P/B, EV/EBITDA</a></li>
+          <li><a href="#indicatori-profitabilitate" id="toc-profit">ROE, ROA, marjă netă</a></li>
+          <li><a href="#dividende" id="toc-div">Dividende și cash flow</a></li>
+          <li><a href="#bilant" id="toc-bilant">Bilanțul în 5 minute</a></li>
+          <li><a href="#exemplu-practic" id="toc-exemplu">TLV vs. BRD — exemplu</a></li>
+          <li><a href="#limite" id="toc-limite">Limitele analizei</a></li>
+          <li><a href="#unde-gasesti-datele" id="toc-date">Unde găsești datele</a></li>
+        </ul>
+      </div>
+
+      <div class="related-card reveal">
+        <h4>Legături utile</h4>
+        <a href="screener.html" class="related-link"><span class="related-link-icon">📊</span>Screener BVB live</a>
+        <a href="calculatoare.html" class="related-link"><span class="related-link-icon">🧮</span>Calculatoare investiții</a>
+        <a href="dividende-bvb-2025.html" class="related-link"><span class="related-link-icon">💰</span>Top dividende BVB 2026</a>
+        <a href="simulator-investitii.html" class="related-link"><span class="related-link-icon">📈</span>BVB vs alte alternative</a>
+        <a href="portofoliu-incepator.html" class="related-link"><span class="related-link-icon">🎯</span>Portofoliu pentru începători</a>
+        <a href="glosar.html" class="related-link"><span class="related-link-icon">📖</span>Glosar termeni bursieri</a>
+      </div>
+
+      <div class="reveal" style="background:linear-gradient(135deg,rgba(0,212,255,.07),rgba(0,255,148,.04));border:1px solid rgba(0,212,255,.2);border-radius:12px;padding:20px;margin-bottom:16px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:10px">Practică ce ai citit</div>
+        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:15px;color:var(--text);margin-bottom:8px">Cumpără acțiuni BVB analizate</div>
+        <p style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:14px">XTB — comision 0% pe acțiuni BVB până la 100.000 EUR/lună. Cont demo gratuit, fără depozit minim.</p>
+        <a href="xtb-review.html" class="btn btn-primary" style="width:100%;text-align:center;display:block;padding:11px 16px;font-size:13px;border-radius:8px">Deschide cont XTB gratuit →</a>
+        <a href="trading212-review.html" style="display:block;text-align:center;font-size:12px;color:var(--muted);margin-top:10px;text-decoration:none">Trading 212 — alternativă gratuită</a>
+        <div style="font-size:10px;color:var(--muted);opacity:.6;text-align:center;margin-top:8px">Link afiliere · Investițiile implică riscuri</div>
+      </div>
+
+      <div class="related-card reveal" style="margin-top:0">
+        <h4>Acțiuni din ghid</h4>
+        <a href="actiune-tlv.html" class="related-link"><span class="related-link-icon" style="color:var(--accent);font-weight:700;font-size:12px">TLV</span>Banca Transilvania</a>
+        <a href="actiune-brd.html" class="related-link"><span class="related-link-icon" style="color:var(--accent);font-weight:700;font-size:12px">BRD</span>BRD Groupe SG</a>
+        <a href="actiune-snp.html" class="related-link"><span class="related-link-icon" style="color:var(--accent);font-weight:700;font-size:12px">SNP</span>OMV Petrom</a>
+        <a href="actiune-sng.html" class="related-link"><span class="related-link-icon" style="color:var(--accent);font-weight:700;font-size:12px">SNG</span>Romgaz</a>
+        <a href="actiune-h2o.html" class="related-link"><span class="related-link-icon" style="color:var(--accent);font-weight:700;font-size:12px">H2O</span>Hidroelectrica</a>
+        <a href="actiune-tgn.html" class="related-link"><span class="related-link-icon" style="color:var(--accent);font-weight:700;font-size:12px">TGN</span>Transgaz</a>
+      </div>
+    </aside>
+
+  </div><!-- /article-grid -->
+</div><!-- /section-inner -->
+
+<footer>
+<a href="index.html" style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:16px;color:var(--text)">Ghid<span style="color:var(--accent)">Bursa</span>.ro</a>
+<div class="footer-links">
+  <a href="unsubscribe.html">Dezabonare newsletter</a>
+  <a href="brokeri.html">Brokeri</a><a href="ghiduri.html">Ghiduri</a>
+  <a href="screener.html">Screener BVB</a><a href="calculatoare.html">Calculatoare</a>
+  <a href="newsletter.html">Newsletter</a><a href="fear-greed.html">Sentiment BVB</a>
+  <a href="calendar-dividende.html">Dividende</a><a href="glosar.html">Glosar</a>
+  <a href="legal.html#termeni">Termeni</a><a href="legal.html#disclaimer">Disclaimer</a>
+  <a href="despre-noi.html">Contact</a>
+</div>
+<span>© 2026 GhidBursa.ro</span>
+<p class="footer-disclaimer">Investițiile implică riscuri. Conținutul GhidBursa.ro este informativ și nu constituie consultanță financiară autorizată. Datele prezentate sunt orientative. Verificați toate informațiile înainte de a lua decizii de investiție.</p>
+</footer>
+
+<script defer src="shared.js"></script>
+<script>
+// ── READING PROGRESS BAR ──
+window.addEventListener('scroll', function() {
+  var el = document.documentElement;
+  var scrolled = el.scrollTop || document.body.scrollTop;
+  var total = el.scrollHeight - el.clientHeight;
+  var pct = total > 0 ? (scrolled / total) * 100 : 0;
+  document.getElementById('readProgress').style.width = pct + '%';
+});
+
+// ── ACTIVE TOC ──
+var sections = ['ce-este','indicatori-evaluare','indicatori-profitabilitate','dividende','bilant','exemplu-practic','limite','unde-gasesti-datele'];
+var tocMap = { 'ce-este':'toc-ce-este','indicatori-evaluare':'toc-evaluare','indicatori-profitabilitate':'toc-profit','dividende':'toc-div','bilant':'toc-bilant','exemplu-practic':'toc-exemplu','limite':'toc-limite','unde-gasesti-datele':'toc-date' };
+
+window.addEventListener('scroll', function() {
+  var current = '';
+  sections.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top < 120) current = id;
+  });
+  document.querySelectorAll('.toc-list a').forEach(function(a) { a.classList.remove('active'); });
+  if (current && tocMap[current]) {
+    var tocEl = document.getElementById(tocMap[current]);
+    if (tocEl) tocEl.classList.add('active');
+  }
+}, { passive: true });
+
+// ── P/E CALCULATOR ──
+var SECTOR_PE = { banking: 9, energie: 6, utilitati: 10, telecom: 15, imobiliare: 18 };
+
+function calcIndicators() {
+  var price = parseFloat(document.getElementById('ci-price').value) || 0;
+  var eps   = parseFloat(document.getElementById('ci-eps').value)   || 0;
+  var bv    = parseFloat(document.getElementById('ci-bv').value)    || 0;
+  var sector = document.getElementById('ci-sector').value;
+  var sectorPE = SECTOR_PE[sector] || 10;
+
+  if (price <= 0 || eps <= 0) return;
+
+  var pe = price / eps;
+  var pb = bv > 0 ? price / bv : null;
+  var ey = (eps / price) * 100;
+
+  // P/E display + verdict
+  var peEl = document.getElementById('ci-pe-val');
+  var peV  = document.getElementById('ci-pe-verdict');
+  peEl.textContent = pe.toFixed(1) + '×';
+  if (pe < sectorPE * 0.75) {
+    peEl.style.color = 'var(--accent2)';
+    peV.textContent = 'Sub media sectorului';
+    peV.className = 'res-verdict verdict-ieftin';
+  } else if (pe < sectorPE * 1.25) {
+    peEl.style.color = 'var(--gold)';
+    peV.textContent = 'În linie cu sectorul';
+    peV.className = 'res-verdict verdict-ok';
+  } else {
+    peEl.style.color = 'var(--red)';
+    peV.textContent = 'Peste media sectorului';
+    peV.className = 'res-verdict verdict-scump';
+  }
+
+  // P/B
+  var pbEl = document.getElementById('ci-pb-val');
+  var pbV  = document.getElementById('ci-pb-verdict');
+  if (pb !== null) {
+    pbEl.textContent = pb.toFixed(2) + '×';
+    if (pb < 1) {
+      pbEl.style.color = 'var(--accent2)';
+      pbV.textContent = 'Sub valoarea contabilă';
+      pbV.className = 'res-verdict verdict-ieftin';
+    } else if (pb < 2) {
+      pbEl.style.color = 'var(--gold)';
+      pbV.textContent = 'Rezonabil';
+      pbV.className = 'res-verdict verdict-ok';
+    } else {
+      pbEl.style.color = 'var(--red)';
+      pbV.textContent = 'Premium față de carte';
+      pbV.className = 'res-verdict verdict-scump';
+    }
+  }
+
+  // Earnings Yield
+  var eyEl = document.getElementById('ci-ey-val');
+  var eyV  = document.getElementById('ci-ey-verdict');
+  eyEl.textContent = ey.toFixed(1) + '%';
+  if (ey > 10) {
+    eyEl.style.color = 'var(--accent2)';
+    eyV.textContent = 'Randament ridicat';
+    eyV.className = 'res-verdict verdict-ieftin';
+  } else if (ey > 6) {
+    eyEl.style.color = 'var(--gold)';
+    eyV.textContent = 'Decent';
+    eyV.className = 'res-verdict verdict-ok';
+  } else {
+    eyEl.style.color = 'var(--red)';
+    eyV.textContent = 'Randament redus';
+    eyV.className = 'res-verdict verdict-scump';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', calcIndicators);
+</script>
+<script defer src="/cookie-consent.js"></script>
+</body>
+</html>

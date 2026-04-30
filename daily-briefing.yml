@@ -1,0 +1,37 @@
+name: Daily BVB Briefing
+
+on:
+  schedule:
+    # 07:30 UTC = 09:30 România (EET, UTC+2)
+    # Rulează luni-vineri
+    - cron: '30 7 * * 1-5'
+  workflow_dispatch:
+    # Permite rulare manuală din GitHub Actions tab
+
+jobs:
+  briefing:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests yfinance
+
+      - name: Run daily briefing
+        env:
+          ANTHROPIC_API_KEY:       ${{ secrets.ANTHROPIC_API_KEY }}
+          TELEGRAM_BOT_TOKEN:      ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHANNEL_ID:     ${{ secrets.TELEGRAM_CHANNEL_ID }}
+          RESEND_API_KEY:          ${{ secrets.RESEND_API_KEY }}
+          NEWSLETTER_WORKER_URL:   ${{ secrets.NEWSLETTER_WORKER_URL }}
+          EXPORT_SECRET:           ${{ secrets.EXPORT_SECRET }}
+        run: python daily_briefing.py

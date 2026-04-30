@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+
+<html lang="ro">
+<head>
+<link href="favicon.svg" rel="icon" type="image/svg+xml"/>
+<link href="favicon.svg" rel="shortcut icon"/>
+<meta charset="utf-8"/>
+<style data-critical="true">
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+ --black: #080B0F;
+ --dark: #0D1117;
+ --card: #111820;
+ --card2: #141E28;
+ --border: #1E2A38;
+ --accent: #00D4FF;
+ --accent2: #00FF94;
+ --gold: #FFB800;
+ --red: #FF4D6D;
+ --text: #E8EDF2;
+ --muted: #6B7A8D;
+ --font-display: 'Plus Jakarta Sans', sans-serif;
+ --font-body: 'DM Sans', sans-serif;
+ --nav-h: 56px;
+ --ticker-h: 76px;
+ --offset: 132px; 
+}
+@media (min-width: 768px) {
+ :root {
+ --nav-h: 72px;
+ --offset: 148px;
+ }
+}
+html { scroll-behavior: smooth; font-size: 15px; }
+body {
+ background: var(--black);
+ color: var(--text);
+ font-family: var(--font-body);
+ line-height: 1.6;
+ overflow-x: hidden;
+ -webkit-font-smoothing: antialiased;
+ width: 100%;
+ max-width: 100vw;
+}
+body::before {
+ content: '';
+ position: fixed; inset: 0;
+ background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+ pointer-events: none; z-index: 0; opacity: 0.5;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+img { max-width: 100%; height: auto; display: block; }
+h1, h2, h3, h4 {
+ font-family: var(--font-display);
+ -webkit-font-smoothing: antialiased;
+ letter-spacing: -0.01em;
+ line-height: 1.18;
+}
+h1 { font-size: clamp(18px, 2vw, 28px); font-weight: 700; }
+h2 { font-size: clamp(18px, 2.5vw, 28px); font-weight: 700; }
+h3 { font-size: clamp(15px, 2vw, 20px); font-weight: 600; }
+h4 { font-size: 14px; font-weight: 700; }
+p { color: rgba(232,237,242,.82); line-height: 1.75; font-size: 15px; }
+nav {
+ position: fixed; top: 0; left: 0; right: 0;
+ z-index: 200;
+ height: var(--nav-h);
+ display: flex; align-items: center; justify-content: space-between;
+ padding: 0 20px;
+ background: rgba(8,11,15,0.92);
+ backdrop-filter: blur(24px);
+ border-bottom: 1px solid var(--border);
+}
+@media (min-width: 768px) { nav { padding: 0 48px; } }
+@media (min-width: 1280px) { nav { padding: 0 64px; } }
+.nav-logo {
+ font-family: var(--font-display);
+ font-size: 18px; font-weight: 800; letter-spacing: -0.02em;
+ color: var(--text); text-decoration: none;
+ display: flex; align-items: center; gap: 8px;
+ flex-shrink: 0;
+}
+@media (min-width: 768px) { .nav-logo { font-size: 22px; } }
+.nav-logo span { color: var(--accent); }
+.nav-logo:hover { text-decoration: none; }
+.nav-dot {
+ width: 8px; height: 8px;
+ background: var(--accent2); border-radius: 50%;
+ animation: pulse 2s ease-in-out infinite; flex-shrink: 0;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+.nav-links {
+ display: none;
+ align-items: center; gap: 28px; list-style: none;
+}
+@media (min-width: 768px) { .nav-links { display: flex; } }
+.nav-links a { color: var(--muted); font-size: 14px; font-weight: 500; transition: color .2s; text-decoration: none; }
+.nav-links a:hover { color: var(--text); }
+.nav-cta {
+ background: var(--accent) !important;
+ color: var(--black) !important;
+ padding: 9px 18px; border-radius: 6px;
+ font-weight: 700 !important; font-size: 13px !important;
+}
+.nav-cta:hover { opacity: .85; }
+.hamburger {
+ display: flex; flex-direction: column; gap: 5px;
+ background: none; border: none; cursor: pointer; padding: 6px;
+}
+@media (min-width: 768px) { .hamburger { display: none; } }
+.hamburger span {
+ display: block; width: 22px; height: 2px;
+ background: var(--text); border-radius: 2px;
+ transition: all .3s;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.mobile-nav {
+ display: none; position: fixed;
+ top: var(--nav-h); left: 0; right: 0;
+ background: rgba(8,11,15,.98);
+ border-bottom: 1px solid var(--border);
+ z-index: 199; flex-direction: column;
+ padding: 8px 0 16px;
+ transform: translateY(-10px); opacity: 0;
+ transition: transform .25s, opacity .25s;
+}
+.mobile-nav.open {
+ display: flex; transform: translateY(0); opacity: 1;
+}
+.mobile-nav a {
+ display: block; padding: 14px 24px;
+ color: var(--text); font-size: 15px; font-weight: 500;
+ border-bottom: 1px solid rgba(30,42,56,.5);
+ text-decoration: none; transition: background .15s;
+}
+.mobile-nav a:last-child { border-bottom: none; }
+.mobile-nav a:hover { background: rgba(0,212,255,.05); }
+.mobile-nav .mobile-cta {
+ margin: 12px 24px 0;
+ background: var(--accent); color: var(--black) !important;
+ border-radius: 8px; text-align: center; font-weight: 700 !important;
+ border-bottom: none !important;
+}
+.ticker-bar {
+ position: sticky;
+ top: var(--nav-h);
+ z-index: 150;
+ height: var(--ticker-h);
+ background: rgba(8,11,15,.98);
+ border-bottom: 1px solid var(--border);
+ overflow: hidden;
+}
+.ticker-bar .tradingview-widget-container,
+.ticker-bar .tradingview-widget-container__widget { height: 100% !important; }
+.section-inner { max-width: 1280px; margin: 0 auto; padding: 0 20px; }
+.reveal,.reveal-left,.reveal-right,.reveal-scale{
+ opacity:0;
+ transition:opacity .65s cubic-bezier(.4,0,.2,1),transform .65s cubic-bezier(.4,0,.2,1);
+ will-change:opacity,transform;
+}
+.reveal{transform:translateY(28px)}
+.reveal-left{transform:translateX(-28px)}
+.reveal-right{transform:translateX(28px)}
+.reveal-scale{transform:scale(.96)}
+.reveal.visible,.reveal-left.visible,.reveal-right.visible,.reveal-scale.visible{
+ opacity:1;transform:none;
+}
+@keyframes forceVisible { to { opacity: 1; tran
+.btn {
+ display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+ font-family: var(--font-display); font-weight: 700;
+ border-radius: 8px; cursor: pointer;
+ text-decoration: none; transition: opacity .2s, transform .15s;
+ white-space: nowrap;
+}
+.btn:hover { opacity: .85; transform: translateY(-1px); text-decoration: none; }
+.btn:active { transform: translateY(0); }
+.btn-primary { background: var(--accent); color: var(--black); padding: 13px 24px; font-size: 14px; }
+.btn-secondary { background: rgba(0,212,255,.1); border: 1px solid rgba(0,212,255,.25); color: var(--accent); padding: 12px 22px; font-size: 14px; }
+.btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 11px 20px; font-size: 13px; }
+.btn-ghost:hover { border-color: var(--text); color: var(--text); }
+.btn-green { background: rgba(0,255,148,.1); border: 1px solid rgba(0,255,148,.25); color: var(--accent2); padding: 12px 22px; font-size: 14px; }
+.btn-full { width: 100%; }
+.btn-sm { padding: 8px 14px; font-size: 12px; }
+.btn-lg { padding: 16px 32px; font-size: 16px; }
+</style>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cel Mai Bun Broker România 2026 — Comparație Completă | GhidBursa.ro</title>
+<meta name="description" content="Compară cei mai buni brokeri pentru Bursa de Valori București: XTB, Trading 212, IBKR, eToro, Plus500. Comisioane reale, recenzii și verdict."/>
+
+<style>
+ *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ :root {
+  --black: #080B0F; --dark: #0D1117; --card: #111820; --border: #1E2A38;
+  --accent: #00D4FF; --accent2: #00FF94; --gold: #FFB800; --red: #FF4D6D;
+  --text: #E8EDF2; --muted: #6B7A8D;
+  --font-display: 'Plus Jakarta Sans', sans-serif; --font-body: 'DM Sans', sans-serif;
+ }
+ body { background: var(--black); color: var(--text); font-family: var(--font-body); font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+
+ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 18px 60px; background: rgba(8,11,15,0.92); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+ .nav-logo { font-family: var(--font-display); font-size: 20px; font-weight: 700; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+ .nav-logo span { color: var(--accent); }
+ .nav-dot { width: 7px; height: 7px; background: var(--accent2); border-radius: 50%; animation: pulse 2s ease-in-out infinite; flex-shrink: 0; }
+ @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+ .nav-links { display: flex; align-items: center; gap: 28px; list-style: none; }@media(min-width:768px) and (max-width:1100px){.nav-links{gap:16px!important}.nav-links a{font-size:13px!important}.nav-cta{padding:7px 12px!important;font-size:12px!important}}
+ .nav-links a { color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 500; transition: color 0.2s; }
+ .nav-links a:hover { color: var(--text); }
+ .nav-cta { background: var(--accent) !important; color: var(--black) !important; padding: 9px 18px; border-radius: 6px; font-weight: 600 !important; }
+ .nav-cta:hover { opacity: 0.85; }
+
+ .page{max-width:1100px;margin:0 auto;padding:calc(var(--offset)+10px) 20px 60px}@media(min-width:768px){.page{padding:calc(var(--offset)+10px) 40px 80px 80px}}
+
+ /* HERO */
+ .hero { text-align: center; padding: 32px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 40px; }
+ .hero-tag { display: inline-flex; align-items: center; gap: 8px; background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.2); color: var(--accent); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 6px 14px; border-radius: 4px; margin-bottom: 20px; }
+ .hero h1 { font-family: var(--font-display); font-size: clamp(24px, 3.5vw, 40px); font-weight: 700; line-height: 1.18; letter-spacing: -0.01em; margin-bottom: 14px; -webkit-font-smoothing: antialiased; }
+ .hero p { font-size: 16px; color: var(--muted); max-width: 560px; margin: 0 auto 24px; line-height: 1.7; }
+ .hero-meta { display: flex; align-items: center; justify-content: center; gap: 24px; font-size: 13px; color: var(--muted); }
+
+ /* FILTER TABS */
+ .filter-bar { display: flex; gap: 8px; margin-bottom: 40px; flex-wrap: wrap; }
+ .filter-btn { background: var(--card); border: 1px solid var(--border); color: var(--muted); font-size: 13px; font-weight: 500; padding: 9px 18px; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-family: var(--font-body); }
+ .filter-btn:hover { border-color: var(--accent); color: var(--text); }
+ .filter-btn.active { background: rgba(0,212,255,0.1); border-color: var(--accent); color: var(--accent); }
+
+ /* BROKER CARDS */
+ .brokers-grid { display: flex; flex-direction: column; gap: 16px; margin-bottom: 64px; }
+
+ .broker-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; display: grid; grid-template-columns: 1fr; gap: 16px; align-items: start; transition: border-color 0.2s, transform 0.15s; }@media(min-width:768px){.broker-card{padding:28px 32px;grid-template-columns:200px 1fr auto;gap:32px;align-items:center}}
+ .broker-card:hover { border-color: rgba(0,212,255,0.3); transform: translateY(-1px); }
+ .broker-card.top-pick { border-color: rgba(0,212,255,0.4); background: rgba(0,212,255,0.03); }
+ .broker-card.hidden { display: none; }
+
+ .broker-left {}
+ .broker-rank { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+ .broker-name { font-family: var(--font-display); font-size: 22px; font-weight: 700; margin-bottom: 6px; -webkit-font-smoothing: antialiased; }
+ .broker-tagline { font-size: 13px; color: var(--muted); line-height: 1.4; }
+ .broker-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+ .badge { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; }
+ .badge-rec { background: rgba(0,212,255,0.12); color: var(--accent); }
+ .badge-ro { background: rgba(0,255,148,0.12); color: var(--accent2); }
+ .badge-ct { background: rgba(255,184,0,0.12); color: var(--gold); }
+ .badge-adv { background: rgba(255,77,109,0.1); color: var(--red); }
+ .badge-int { background: rgba(107,122,141,0.15); color: var(--muted); }
+
+ .broker-middle { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+ .broker-stat { }
+ .broker-stat-label { font-size: 11px; color: var(--muted); font-weight: 500; margin-bottom: 4px; letter-spacing: 0.03em; }
+ .broker-stat-val { font-size: 14px; font-weight: 600; color: var(--text); }
+ .broker-stat-val.green { color: var(--accent2); }
+ .broker-stat-val.amber { color: var(--gold); }
+ .broker-stat-val.red { color: var(--red); }
+
+ .broker-right { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; min-width: 160px; }
+ .broker-score-wrap { text-align: center; }
+ .broker-score { font-family: var(--font-display); font-size: 40px; font-weight: 700; line-height: 1; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; -webkit-font-smoothing: antialiased; }
+ .broker-score-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+ .score-mini-bars { display: flex; flex-direction: column; gap: 5px; width: 100%; }
+ .score-mini-row { display: flex; align-items: center; gap: 8px; }
+ .score-mini-label { font-size: 10px; color: var(--muted); width: 70px; text-align: right; flex-shrink: 0; }
+ .score-mini-bar { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+ .score-mini-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+ .btn-review { display: block; background: transparent; border: 1px solid var(--accent); color: var(--accent); font-size: 12px; font-weight: 700; padding: 9px 16px; border-radius: 7px; text-decoration: none; text-align: center; transition: background 0.2s; width: 100%; }
+ .btn-review:hover { background: rgba(0,212,255,0.1); }
+ .btn-open { display: block; background: var(--accent); color: var(--black); font-family: var(--font-display); font-weight: 700; font-size: 13px; padding: 11px 16px; border-radius: 7px; text-decoration: none; text-align: center; transition: opacity 0.2s; width: 100%; }
+ .btn-open:hover { opacity: 0.85; }
+
+ /* COMPARISON TABLE */
+ .section-header { margin-bottom: 32px; }
+ .section-label { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+ .section-title { font-family: var(--font-display); font-size: 32px; font-weight: 700; letter-spacing: -0.01em; -webkit-font-smoothing: antialiased; }
+ .section-sub { font-size: 15px; color: var(--muted); margin-top: 8px; }
+
+ .comp-wrap { overflow-x: auto; margin-bottom: 64px; }
+ .comp-table { width: 100%; border-collapse: collapse; min-width: 800px; }
+ .comp-table th { padding: 14px 16px; text-align: center; font-size: 13px; font-weight: 700; font-family: var(--font-display); border-bottom: 2px solid var(--border); -webkit-font-smoothing: antialiased; }
+ .comp-table th:first-child { text-align: left; width: 180px; }
+ .comp-table th.col-xtb { color: var(--accent); border-bottom-color: var(--accent); }
+ .comp-table th.col-tv { color: var(--accent2); border-bottom-color: var(--accent2); }
+ .comp-table th.col-et { color: #6C8EFF; border-bottom-color: #6C8EFF; }
+ .comp-table th.col-bt { color: var(--gold); border-bottom-color: var(--gold); }
+ .comp-table th.col-gr { color: #B57BFF; border-bottom-color: #B57BFF; }
+ .comp-table th.col-ib { color: var(--muted); border-bottom-color: var(--muted); }
+
+ .comp-table td { padding: 14px 16px; text-align: center; font-size: 13px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+ .comp-table td:first-child { text-align: left; font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: 0.02em; }
+ .comp-table tr:hover td { background: rgba(255,255,255,0.015); }
+ .comp-table tr.section-row td { background: rgba(0,0,0,0.2); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 10px 16px; }
+
+ .check { color: var(--accent2); font-size: 15px; }
+ .cross { color: rgba(107,122,141,0.4); font-size: 15px; }
+ .partial { color: var(--gold); font-size: 13px; }
+ .best { background: rgba(0,255,148,0.08); color: var(--accent2); font-weight: 700; border-radius: 4px; padding: 2px 6px; font-size: 12px; }
+ .worst { color: rgba(107,122,141,0.5); }
+
+ /* WHO SHOULD USE WHAT */
+ .use-cases { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 64px; }
+ .use-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 28px; }
+ .use-icon { font-size: 24px; margin-bottom: 14px; }
+ .use-title { font-family: var(--font-display); font-size: 15px; font-weight: 700; margin-bottom: 10px; -webkit-font-smoothing: antialiased; }
+ .use-broker { font-size: 18px; font-weight: 700; font-family: var(--font-display); margin-bottom: 10px; -webkit-font-smoothing: antialiased; }
+ .use-broker.xtb { color: var(--accent); }
+ .use-broker.tv { color: var(--accent2); }
+ .use-broker.et { color: #6C8EFF; }
+ .use-broker.bt { color: var(--gold); }
+ .use-broker.both { color: var(--text); font-size: 15px; }
+ .use-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+ /* DISCLAIMER */
+ .disclaimer-bar { background: rgba(255,184,0,0.05); border: 1px solid rgba(255,184,0,0.15); border-radius: 10px; padding: 20px 24px; font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 48px; }
+
+ footer { border-top: 1px solid var(--border); padding: 40px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--muted); }
+ footer a { color: var(--muted); text-decoration: none; }
+ footer a:hover { color: var(--accent); }
+</style>
+<link href="shared.css?v=12" rel="stylesheet"/>
+<link href="mobile.css?v=12" rel="stylesheet"/>
+<link href="https://www.ghidbursa.ro/brokeri.html" rel="canonical"/>
+<meta content="website" property="og:type"/>
+<meta content="Cel Mai Bun Broker România 2026 — Comparație Completă | GhidBursa.ro" property="og:title"/>
+<meta content="Comparație completă a celor mai buni brokeri disponibili în România 2026: XTB, Trading 212, eToro, Plus500, Interactive Brokers. Comisioane reale, platforme și siguranță." property="og:description"/>
+<meta content="https://www.ghidbursa.ro/brokeri.html" property="og:url"/>
+<meta content="GhidBursa.ro" property="og:site_name"/>
+<meta content="summary" name="twitter:card"/>
+<meta content="Cel Mai Bun Broker România 2026 — Comparație Completă | GhidBursa.ro" name="twitter:title"/>
+<meta content="Comparație completă a celor mai buni brokeri disponibili în România 2026: XTB, Trading 212, eToro, Plus500, Interactive Brokers. Comisioane reale, platforme și siguranță." name="twitter:description"/>
+<script type="application/ld+json">
+{"dateModified": "2026-03-19", "@context":"https://schema.org","@type":"WebPage","name":"Cel Mai Bun Broker România 2026 — Comparație Completă | GhidBursa.ro","description":"Comparație completă a celor mai buni brokeri disponibili în România 2026: XTB, Trading 212, eToro, Plus500, Interactive Brokers. Comisioane reale, platforme și siguranță.","url":"https://www.ghidbursa.ro/brokeri.html","isPartOf":{"@type":"WebSite","name":"GhidBursa.ro","url":"https://www.ghidbursa.ro"}}
+</script>
+<meta property="og:image" content="https://www.ghidbursa.ro/og-image.png"/>
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta property="og:locale" content="ro_RO"/>
+  <meta property="og:site_name" content="GhidBursa.ro"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="@GhidBursa"/>
+  <meta name="twitter:image" content="https://www.ghidbursa.ro/og-image.png"/>
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"/>
+  <meta name="author" content="GhidBursa.ro"/>
+  <meta http-equiv="content-language" content="ro"/>
+  <meta name="theme-color" content="#080B0F"/>
+  <link rel="dns-prefetch" href="//s3.tradingview.com"/>
+    <link rel="stylesheet" href="/fonts/fonts.css"/>
+<link rel="preload" href="/fonts/plus-jakarta-sans-700.woff2" as="font" type="font/woff2" crossorigin="anonymous" fetchpriority="high"/>
+<link rel="stylesheet" href="/cookie-consent.css"/>
+</head>
+<body class="no-ticker">
+<nav>
+<a class="nav-logo" href="index.html"><div class="nav-dot"></div>Ghid<span>Bursa</span>.ro</a>
+<ul class="nav-links">
+<li><a href="brokeri.html">Brokeri</a></li>
+<li><a href="ghiduri.html">Ghiduri</a></li>
+<li><a href="screener.html">Screener BVB</a></li>
+<li><a href="calculatoare.html">Calculatoare</a></li>
+<li><a href="newsletter.html">Newsletter</a></li>
+<li><a class="nav-cta" href="brokeri.html">Compară brokeri →</a></li>
+</ul>
+<button aria-label="Meniu" class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
+</nav>
+<div class="mobile-nav" id="mobileNav">
+<a href="index.html">Acasă</a>
+<a href="brokeri.html">Brokeri</a>
+<a href="ghiduri.html">Ghiduri</a>
+<a href="screener.html">Screener BVB</a>
+<a href="calculatoare.html">Calculatoare</a>
+<a href="newsletter.html">Newsletter</a>
+<a href="fear-greed.html">Sentiment BVB</a>
+<a href="fidelis-2025.html">Fidelis 2026</a>
+<a href="glosar.html">Glosar</a>
+<a href="despre-noi.html">Contact</a>
+<a class="mobile-cta" href="brokeri.html">Compară brokeri →</a>
+</div>
+<div class="page">
+<div class="breadcrumb"><a href="index.html">Acasă</a> › <span>Compară Brokeri BVB</span></div>
+<!-- HERO -->
+<div class="hero">
+<div class="hero-tag">Actualizat Ianuarie 2026</div>
+<h1>Brokerul tău de BVB.<br/>Ales cu cap, nu cu noroc.</h1>
+<p>Am analizat 5 brokeri după comisioane reale, acces BVB și siguranță. Fără PR, fără articole plătite. Alegem ce am folosi noi.</p>
+<div class="hero-meta">
+<span>5 brokeri</span>
+<span>·</span>
+<span>25+ criterii reale</span>
+<span>·</span>
+<span>Focus BVB</span>
+</div>
+</div>
+<!-- FILTER -->
+<div class="filter-bar">
+<button class="filter-btn active" onclick="filterBrokers('all', this)">Toți brokerii</button>
+<button class="filter-btn" onclick="filterBrokers('bvb', this)">BVB complet</button>
+<button class="filter-btn" onclick="filterBrokers('incepatori', this)">Începători</button>
+<button class="filter-btn" onclick="filterBrokers('international', this)">Internațional</button>
+<button class="filter-btn" onclick="filterBrokers('crypto', this)">Crypto</button>
+<button class="filter-btn" onclick="filterBrokers('avansat', this)">Investitori avansați</button>
+</div>
+<!-- BROKER CARDS -->
+<div class="brokers-grid" id="brokersGrid">
+<!-- XTB -->
+<div class="broker-card reveal" data-tags="incepatori,international,crypto">
+<div class="broker-left">
+<div class="broker-rank">#1 —Recomandat GhidBursa</div>
+<img alt="XTB" loading="lazy" src="https://s3-symbol-logo.tradingview.com/xtb--600.png" style="height:36px;width:36px;object-fit:contain;border-radius:6px;background:transparent;flex-shrink:0;margin-bottom:8px;display:block"/><div class="broker-name">XTB</div>
+<div class="broker-tagline">0% comision pe acțiuni până la €100k/lună. Platformă xStation, reglementat KNF + ASF.</div>
+<div class="broker-badges">
+<span class="badge badge-rec">Recomandat</span>
+<span class="badge badge-ct">0% comision</span>
+<span class="badge badge-int">Global</span>
+</div>
+</div>
+<div class="broker-middle">
+<div class="broker-stat">
+<div class="broker-stat-label">Comision BVB</div>
+<div class="broker-stat-val green">0% (sub €100k/lună)</div>
+</div>
+<div class="broker-stat">
+<div class="broker-stat-label">Depozit minim</div>
+<div class="broker-stat-val green">Fără minim</div>
+</div>
+<div class="broker-stat">
+<div class="broker-stat-label">Acces BVB</div>
+<div class="broker-stat-val amber">Parțial (~30 companii)</div>
+</div>
+<div class="broker-stat">
+<div class="broker-stat-label">Reglementat</div>
+<div class="broker-stat-val green">CySEC + ASF</div>
+</div>
+</div>
+<div class="broker-right">
+<div class="broker-score-wrap">
+<div class="broker-score" style="background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">9.4</div>
+<div class="broker-score-label">Scor GhidBursa</div>
+</div>
+<div class="score-mini-bars">
+<div class="score-mini-row"><span class="score-mini-label">Comisioane</span><div class="score-mini-bar"><div class="score-mini-fill" style="width:98%"></div></div></div>
+<div class="score-mini-row"><span class="score-mini-label">Platformă</span><div class="score-mini-bar"><div class="score-mini-fill" style="width:95%"></div></div></div>
+<div class="score-mini-row"><span class="score-mini-label">Siguranță</span><div class="score-mini-bar"><div class="score-mini-fill" style="width:96%"></div></div></div>
+</div>
+<a class="btn-review" href="xtb-review.html">Citește review complet</a>
+<a class="btn-open" href="xtb-review.html">Deschide cont →</a>
+</div>
+</div>
+<!-- ETORO -->
+<div class="broker-card reveal" data-tags="incepatori,international,crypto">
+<div class="broker-left">
+<div class="broker-rank">#3 — Cel mai bun pentru Copy Trading</div>
+<img alt="ETORO" loading="lazy" src="https://s3-symbol-logo.tradingview.com/etoro--600.png" style="height:36px;width:auto;max-width:120px;object-fit:contain;border-radius:4px;background:transparent;flex-shrink:0;margin-bottom:8px;display:block"/><div class="broker-name">eToro</div>
+<div class="broker-tagline">Copy trading și acțiuni fără comision. Acces limitat la BVB, depozit minim $50.</div>
+<div class="broker-badges">
+<span class="badge badge-ct">Copy Trading</span>
+<span class="badge badge-int">Crypto ✓</span>
+<span class="badge badge-int">Social</span>
+</div>
+</div>
+<div class="broker-middle">
+<div class="broker-stat">
+<div class="broker-stat-label">Comision acțiuni</div>
+<div class="broker-stat-val green">0% (spread inclus)</div>
+</div>
+<div class="broker-stat">
+<div class="broker-stat-label">Depozit minim</div>
+<div class="broker-stat-val amber">$50</div>
+</div>
+<div class="broker-stat">
+<div class="broker-stat-label">Acces BVB</div>
+<div class="broker-stat-val red">Limitat</div>
+</div>
+<div class="broker-stat">
+<div class="broker-stat-label">Reglementat</div>
+<div class="broker-stat-val green">CySEC + FCA</div>
+</div>
+</div>
+<div class="broker-right">
+<div class="broker-score-wrap">
+<div class="broker-score" style="background:linear-gradient(135deg,#00D4FF,#FFB800);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">8.0</div>
+<div class="broker-score-label">Scor GhidBursa</div>
+</div>
+<div class="score-mini-bars">
+<div class="score-mini-row"><span class="score-mini-label">Copy Trading</span><div class="score-mini-bar"><div class="score-mini-fill" style="width:100%"></div></div></div>
+<div class="score-mini-row"><span class="score-mini-label">Platformă</span><div class="score-mini-bar"><div class="score-mini-fill" style="width:88%"></div></div></div>
+<div class="score-mini-row"><span class="score-mini-label">BVB acces</span><div class="score-mini-bar"><div class="score-mini-fill" style="width:40%"></div></div></div>
+</div>
+<a class="btn-review" href="etoro-review.html">Citește review complet</a>
+<a class="btn-open" href="etoro-review.html">Deschide cont →</a>
+</div>
+</div>
+<!-- TRADING 212 -->
+<div class="broker-card reveal" data-tags="incepatori,international,crypto">
+<div class="broker-left">
+<div class="broker-rank">#2 — Cel mai bun 0% fără limite</div>
+<img alt="TRADING212" loading="lazy" src="https://s3-symbol-logo.tradingview.com/trading-212--600.png" style="height:36px;width:auto;max-width:120px;object-fit:contain;border-radius:4px;background:transparent;flex-shrink:0;margin-bottom:8px;display:block"/><div class="broker-name">Trading 212</div>
+<div class="broker-tagline">0% comision fără plafon de volum. Acțiuni fracționate de la 1 EUR și dobândă pe cash.</div>
+<div class="broker-badges">
+<span class="badge badge-ct">0% fără limite</span>
+<span class="badge badge-int">Fracționate</span>
+<span class="badge badge-rec">4%+ dobândă cash</span>
+</div>
+</div>
+<div class="broker-middle">
+<div class="broker-stat">
+<div class="broker-stat-label">Comision acțiuni</div>
+<div class="broker-stat-val green">0% — fără plafon volum</div>
+</div>
+<div class="broker-stat">
+<div class="broker-stat-label">Depozit minim</div>
+<div class="broker-stat-val green">Fără minim</div>
+</div>
+<div class="broker-stat">
+<div class="broker-stat-label">Acțiuni fracționate</div>
+<div class="broker-stat-val green">De la 1 EUR</div>
+</div>
+<div class="broker-stat">
+<div class="broker-stat-label">Reglementat</div>
+<div class="broker-stat-val green">FCA + CySEC</div>
+</div>
+</div>
+<div class="broker-right">
+<div class="broker-score-wrap">
+<div class="broker-score" style="background:linear-gradient(135deg,var(--accent2),#00D4FF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">8.6</div>
+<div class="broker-score-label">Scor GhidBursa</div>
+</div>
+<div class="score-mini-bars">
+<div class="score-mini-row"><span class="score-mini-label">Comisioane</span><div class="score-mini-bar"><div class="score-mini-fill" style="width:100%"></div></div></div>
+<div class="score-mini-row"><span class="score-mini-label">Platformă</span><div class="score-mini-bar"><div class="score-mini-fill" style="width:90%"></div></div></div>
+<div class="score-mini-row"><span class="score-mini-label">Dobândă cash</span><div class="score-mini-bar"><div class="score-mini-fill" style="width:92%"></div></div></div>
+</div>
+<a class="btn-review" href="trading212-review.html">Citește review complet</a>
+<a class="btn-open" href="trading212-review.html">Deschide cont →</a>
+</div>
+</div>
+<!-- INTERACTIVE BROKERS -->
+<div class="broker-card reveal" data-tags="international,avansat">
+<div class="broker-left">
+<div class="broker-rank">#6 — Cel mai bun pentru volume mari</div>
+<img alt="INTERACTIVE" loading="lazy" src="https://www.interactivebrokers.com/images/web/icon-ibkr-mobile-app.png" style="height:36px;width:36px;object-fit:contain;border-radius:6px;background:transparent;flex-shrink:0;margin-bottom:8px;display:block"/><div class="broker-name">Interactive Brokers</div>
+<div class="broker-tagline">Comisioane mici la volume mari (0.05% BVB). Acoperire completă BVB + piețe globale. Curba de învățare ridicată.</div>
+<div class="broker-badges">
+<span class="badge badge-int">Global</span>
+<span class="badge badge-adv">Avansat</span>
+<span class="badge badge-int">Volume mari</span>
+</div>
+</div>
+<div class="broker-middle">
+<div class="broker-stat">
+<div class="broker-stat-label">Comision acțiuni EU</div>
+<div class="broker-stat-val green">0.05%, min €1.25</div>
+</div>
+<div class="broker-stat">
+<div class="broker-stat-label">Depozit minim</div>
+<div class="broker-stat-val red">$0 (rec. $10k+)</div>
+</div>
+<div class="broker-stat">
+<div class="broker-stat-label">Acces BVB</div>
+<div class="broker-stat-val green">Da (acțiuni principale)</div>
+</div>
+<div class="broker-stat">
+<div class="broker-stat-label">Reglementat</div>
+<div class="broker-stat-val green">SEC + FCA + CySEC</div>
+</div>
+</div>
+<div class="broker-right">
+<div class="broker-score-wrap">
+<div class="broker-score" style="background:linear-gradient(135deg,#FFB800,var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">7.8</div>
+<div class="broker-score-label">Scor GhidBursa</div>
+</div>
+<div class="score-mini-bars">
+<div class="score-mini-row"><span class="score-mini-label">Comisioane</span><div class="score-mini-bar"><div class="score-mini-fill" style="width:95%"></div></div></div>
+<div class="score-mini-row"><span class="score-mini-label">Siguranță</span><div class="score-mini-bar"><div class="score-mini-fill" style="width:99%"></div></div></div>
+<div class="score-mini-row"><span class="score-mini-label">Ușurință</span><div class="score-mini-bar"><div class="score-mini-fill" style="width:45%"></div></div></div>
+</div>
+<a class="btn-review" href="interactive-brokers-review.html">Citește review complet</a>
+<a class="btn-open" href="https://www.interactivebrokers.co.uk" target="_blank">Vizitează site →</a>
+</div>
+</div>
+<!-- PLUS500 -->
+<div class="broker-card reveal" data-tags="international,avansat">
+<div class="broker-left">
+<div class="broker-rank">#5 — Trading activ, indici și materii prime</div>
+<img alt="PLUS500" loading="lazy" src="https://s3-symbol-logo.tradingview.com/plus500--600.png" style="height:36px;width:auto;max-width:120px;object-fit:contain;border-radius:4px;background:transparent;flex-shrink:0;margin-bottom:8px;display:block"/><div class="broker-name">Plus500</div>
+<div class="broker-tagline">Broker CFD reglementat (FCA, CySEC, ASIC). Fără acces la acțiuni reale BVB — potrivit pentru trading pe indici și materii prime.</div>
+<div class="broker-badges">
+<span class="badge badge-adv">CFD</span>
+<span class="badge badge-int">Listat LSE</span>
+<span class="badge badge-int">Demo nelimitat</span>
+</div>
+</div>
+<div class="broker-middle">
+<div class="broker-stat">
+<div class="broker-stat-label">Model de cost</div>
+<div class="broker-stat-val amber">Spread (fără comision)</div>
+</div>
+<div class="broker-stat">
+<div class="broker-stat-label">Depozit minim</div>
+<div class="broker-stat-val amber">$100</div>
+</div>
+<div class="broker-stat">
+<div class="broker-stat-label">Instrumente</div>
+<div class="broker-stat-val amber">Exclusiv CFD</div>
+</div>
+<div class="broker-stat">
+<div class="broker-stat-label">Reglementat</div>
+<div class="broker-stat-val green">FCA + CySEC + ASIC</div>
+</div>
+</div>
+<div class="broker-right">
+<div class="broker-score-wrap">
+<div class="broker-score" style="background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">8.9</div>
+<div class="broker-score-label">Scor GhidBursa</div>
+</div>
+<div class="score-mini-bars">
+<div class="score-mini-row"><span class="score-mini-label">Platformă</span><div class="score-mini-bar"><div class="score-mini-fill" style="width:90%"></div></div></div>
+<div class="score-mini-row"><span class="score-mini-label">Siguranță</span><div class="score-mini-bar"><div class="score-mini-fill" style="width:95%"></div></div></div>
+<div class="score-mini-row"><span class="score-mini-label">Potrivit long-term</span><div class="score-mini-bar"><div class="score-mini-fill" style="width:30%"></div></div></div>
+</div>
+<a class="btn-review" href="plus500-review.html">Citește review complet</a>
+<a class="btn-open" href="https://www.plus500.com" target="_blank">Vizitează site →</a>
+</div>
+</div>
+</div>
+<!-- WHO SHOULD USE WHAT -->
+<div class="section-header">
+<div class="section-label">Ghid rapid</div>
+<div class="section-title">Cine ar trebui să aleagă ce broker?</div>
+<div class="section-sub">6 profiluri tipice de investitor român — recomandarea noastră directă</div>
+</div>
+<div class="use-cases">
+<div class="use-card">
+<div class="use-title">Începător, primii pași</div>
+<div class="use-broker xtb">→ XTB</div>
+<div class="use-desc">Cont demo €100k, conținut educativ integrat, comision 0%, platformă intuitivă. Cel mai mic risc de erori costisitoare.</div>
+</div>
+<div class="use-card">
+<div class="use-title">Vrei 0% comision fără limite</div>
+<div class="use-broker" style="color:var(--accent2)">→ Trading 212</div>
+<div class="use-desc">Comision 0% indiferent de volum, acțiuni fracționate de la 1 EUR și dobândă ~4% pe cash neutilizat.</div>
+</div>
+<div class="use-card">
+<div class="use-title">Portofoliu diversificat global</div>
+<div class="use-broker xtb">→ XTB</div>
+<div class="use-desc">Comision 0% pe NYSE, NASDAQ, burse europene + BVB. Dacă vrei Apple + SNP cu costuri minime.</div>
+</div>
+<div class="use-card">
+<div class="use-title">Vrei copy trading</div>
+<div class="use-broker et">→ eToro</div>
+<div class="use-desc">Copiezi automat investitori verificați. Ideal dacă nu ai timp să analizezi individual fiecare acțiune.</div>
+</div>
+<div class="use-card">
+<div class="use-title">Trading activ pe indici și materii prime</div>
+<div class="use-broker" style="color:var(--gold)">→ Plus500</div>
+<div class="use-desc">Platformă CFD simplă, listată la Londra. Indici globali, forex, materii prime — pentru traderi activi. Atenție: CFD-urile implică risc ridicat.</div>
+</div>
+<div class="use-card">
+<div class="use-title">Strategie completă recomandată</div>
+<div class="use-broker" style="color:var(--accent)">→ XTB + Trading 212</div>
+<div class="use-desc">XTB pentru acțiuni BVB și ETF-uri globale. Trading 212 pentru acțiuni US/EU fracționate și dobândă pe cash. Ambele la 0% comision.</div>
+</div>
+</div>
+<!-- FULL COMPARISON TABLE -->
+<div class="section-header">
+<div class="section-label">Comparație detaliată</div>
+<div class="section-title">Tabel complet — 25 criterii</div>
+<div class="section-sub">Scroll dreapta pe mobil pentru a vedea toți brokerii</div>
+</div>
+<div class="comp-wrap">
+<table class="comp-table">
+<thead>
+<tr>
+<th>Criteriu</th>
+<th class="col-xtb">XTB</th>
+<th class="col-t2" style="color:#7B61FF;border-bottom-color:#7B61FF">T212</th>
+<th class="col-et">eToro</th>
+<th class="col-p5" style="color:var(--gold);border-bottom-color:var(--gold)">Plus500</th>
+<th class="col-ib">IB</th>
+</tr>
+</thead>
+<tbody>
+<tr class="section-row"><td colspan="6">Comisioane</td></tr>
+<tr>
+<td>Comision acțiuni BVB</td>
+<td><span class="best">0%*</span></td>
+<td><span class="best">0%</span></td>
+<td><span class="partial">Spread</span></td>
+<td><span class="partial">Spread CFD</span></td>
+<td>0.05%+€1.25</td>
+</tr>
+<tr>
+<td>Comision acțiuni US</td>
+<td><span class="best">0%*</span></td>
+<td><span class="best">0%</span></td>
+<td><span class="partial">Spread</span></td>
+<td><span class="partial">Spread CFD</span></td>
+<td><span class="best">$0.005/acț</span></td>
+</tr>
+<tr>
+<td>Depozit minim</td>
+<td><span class="best">Fără</span></td>
+<td><span class="best">Fără</span></td>
+<td>$50</td>
+<td>$100</td>
+<td>$0</td>
+</tr>
+<tr>
+<td>Taxă retragere</td>
+<td><span class="best">0 (1/lună)</span></td>
+<td><span class="best">0%</span></td>
+<td>$5/retragere</td>
+<td><span class="best">0%</span></td>
+<td>Variabil</td>
+</tr>
+<tr>
+<td>Taxă inactivitate</td>
+<td>€10/lună*</td>
+<td><span class="best">Nu</span></td>
+<td>$10/lună*</td>
+<td class="worst">$10/3luni</td>
+<td><span class="best">Nu</span></td>
+</tr>
+<tr>
+<td>Dobândă cash neutilizat</td>
+<td><span class="best">Da — 3.4% EUR</span></td>
+<td><span class="best">Da — 4.2% EUR</span></td>
+<td class="worst">Nu</td>
+<td class="worst">Nu</td>
+<td><span class="best">Da — 4%+ USD</span></td>
+</tr>
+<tr class="section-row"><td colspan="6">Acces piețe</td></tr>
+<tr>
+<td>BVB Main Market</td>
+<td><span class="partial">Parțial</span></td>
+<td><span class="partial">Parțial</span></td>
+<td><span class="partial">Parțial</span></td>
+<td><span class="cross">✗ CFD</span></td>
+<td><span class="check">✓</span></td>
+</tr>
+<tr>
+<td>Piața AeRO (companii mici)</td>
+<td><span class="cross">✗</span></td>
+<td><span class="cross">✗</span></td>
+<td><span class="cross">✗</span></td>
+<td><span class="cross">✗</span></td>
+<td><span class="cross">✗</span></td>
+</tr>
+<tr>
+<td>Titluri de stat Fidelis</td>
+<td><span class="cross">✗</span></td>
+<td><span class="cross">✗</span></td>
+<td><span class="cross">✗</span></td>
+<td><span class="cross">✗</span></td>
+<td><span class="cross">✗</span></td>
+</tr>
+<tr>
+<td>Acțiuni US (NYSE/NASDAQ)</td>
+<td><span class="check">✓</span></td>
+<td><span class="check">✓</span></td>
+<td><span class="check">✓</span></td>
+<td><span class="partial">CFD</span></td>
+<td><span class="check">✓</span></td>
+</tr>
+<tr>
+<td>ETF-uri globale</td>
+<td><span class="check">✓ 300+</span></td>
+<td><span class="check">✓ 1000+</span></td>
+<td><span class="check">✓</span></td>
+<td><span class="partial">CFD</span></td>
+<td><span class="check">✓ 1000+</span></td>
+</tr>
+<tr>
+<td>Criptomonede</td>
+<td><span class="partial">CFD</span></td>
+<td><span class="check">✓ Real</span></td>
+<td><span class="check">✓ Real</span></td>
+<td><span class="partial">CFD</span></td>
+<td><span class="check">✓</span></td>
+</tr>
+<tr class="section-row"><td colspan="6">Platformă și funcții</td></tr>
+<tr>
+<td>Cont demo gratuit</td>
+<td><span class="check">✓ €100k</span></td>
+<td><span class="partial">Parțial</span></td>
+<td><span class="check">✓ $100k</span></td>
+<td><span class="check">✓ nelimitat</span></td>
+<td><span class="check">✓</span></td>
+</tr>
+<tr>
+<td>Aplicație mobilă</td>
+<td><span class="check">✓ 4.7★</span></td>
+<td><span class="check">✓ 4.8★</span></td>
+<td><span class="check">✓ 4.5★</span></td>
+<td><span class="check">✓ 4.6★</span></td>
+<td><span class="check">✓ 4.2★</span></td>
+</tr>
+<tr>
+<td>Copy Trading</td>
+<td><span class="cross">✗</span></td>
+<td><span class="cross">✗</span></td>
+<td><span class="check">✓ Complet</span></td>
+<td><span class="cross">✗</span></td>
+<td><span class="cross">✗</span></td>
+</tr>
+<tr>
+<td>Date BVB live incluse</td>
+<td><span class="partial">15 min delay</span></td>
+<td><span class="partial">15 min delay</span></td>
+<td><span class="partial">15 min delay</span></td>
+<td><span class="cross">✗</span></td>
+<td><span class="partial">Contra cost</span></td>
+</tr>
+<tr>
+<td>Platformă în română</td>
+<td><span class="check">✓</span></td>
+<td><span class="check">✓</span></td>
+<td><span class="check">✓</span></td>
+<td><span class="check">✓</span></td>
+<td><span class="cross">✗</span></td>
+</tr>
+<tr class="section-row"><td colspan="6">Siguranță și reglementare</td></tr>
+<tr>
+<td>Reglementare</td>
+<td>CySEC+ASF+KNF</td>
+<td>FCA+CySEC</td>
+<td>CySEC+FCA</td>
+<td>FCA+CySEC+ASIC</td>
+<td>SEC+FCA+CySEC</td>
+</tr>
+<tr>
+<td>Protecție fonduri</td>
+<td>€20.000</td>
+<td>£85.000</td>
+<td>€20.000</td>
+<td>€20.000</td>
+<td>$500.000</td>
+</tr>
+<tr>
+<td>Companie publică/listată</td>
+<td><span class="check">✓ WSE</span></td>
+<td><span class="cross">✗</span></td>
+<td><span class="check">✓ NASDAQ</span></td>
+<td><span class="check">✓ LSE</span></td>
+<td><span class="check">✓ NASDAQ</span></td>
+</tr>
+<tr>
+<td><strong>SCOR TOTAL</strong></td>
+<td><strong style="color:var(--accent)">9.4</strong></td>
+<td><strong style="color:var(--accent2)">8.8</strong></td>
+<td><strong style="color:#6C8EFF">8.0</strong></td>
+<td><strong style="color:var(--gold)">7.6</strong></td>
+<td><strong style="color:var(--muted)">7.2</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- DISCLAIMER -->
+<div class="disclaimer-bar">
+<strong>Disclaimer:</strong> *0% comision la XTB se aplică pentru volume sub €100.000/lună. Peste această sumă se aplică 0.5%. Taxa de inactivitate de €10/lună se aplică după 12 luni fără tranzacții. Comisioanele pot varia — verificați întotdeauna la sursă înainte de a deschide un cont. GhidBursa.ro poate primi comisioane de afiliere de la brokerii prezentați, fără costuri suplimentare pentru tine. Conținutul are scop exclusiv educativ și nu constituie consultanță financiară.
+ </div>
+
+<!-- TABEL COMPARATIV RAPID -->
+<div style="margin:48px 0">
+<div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:12px">Comparativ rapid</div>
+<h2 style="font-size:clamp(20px,2.5vw,28px);font-weight:700;margin-bottom:8px">Toți brokerii față în față</h2>
+<p style="font-size:14px;color:var(--muted);margin-bottom:24px">Criterii esențiale pentru investitorul român pe BVB</p>
+<div style="overflow-x:auto;border-radius:12px;border:1px solid var(--border)">
+<table style="width:100%;border-collapse:collapse;min-width:600px;font-size:13px">
+<thead>
+<tr style="background:rgba(255,255,255,.02)">
+<th style="padding:12px 16px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)">Broker</th>
+<th style="padding:12px 16px;text-align:center;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)">Comision BVB</th>
+<th style="padding:12px 16px;text-align:center;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)">Depozit minim</th>
+<th style="padding:12px 16px;text-align:center;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)">Acces BVB</th>
+<th style="padding:12px 16px;text-align:center;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)">Reglementat</th>
+<th style="padding:12px 16px;text-align:center;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)">Scor</th>
+<th style="padding:12px 16px;border-bottom:1px solid var(--border)"></th>
+</tr>
+</thead>
+<tbody>
+<tr style="border-bottom:1px solid var(--border);background:rgba(0,212,255,.02)">
+<td style="padding:14px 16px;font-weight:700;color:var(--text)">XTB</td>
+<td style="padding:14px 16px;text-align:center;color:var(--accent2);font-weight:700">0%*</td>
+<td style="padding:14px 16px;text-align:center;color:var(--accent2);font-weight:700">Fără minim</td>
+<td style="padding:14px 16px;text-align:center;color:var(--text)">Parțial (~30)</td>
+<td style="padding:14px 16px;text-align:center;color:var(--text)">KNF · ASF</td>
+<td style="padding:14px 16px;text-align:center;font-weight:800;color:var(--accent)">9.4</td>
+<td style="padding:14px 16px;text-align:right"><a href="xtb-review.html" style="color:var(--accent);font-weight:700;font-size:12px;text-decoration:none">Deschide →</a></td>
+</tr>
+<tr style="border-bottom:1px solid var(--border)">
+<td style="padding:14px 16px;font-weight:700;color:var(--text)">Trading 212</td>
+<td style="padding:14px 16px;text-align:center;color:var(--accent2);font-weight:700">0%</td>
+<td style="padding:14px 16px;text-align:center;color:var(--accent2);font-weight:700">Fără minim</td>
+<td style="padding:14px 16px;text-align:center;color:var(--text)">Parțial (~25)</td>
+<td style="padding:14px 16px;text-align:center;color:var(--text)">FCA</td>
+<td style="padding:14px 16px;text-align:center;font-weight:800;color:var(--accent)">8.6</td>
+<td style="padding:14px 16px;text-align:right"><a href="trading212-review.html" style="color:var(--accent);font-weight:700;font-size:12px;text-decoration:none">Deschide →</a></td>
+</tr>
+<tr style="border-bottom:1px solid var(--border)">
+<td style="padding:14px 16px;font-weight:700;color:var(--text)">Interactive Brokers</td>
+<td style="padding:14px 16px;text-align:center;color:var(--text)">Fix mic</td>
+<td style="padding:14px 16px;text-align:center;color:var(--text)">Fără minim</td>
+<td style="padding:14px 16px;text-align:center;color:var(--accent2);font-weight:700">Complet</td>
+<td style="padding:14px 16px;text-align:center;color:var(--text)">SIPC · FCA</td>
+<td style="padding:14px 16px;text-align:center;font-weight:800;color:var(--accent)">8.9</td>
+<td style="padding:14px 16px;text-align:right"><a href="interactive-brokers-review.html" style="color:var(--accent);font-weight:700;font-size:12px;text-decoration:none">Deschide →</a></td>
+</tr>
+<tr style="border-bottom:1px solid var(--border)">
+<td style="padding:14px 16px;font-weight:700;color:var(--text)">eToro</td>
+<td style="padding:14px 16px;text-align:center;color:var(--accent2);font-weight:700">0%</td>
+<td style="padding:14px 16px;text-align:center;color:var(--muted)">$50</td>
+<td style="padding:14px 16px;text-align:center;color:var(--red)">Limitat</td>
+<td style="padding:14px 16px;text-align:center;color:var(--text)">CySEC · FCA</td>
+<td style="padding:14px 16px;text-align:center;font-weight:800;color:var(--accent)">8.0</td>
+<td style="padding:14px 16px;text-align:right"><a href="etoro-review.html" style="color:var(--accent);font-weight:700;font-size:12px;text-decoration:none">Deschide →</a></td>
+</tr>
+<tr>
+<td style="padding:14px 16px;font-weight:700;color:var(--text)">Plus500</td>
+<td style="padding:14px 16px;text-align:center;color:var(--muted)">Spread</td>
+<td style="padding:14px 16px;text-align:center;color:var(--muted)">$100</td>
+<td style="padding:14px 16px;text-align:center;color:var(--red)">Limitat</td>
+<td style="padding:14px 16px;text-align:center;color:var(--text)">CySEC · FCA</td>
+<td style="padding:14px 16px;text-align:center;font-weight:800;color:var(--accent)">7.8</td>
+<td style="padding:14px 16px;text-align:right"><a href="plus500-review.html" style="color:var(--accent);font-weight:700;font-size:12px;text-decoration:none">Deschide →</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- NEWSLETTER CTA -->
+<div style="background:linear-gradient(135deg,rgba(0,212,255,.06),rgba(0,255,148,.04));border:1px solid rgba(0,212,255,.2);border-radius:16px;padding:32px;margin:0 0 48px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap">
+<div>
+<div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent2);margin-bottom:8px">Gratuit · Fără spam</div>
+<h3 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:700;margin-bottom:8px">Alerte când se schimbă comisioanele</h3>
+<p style="font-size:13px;color:var(--muted);line-height:1.6">Abonează-te la newsletter pentru a primi notificări când apar oferte noi sau se modifică condițiile brokerilor.</p>
+</div>
+<a class="btn btn-primary" href="newsletter.html" style="white-space:nowrap;flex-shrink:0">Abonează-te gratuit →</a>
+</div>
+
+</div>
+<footer>
+<a href="index.html" style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:16px;color:var(--text)">Ghid<span style="color:var(--accent)">Bursa</span>.ro</a>
+<div class="footer-links">
+      <a href="unsubscribe.html">Dezabonare newsletter</a>
+<a href="brokeri.html">Brokeri</a>
+<a href="ghiduri.html">Ghiduri</a>
+<a href="screener.html">Screener BVB</a>
+<a href="calculatoare.html">Calculatoare</a>
+<a href="newsletter.html">Newsletter</a>
+<a href="fear-greed.html">Sentiment BVB</a>
+<a href="calendar-dividende.html">Dividende</a>
+<a href="glosar.html">Glosar</a>
+<a href="legal.html#termeni">Termeni</a>
+<a href="legal.html#disclaimer">Disclaimer</a>
+<a href="despre-noi.html">Contact</a>
+</div>
+<span>© 2026 GhidBursa.ro</span>
+<p class="footer-disclaimer">Investițiile implică riscuri. Conținutul GhidBursa.ro este informativ și nu constituie consultanță financiară. Verificați toate informațiile înainte de a lua decizii de investiție.</p>
+</footer>
+<script>
+function filterBrokers(tag, btn) {
+ document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+ btn.classList.add('active');
+ const cards = document.querySelectorAll('.broker-card');
+ cards.forEach(card => {
+  if (tag === 'all') {
+   card.classList.remove('hidden');
+  } else {
+   const tags = card.dataset.tags || '';
+   card.classList.toggle('hidden', !tags.includes(tag));
+  }
+ });
+}
+</script>
+<script defer="" src="shared.js"></script>
+<script defer src="/cookie-consent.js"></script>
+</body>
+</html>

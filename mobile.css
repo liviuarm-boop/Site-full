@@ -1,0 +1,248 @@
+/* ═══════════════════════════════════════════════════════════
+   GhidBursa.ro — Mobile CSS v4 Bloomberg
+   768px = tablet, 480px = phone
+═══════════════════════════════════════════════════════════ */
+
+/* ── GLOBAL MOBILE ── */
+/* Belt + suspenders overflow prevention */
+html { overflow-x: hidden; }
+body { overflow-x: hidden; max-width: 100vw; }
+
+@media (max-width: 767px) {
+  html { font-size: 14px; overflow-x: hidden !important; }
+  html, body { overflow-x: hidden !important; max-width: 100vw; }
+  /* Prevent ANY element from exceeding viewport width */
+  * { max-width: 100%; }
+  /* Exception: tables and pre need their own scroll container */
+  table, pre { max-width: none; }
+  img { max-width: 100%; height: auto; }
+
+  /* PAGE WRAPPERS */
+  .page-wrap, .co-page, .page {
+    padding-top: calc(var(--offset) + 12px) !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    padding-bottom: 48px !important;
+  }
+
+  /* GRIDS → 1 column */
+  .grid-2, .grid-3, .grid-4,
+  .layout-sidebar, .layout-article,
+  .two-col, .fund-grid, .about-grid,
+  .portfolio-grid, .pros-cons, .main-layout {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  .sidebar, .sidebar-col, aside { position: static !important; }
+
+  /* TYPOGRAPHY */
+  h1 { font-size: clamp(20px, 5.5vw, 30px) !important; letter-spacing: 0 !important; }
+  h2 { font-size: clamp(16px, 4vw, 23px) !important; }
+  h3 { font-size: clamp(14px, 3.5vw, 18px) !important; }
+
+  /* HERO */
+  .hero { min-height: auto !important; padding: calc(var(--ticker-h) + 16px) 20px 40px !important; }
+  .hero-title { font-size: clamp(20px, 5.5vw, 28px) !important; letter-spacing: 0 !important; line-height: 1.2 !important; }
+  .hero-stats { gap: 16px !important; flex-wrap: wrap !important; }
+  .hero-stat-num { font-size: 22px !important; }
+  .hero-actions .btn { width: 100% !important; }
+
+  /* TABLES */
+  .table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 10px;
+    max-width: 100vw;
+    margin-left: -16px;
+    margin-right: -16px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  table.data-table { min-width: 480px; font-size: 12px; }
+  table.data-table th, table.data-table td { padding: 8px 10px; white-space: nowrap; }
+
+  /* SECTIONS */
+  section { padding: 32px 0 !important; }
+  .section-header { margin-bottom: 16px !important; }
+
+  /* TRADINGVIEW */
+  .tradingview-widget-container { max-width: 100% !important; overflow: hidden !important; }
+
+  /* BUTTONS */
+  .btn-lg { padding: 14px 20px !important; font-size: 14px !important; }
+  .cta-btns { flex-direction: column !important; gap: 10px !important; }
+  .broker-cta-row .btn { flex: 1 1 45% !important; }
+
+  /* TABS */
+  .tabs-row { overflow-x: auto !important; -webkit-overflow-scrolling: touch !important; gap: 4px !important; padding: 4px !important; }
+  .tab-btn { font-size: 12px !important; padding: 8px 12px !important; }
+
+  /* COMPANY PAGE */
+  .co-header { flex-direction: column !important; gap: 14px !important; }
+  .co-name { font-size: 22px !important; }
+  .price-hero-box, .price-hero { width: 100% !important; min-width: unset !important; }
+  .ph-metrics { gap: 10px !important; }
+  .ph-metric-val { font-size: 13px !important; }
+
+  /* CHART */
+  #tvChartWrap { height: 260px !important; }
+  .chart-top { flex-direction: column !important; align-items: flex-start !important; gap: 8px !important; }
+
+  /* SCORE HERO */
+  .score-hero { flex-direction: column !important; gap: 16px !important; padding: 20px !important; }
+  .score-num { font-size: 48px !important; }
+  .score-breakdown { grid-template-columns: 1fr !important; }
+
+  /* FOOTER */
+  footer { flex-direction: column !important; gap: 16px !important; text-align: center !important; padding: 24px 20px !important; }
+  .footer-links { flex-wrap: wrap !important; justify-content: center !important; gap: 12px !important; }
+
+  /* MISC */
+  .month-grid { grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
+  .stats-band-inner { grid-template-columns: 1fr 1fr !important; gap: 16px !important; }
+  .stat-num { font-size: 26px !important; }
+  .section-inner { padding-left: 20px !important; padding-right: 20px !important; }
+  section { overflow-x: hidden; }
+  .ticker-bar { animation: none !important; }
+  .filters { flex-direction: column !important; gap: 10px !important; }
+  .filter-group { flex: 1 1 100% !important; }
+  .btn-reset { width: 100% !important; }
+  .stats-row { gap: 8px !important; }
+  .stat-pill { font-size: 12px !important; padding: 8px 12px !important; }
+  .blob { display: none !important; }
+  body::before { display: none !important; }
+  .reveal,.reveal-left,.reveal-right,.reveal-scale { animation-delay: 0.5s !important; }
+  .step-box { grid-template-columns: 36px 1fr !important; gap: 12px !important; }
+  .glosar-grid { grid-template-columns: 1fr !important; }
+  .broker-card { padding: 18px !important; }
+  .broker-score { font-size: 28px !important; }
+  .layout { grid-template-columns: 1fr !important; padding: 0 20px !important; }
+  .sim-grid { grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
+
+  /* Screener filters — force single column */
+  #screenerFilters, .filters {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+  #screenerFilters .filter-group,
+  .filters .filter-group {
+    width: 100% !important;
+    flex: none !important;
+  }
+  #screenerFilters .filter-input,
+  #screenerFilters .filter-select,
+  .filters .filter-input,
+  .filters .filter-select {
+    width: 100% !important;
+    font-size: 16px !important;
+  }
+  #screenerFilters .btn-reset,
+  .filters .btn-reset {
+    width: 100% !important;
+    margin-top: 4px !important;
+  }
+
+  body { overflow-x: hidden; }
+}
+
+/* ── PHONE (< 480px) ── */
+@media (max-width: 479px) {
+  html { font-size: 13px; }
+
+  .page-wrap, .co-page, .page {
+    padding-top: calc(var(--offset) + 8px) !important;
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+    padding-bottom: 40px !important;
+  }
+
+  nav { padding: 0 14px !important; }
+  .nav-logo { font-size: 16px !important; }
+
+  h1 { font-size: clamp(19px, 5vw, 26px) !important; }
+  h2 { font-size: clamp(15px, 4vw, 20px) !important; }
+
+  .co-name { font-size: 20px !important; }
+  .co-tags { gap: 5px !important; }
+  .co-tag { font-size: 9px !important; padding: 2px 7px !important; }
+
+  #tvChartWrap { height: 220px !important; }
+
+  .sim-grid { gap: 6px !important; }
+  .sim-card { padding: 10px !important; }
+  .sim-ticker { font-size: 13px !important; }
+
+  .ph-metrics { flex-direction: column !important; gap: 8px !important; }
+  .ph-metric { display: flex !important; justify-content: space-between !important; align-items: center !important; padding: 6px 0 !important; border-bottom: 1px solid var(--border) !important; }
+  .ph-metric:last-child { border-bottom: none !important; }
+
+  .hero-stats { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 12px !important; }
+
+  .score-hero { padding: 16px !important; }
+  .score-num { font-size: 40px !important; }
+
+  .telegram-card { padding: 18px !important; }
+  .telegram-icon { font-size: 32px !important; }
+
+  input, select, textarea { font-size: 16px !important; }
+}
+
+/* ── TABLET (768–1023px) ── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .grid-3 { grid-template-columns: 1fr 1fr !important; }
+  .grid-4 { grid-template-columns: 1fr 1fr !important; }
+  .layout-sidebar { grid-template-columns: 1fr 280px !important; }
+
+  .co-header { gap: 20px !important; }
+  .price-hero-box { min-width: 260px !important; }
+
+  nav { padding: 0 32px !important; }
+  .section-inner { padding: 0 32px !important; }
+  .page-wrap { padding-left: 32px !important; padding-right: 32px !important; }
+  .co-page { padding-left: 32px !important; padding-right: 32px !important; }
+
+  #screenerTableWrap { display: block !important; }
+  .stock-cards { display: none !important; }
+  .col-ytd { display: none !important; }
+}
+
+/* ── PRINT ── */
+@media print {
+  nav, .ticker-bar, .hamburger, .mobile-nav, footer, .btn { display: none !important; }
+  .page-wrap, .co-page { padding-top: 0 !important; }
+  body { background: white !important; color: black !important; }
+  .reveal, .reveal-left, .reveal-right, .reveal-scale { opacity: 1 !important; transform: none !important; }
+}
+
+/* ── ACCESSIBILITY ── */
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .reveal-left, .reveal-right, .reveal-scale {
+    opacity: 1 !important; transform: none !important; transition: none !important;
+  }
+  .blob { display: none !important; }
+  * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+/* ── H1/H2 RESPONSIVE ON ALL PAGES — catches inline style overrides ── */
+@media (max-width: 767px) {
+  h1 { font-size: clamp(20px, 5.5vw, 28px) !important; line-height: 1.2 !important; letter-spacing: 0 !important; }
+  h2 { font-size: clamp(17px, 4.5vw, 24px) !important; }
+  /* Any element with a fixed large font-size inline */
+  .page-header h1 { font-size: clamp(20px, 5.5vw, 28px) !important; }
+  /* Prevent btn white-space:nowrap from causing overflow */
+  .btn, .btn-primary, .btn-secondary, .btn-cta, .btn-sec {
+    white-space: normal !important;
+    max-width: 100% !important;
+  }
+  /* Nav: hide overflow gracefully */
+  nav { overflow: hidden !important; }
+}
+
+/* ── PHONE (< 390px) — ultra narrow screens ── */
+@media (max-width: 390px) {
+  h1 { font-size: 20px !important; }
+  .nav-logo { font-size: 15px !important; }
+  p, li { font-size: 14px !important; }
+}

@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+
+<html lang="ro">
+<head>
+<link href="favicon.svg" rel="icon" type="image/svg+xml"/>
+<link href="favicon.svg" rel="shortcut icon"/>
+<meta charset="utf-8"/>
+<style data-critical="true">
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+ --black: #080B0F;
+ --dark: #0D1117;
+ --card: #111820;
+ --card2: #141E28;
+ --border: #1E2A38;
+ --accent: #00D4FF;
+ --accent2: #00FF94;
+ --gold: #FFB800;
+ --red: #FF4D6D;
+ --text: #E8EDF2;
+ --muted: #6B7A8D;
+ --font-display: 'Plus Jakarta Sans', sans-serif;
+ --font-body: 'DM Sans', sans-serif;
+ --nav-h: 56px;
+ --ticker-h: 76px;
+ --offset: 132px; 
+}
+@media (min-width: 768px) {
+ :root {
+ --nav-h: 72px;
+ --offset: 148px;
+ }
+}
+html { scroll-behavior: smooth; font-size: 15px; }
+body {
+ background: var(--black);
+ color: var(--text);
+ font-family: var(--font-body);
+ line-height: 1.6;
+ overflow-x: hidden;
+ -webkit-font-smoothing: antialiased;
+ width: 100%;
+ max-width: 100vw;
+}
+body::before {
+ content: '';
+ position: fixed; inset: 0;
+ background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+ pointer-events: none; z-index: 0; opacity: 0.5;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+img { max-width: 100%; height: auto; display: block; }
+h1, h2, h3, h4 {
+ font-family: var(--font-display);
+ -webkit-font-smoothing: antialiased;
+ letter-spacing: -0.01em;
+ line-height: 1.18;
+}
+h1 { font-size: clamp(18px, 2vw, 28px); font-weight: 700; }
+h2 { font-size: clamp(18px, 2.5vw, 28px); font-weight: 700; }
+h3 { font-size: clamp(15px, 2vw, 20px); font-weight: 600; }
+h4 { font-size: 14px; font-weight: 700; }
+p { color: rgba(232,237,242,.82); line-height: 1.75; font-size: 15px; }
+nav {
+ position: fixed; top: 0; left: 0; right: 0;
+ z-index: 200;
+ height: var(--nav-h);
+ display: flex; align-items: center; justify-content: space-between;
+ padding: 0 20px;
+ background: rgba(8,11,15,0.92);
+ backdrop-filter: blur(24px);
+ border-bottom: 1px solid var(--border);
+}
+@media (min-width: 768px) { nav { padding: 0 48px; } }
+@media (min-width: 1280px) { nav { padding: 0 64px; } }
+.nav-logo {
+ font-family: var(--font-display);
+ font-size: 18px; font-weight: 800; letter-spacing: -0.02em;
+ color: var(--text); text-decoration: none;
+ display: flex; align-items: center; gap: 8px;
+ flex-shrink: 0;
+}
+@media (min-width: 768px) { .nav-logo { font-size: 22px; } }
+.nav-logo span { color: var(--accent); }
+.nav-logo:hover { text-decoration: none; }
+.nav-dot {
+ width: 8px; height: 8px;
+ background: var(--accent2); border-radius: 50%;
+ animation: pulse 2s ease-in-out infinite; flex-shrink: 0;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+.nav-links {
+ display: none;
+ align-items: center; gap: 28px; list-style: none;
+}
+@media (min-width: 768px) { .nav-links { display: flex; } }
+.nav-links a { color: var(--muted); font-size: 14px; font-weight: 500; transition: color .2s; text-decoration: none; }
+.nav-links a:hover { color: var(--text); }
+.nav-cta {
+ background: var(--accent) !important;
+ color: var(--black) !important;
+ padding: 9px 18px; border-radius: 6px;
+ font-weight: 700 !important; font-size: 13px !important;
+}
+.nav-cta:hover { opacity: .85; }
+.hamburger {
+ display: flex; flex-direction: column; gap: 5px;
+ background: none; border: none; cursor: pointer; padding: 6px;
+}
+@media (min-width: 768px) { .hamburger { display: none; } }
+.hamburger span {
+ display: block; width: 22px; height: 2px;
+ background: var(--text); border-radius: 2px;
+ transition: all .3s;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.mobile-nav {
+ display: none; position: fixed;
+ top: var(--nav-h); left: 0; right: 0;
+ background: rgba(8,11,15,.98);
+ border-bottom: 1px solid var(--border);
+ z-index: 199; flex-direction: column;
+ padding: 8px 0 16px;
+ transform: translateY(-10px); opacity: 0;
+ transition: transform .25s, opacity .25s;
+}
+.mobile-nav.open {
+ display: flex; transform: translateY(0); opacity: 1;
+}
+.mobile-nav a {
+ display: block; padding: 14px 24px;
+ color: var(--text); font-size: 15px; font-weight: 500;
+ border-bottom: 1px solid rgba(30,42,56,.5);
+ text-decoration: none; transition: background .15s;
+}
+.mobile-nav a:last-child { border-bottom: none; }
+.mobile-nav a:hover { background: rgba(0,212,255,.05); }
+.mobile-nav .mobile-cta {
+ margin: 12px 24px 0;
+ background: var(--accent); color: var(--black) !important;
+ border-radius: 8px; text-align: center; font-weight: 700 !important;
+ border-bottom: none !important;
+}
+.ticker-bar {
+ position: sticky;
+ top: var(--nav-h);
+ z-index: 150;
+ height: var(--ticker-h);
+ background: rgba(8,11,15,.98);
+ border-bottom: 1px solid var(--border);
+ overflow: hidden;
+}
+.ticker-bar .tradingview-widget-container,
+.ticker-bar .tradingview-widget-container__widget { height: 100% !important; }
+.section-inner { max-width: 1280px; margin: 0 auto; padding: 0 20px; }
+.reveal,.reveal-left,.reveal-right,.reveal-scale{
+ opacity:0;
+ transition:opacity .65s cubic-bezier(.4,0,.2,1),transform .65s cubic-bezier(.4,0,.2,1);
+ will-change:opacity,transform;
+}
+.reveal{transform:translateY(28px)}
+.reveal-left{transform:translateX(-28px)}
+.reveal-right{transform:translateX(28px)}
+.reveal-scale{transform:scale(.96)}
+.reveal.visible,.reveal-left.visible,.reveal-right.visible,.reveal-scale.visible{
+ opacity:1;transform:none;
+}
+@keyframes forceVisible { to { opacity: 1; tran
+.btn {
+ display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+ font-family: var(--font-display); font-weight: 700;
+ border-radius: 8px; cursor: pointer;
+ text-decoration: none; transition: opacity .2s, transform .15s;
+ white-space: nowrap;
+}
+.btn:hover { opacity: .85; transform: translateY(-1px); text-decoration: none; }
+.btn:active { transform: translateY(0); }
+.btn-primary { background: var(--accent); color: var(--black); padding: 13px 24px; font-size: 14px; }
+.btn-secondary { background: rgba(0,212,255,.1); border: 1px solid rgba(0,212,255,.25); color: var(--accent); padding: 12px 22px; font-size: 14px; }
+.btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 11px 20px; font-size: 13px; }
+.btn-ghost:hover { border-color: var(--text); color: var(--text); }
+.btn-green { background: rgba(0,255,148,.1); border: 1px solid rgba(0,255,148,.25); color: var(--accent2); padding: 12px 22px; font-size: 14px; }
+.btn-full { width: 100%; }
+.btn-sm { padding: 8px 14px; font-size: 12px; }
+.btn-lg { padding: 16px 32px; font-size: 16px; }
+</style>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Glosar Termeni Investiții BVB — Dicționar Complet | GhidBursa.ro</title>
+<meta name="description" content="Glosar termeni bursieri pentru investitori la BVB: P/E, dividend yield, capitalizare, short selling și 50+ alți termeni explicați simplu."/>
+
+<style>
+ *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ :root { --black: #080B0F; --card: #111820; --border: #1E2A38; --accent: #00D4FF; --accent2: #00FF94; --gold: #FFB800; --text: #E8EDF2; --muted: #6B7A8D; --font-display: 'Plus Jakarta Sans', sans-serif; --font-body: 'DM Sans', sans-serif; }
+ body { background: var(--black); color: var(--text); font-family: var(--font-body); font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 18px 60px; background: rgba(8,11,15,0.92); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+ .nav-logo { font-family: var(--font-display); font-size: 20px; font-weight: 700; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+ .nav-logo span { color: var(--accent); }
+ .nav-dot { width: 7px; height: 7px; background: var(--accent2); border-radius: 50%; animation: pulse 2s ease-in-out infinite; flex-shrink:0; }
+ @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+ .nav-links { display: flex; align-items: center; gap: 28px; list-style: none; }@media(min-width:768px) and (max-width:1100px){.nav-links{gap:16px!important}.nav-links a{font-size:13px!important}.nav-cta{padding:7px 12px!important;font-size:12px!important}}
+ .nav-links a { color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 500; transition: color 0.2s; }
+ .nav-links a:hover { color: var(--text); }
+ .nav-cta { background: var(--accent) !important; color: var(--black) !important; padding: 9px 18px; border-radius: 6px; font-weight: 600 !important; }
+
+ .layout{max-width:1100px;margin:0 auto;padding:calc(var(--offset)+10px) 20px 60px;display:grid;grid-template-columns:1fr;gap:16px;align-items:start}@media(min-width:768px){.layout{padding:calc(var(--offset)+10px) 40px 80px 80px;grid-template-columns:220px 1fr;gap:48px}}
+
+ /* SIDEBAR ALPHABET NAV */
+ .alpha-nav { position: sticky; top: 100px; }
+ .alpha-nav h4 { font-family: var(--font-display); font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; -webkit-font-smoothing: antialiased; }
+ .alpha-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-bottom: 28px; }
+ .alpha-btn { background: var(--card); border: 1px solid var(--border); color: var(--muted); font-size: 13px; font-weight: 700; padding: 8px; border-radius: 6px; cursor: pointer; text-align: center; text-decoration: none; transition: all 0.2s; font-family: var(--font-display); -webkit-font-smoothing: antialiased; }
+ .alpha-btn:hover { border-color: var(--accent); color: var(--accent); }
+ .alpha-btn.has-items { color: var(--text); }
+ .search-wrap { margin-bottom: 16px; }
+ .glosar-search { width: 100%; background: var(--card); border: 1px solid var(--border); color: var(--text); font-family: var(--font-body); font-size: 13px; padding: 10px 14px; border-radius: 8px; outline: none; }
+ .glosar-search:focus { border-color: var(--accent); }
+ .sidebar-links { display: flex; flex-direction: column; gap: 8px; }
+ .sidebar-links a { font-size: 13px; color: var(--muted); text-decoration: none; padding: 8px 12px; background: var(--card); border: 1px solid var(--border); border-radius: 8px; transition: all 0.2s; }
+ .sidebar-links a:hover { border-color: var(--accent); color: var(--accent); }
+
+ /* MAIN CONTENT */
+ .main-header { margin-bottom: 48px; }
+ .main-header h1 { font-family: var(--font-display); font-size: 40px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 10px; -webkit-font-smoothing: antialiased; }
+ .main-header p { font-size: 16px; color: var(--muted); }
+
+ .letter-section { margin-bottom: 48px; }
+ .letter-heading { font-family: var(--font-display); font-size: 32px; font-weight: 700; color: var(--accent); margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid var(--border); -webkit-font-smoothing: antialiased; }
+ .term-list { display: flex; flex-direction: column; gap: 1px; }
+ .term-item { background: var(--card); border-radius: 0; padding: 20px 24px; border-bottom: 1px solid var(--border); transition: background 0.15s; }
+ .term-item:first-child { border-radius: 12px 12px 0 0; }
+ .term-item:last-child { border-radius: 0 0 12px 12px; border-bottom: none; }
+ .term-item:only-child { border-radius: 12px; border-bottom: none; }
+ .term-item:hover { background: #141E2A; }
+ .term-item.hidden { display: none; }
+ .term-name { font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 8px; -webkit-font-smoothing: antialiased; }
+ .term-name .term-en { font-size: 13px; color: var(--muted); font-weight: 400; margin-left: 8px; font-family: var(--font-body); }
+ .term-def { font-size: 14px; color: rgba(232,237,242,0.8); line-height: 1.7; }
+ .term-def strong { color: var(--text); }
+ .term-example { margin-top: 8px; font-size: 13px; color: var(--muted); font-style: italic; border-left: 2px solid var(--border); padding-left: 12px; }
+
+ .no-results-glosar { text-align: center; padding: 48px; color: var(--muted); display: none; }
+ .no-results-glosar.show { display: block; }
+
+ footer { border-top: 1px solid var(--border); padding: 32px 40px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--muted); }
+ footer a { color: var(--muted); text-decoration: none; }
+ footer a:hover { color: var(--accent); }
+</style>
+<link href="shared.css?v=12" rel="stylesheet"/>
+<link href="mobile.css?v=12" rel="stylesheet"/>
+<link href="https://www.ghidbursa.ro/glosar.html" rel="canonical"/>
+<meta content="website" property="og:type"/>
+<meta content="Glosar Termeni Investiții BVB — Dicționar Complet | GhidBursa.ro" property="og:title"/>
+<meta content="Glosar complet de termeni financiari și de investiții în română. De la acțiune la yield, explicat simplu pentru investitorii la BVB." property="og:description"/>
+<meta content="https://www.ghidbursa.ro/glosar.html" property="og:url"/>
+<meta content="GhidBursa.ro" property="og:site_name"/>
+<meta content="summary" name="twitter:card"/>
+<meta content="Glosar Termeni Investiții BVB — Dicționar Complet | GhidBursa.ro" name="twitter:title"/>
+<meta content="Glosar complet de termeni financiari și de investiții în română. De la acțiune la yield, explicat simplu pentru investitorii la BVB." name="twitter:description"/>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","name":"Glosar Termeni Investiții BVB — Dicționar Complet | GhidBursa.ro","description":"Glosar complet de termeni financiari și de investiții în română. De la acțiune la yield, explicat simplu pentru investitorii la BVB.","url":"https://www.ghidbursa.ro/glosar.html","isPartOf":{"@type":"WebSite","name":"GhidBursa.ro","url":"https://www.ghidbursa.ro"}}
+</script>
+<meta property="og:image" content="https://www.ghidbursa.ro/og-image.png"/>
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta property="og:locale" content="ro_RO"/>
+  <meta property="og:site_name" content="GhidBursa.ro"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="@GhidBursa"/>
+  <meta name="twitter:image" content="https://www.ghidbursa.ro/og-image.png"/>
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"/>
+  <meta name="author" content="GhidBursa.ro"/>
+  <meta http-equiv="content-language" content="ro"/>
+  <meta name="theme-color" content="#080B0F"/>
+  <link rel="dns-prefetch" href="//s3.tradingview.com"/>
+    <link rel="stylesheet" href="/fonts/fonts.css"/>
+<link rel="preload" href="/fonts/plus-jakarta-sans-700.woff2" as="font" type="font/woff2" crossorigin="anonymous" fetchpriority="high"/>
+<link rel="stylesheet" href="/cookie-consent.css"/>
+</head>
+<body class="no-ticker">
+<nav>
+<a class="nav-logo" href="index.html"><div class="nav-dot"></div>Ghid<span>Bursa</span>.ro</a>
+<ul class="nav-links">
+<li><a href="brokeri.html">Brokeri</a></li>
+<li><a href="ghiduri.html">Ghiduri</a></li>
+<li><a href="screener.html">Screener BVB</a></li>
+<li><a href="calculatoare.html">Calculatoare</a></li>
+<li><a href="newsletter.html">Newsletter</a></li>
+<li><a class="nav-cta" href="brokeri.html">Compară brokeri →</a></li>
+</ul>
+<button aria-label="Meniu" class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
+</nav>
+<div class="mobile-nav" id="mobileNav">
+<a href="index.html">Acasă</a>
+<a href="brokeri.html">Brokeri</a>
+<a href="ghiduri.html">Ghiduri</a>
+<a href="screener.html">Screener BVB</a>
+<a href="calculatoare.html">Calculatoare</a>
+<a href="newsletter.html">Newsletter</a>
+<a href="fear-greed.html">Sentiment BVB</a>
+<a href="fidelis-2025.html">Fidelis 2026</a>
+<a href="glosar.html">Glosar</a>
+<a href="despre-noi.html">Contact</a>
+<a class="mobile-cta" href="brokeri.html">Compară brokeri →</a>
+</div>
+<div class="layout">
+<aside class="alpha-nav">
+<h4>Caută termen</h4>
+<div class="search-wrap">
+<input class="glosar-search" id="glosarSearch" oninput="searchGlosar(this.value)" placeholder="Caută..." type="text"/>
+</div>
+<h4>Salt la litera</h4>
+<div class="alpha-grid" id="alphaGrid"></div>
+<div class="sidebar-links">
+<a href="cum-investesti-bvb.html">Ghid investiții BVB</a>
+<a href="screener.html">Screener BVB</a>
+<a href="dividende-bvb-2025.html">Top dividende</a>
+</div>
+</aside>
+<main>
+<div class="main-header">
+<div class="breadcrumb"><a href="index.html">Acasă</a> › <span>Glosar Financiar</span></div>
+<h1>Ce înseamnă, de fapt, toți termenii ăia.</h1>
+<p>Toți termenii financiari pe care îi vei întâlni când investești la Bursa de Valori București, explicați în română fără jargon inutil.</p>
+</div>
+<div id="glosarContent"></div>
+<div class="no-results-glosar" id="noResultsGlosar">
+<h3 style="font-family:var(--font-display);font-size:20px;margin-bottom:8px">Niciun termen găsit</h3>
+<p>Încearcă alt cuvânt cheie.</p>
+</div>
+</main>
+</div>
+<footer>
+<a href="index.html" style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:16px;color:var(--text)">Ghid<span style="color:var(--accent)">Bursa</span>.ro</a>
+<div class="footer-links">
+      <a href="unsubscribe.html">Dezabonare newsletter</a>
+<a href="brokeri.html">Brokeri</a>
+<a href="ghiduri.html">Ghiduri</a>
+<a href="screener.html">Screener BVB</a>
+<a href="calculatoare.html">Calculatoare</a>
+<a href="newsletter.html">Newsletter</a>
+<a href="fear-greed.html">Sentiment BVB</a>
+<a href="calendar-dividende.html">Dividende</a>
+<a href="glosar.html">Glosar</a>
+<a href="legal.html#termeni">Termeni</a>
+<a href="legal.html#disclaimer">Disclaimer</a>
+<a href="despre-noi.html">Contact</a>
+</div>
+<span>© 2026 GhidBursa.ro</span>
+<p class="footer-disclaimer">Investițiile implică riscuri. Conținutul GhidBursa.ro este informativ și nu constituie consultanță financiară. Verificați toate informațiile înainte de a lua decizii de investiție.</p>
+</footer>
+<script>
+const terms = [
+ { letter:'A', name:'Acțiune', en:'Share / Stock', def:'Un titlu de valoare care reprezintă o fracțiune din capitalul social al unei companii. Deținătorul unei acțiuni devine coproprietar al companiei și are drept la dividende și la vot în Adunarea Generală a Acționarilor.', example:'Dacă cumperi 100 de acțiuni SNP (Petrom), deții o mică parte din cea mai mare companie de pe BVB.' },
+ { letter:'A', name:'AeRO', en:'Alternative Exchange in Romania', def:'Segmentul alternativ de tranzacționare al BVB, destinat companiilor mici și mijlocii. Cerințele de listare sunt mai relaxate față de piața principală, dar lichiditarea este de regulă mai mică.', example:'Companii ca Aquila, Smartree sau Vector PE sunt listate pe AeRO.' },
+ { letter:'A', name:'ASF', en:'Romanian Financial Supervisory Authority', def:'Autoritatea de Supraveghere Financiară — autoritatea de reglementare a pieței de capital din România. Autorizează și supraveghează brokerii, fondurile de investiții și alte entități din piața financiară.', example:'Când deschizi un cont la XTB, brokerul este autorizat și supravegheat de ASF.' },
+ { letter:'B', name:'BET', en:'Bucharest Exchange Trading', def:'Indicele principal al BVB, calculat din 1997, care urmărește performanța celor mai lichide 20 de companii listate pe piața reglementată. Este benchmark-ul principal pentru piața românească.', example:'Dacă BET crește cu 5%, înseamnă că în medie companiile mari de pe BVB au crescut cu 5%.' },
+ { letter:'B', name:'BVB', en:'Bucharest Stock Exchange (Bursa de Valori București)', def:'Piața de capital a României, înființată în 1995. Locul unde se tranzacționează acțiuni, obligațiuni, ETF-uri și alte instrumente financiare ale companiilor românești.', example:'Petrom, Banca Transilvania, Hidroelectrica sunt listate la BVB.' },
+ { letter:'B', name:'Broker', en:'Broker / Intermediary', def:'Firma autorizată care execută ordinele de cumpărare și vânzare ale investitorilor la bursă. Nu poți cumpăra acțiuni direct de pe BVB — ai nevoie de un broker intermediar (XTB, Trading 212, eToro etc.)', example:'XTB este brokerul tău — tu îi dai instrucțiunea să cumpere 100 acțiuni SNP, el execută ordinul la BVB.' },
+ { letter:'C', name:'Capitalizare bursieră', en:'Market Capitalization', def:'Valoarea totală de piață a tuturor acțiunilor emise de o companie. Se calculează ca: Preț acțiune × Număr total acțiuni emise. Indică dimensiunea companiei pe piața de capital.', example:'Hidroelectrica are o capitalizare de ~60 miliarde RON — este cea mai mare companie de pe BVB.' },
+ { letter:'C', name:'Comision de tranzacționare', en:'Trading Commission / Brokerage Fee', def:'Taxa percepută de broker pentru executarea unui ordin de cumpărare sau vânzare. Poate fi exprimat ca procent din valoarea tranzacției sau ca sumă fixă per ordin.', example:'XTB percepe 0.40% + €0.30 per ordin. La o cumpărare de 5.000 RON, comisionul e ~21 RON.' },
+ { letter:'C', name:'CFD', en:'Contract for Difference', def:'Instrument financiar derivat prin care câștigi sau pierzi diferența de preț a unui activ fără să deții efectiv activul. CFD-urile implică levier și risc ridicat — nu sunt recomandate începătorilor.', example:'La eToro poți tranzacționa CFD pe acțiunile Tesla. Câștigi dacă prețul crește, pierzi dacă scade, fără să deții acțiunea reală.' },
+ { letter:'C', name:'Copy Trading', en:'Copy Trading', def:'Funcție oferită de unii brokeri (eToro) prin care copiezi automat fiecare tranzacție a unui alt investitor. Dacă el cumpără, și tu cumperi proporțional. Dacă el vinde, și tu vinzi.', example:'Aloci 1.000 EUR pentru a copia un investitor cu randament de 25% pe an. El face 5% din portofoliu într-o tranzacție → și tu faci automat 5% × 1.000 EUR = 50 EUR.' },
+ { letter:'D', name:'DCA (Dollar Cost Averaging)', en:'Dollar Cost Averaging', def:'Strategia de a investi o sumă fixă la intervale regulate (lunar, trimestrial), indiferent de prețul curent. Când piața e sus cumperi mai puțin, când e jos cumperi mai mult. Pe termen lung, costul mediu devine mai favorabil.', example:'Investești 500 RON în ETF BET în fiecare lună timp de 10 ani, indiferent dacă piața crește sau scade.' },
+ { letter:'D', name:'Dividend', en:'Dividend', def:'O parte din profitul companiei distribuită acționarilor. De regulă plătit anual sau semianual. Exprimat ca sumă pe acțiune sau ca randament (procent din prețul acțiunii).', example:'Transgaz a plătit ~37 RON per acțiune dividend în 2024 — pentru 100 de acțiuni ai primit 3.700 RON cash.' },
+ { letter:'E', name:'ETF', en:'Exchange Traded Fund', def:'Un fond de investiții tranzacționat la bursă ca o acțiune normală. Un ETF "replicator" urmărește un indice (ex: BET, S&P 500) investind în toate companiile din index proporțional. Oferă diversificare instantă la cost redus.', example:'ETF BET Patria (TVBETETF) cumpărând o singură "acțiune" investești în toate cele 20 companii din indicele BET.' },
+ { letter:'F', name:'Free float', en:'Free Float', def:'Procentul din acțiunile unei companii disponibil tranzacționării libere pe bursă. Acțiunile deținute de acționarii majori stabili (stat, fondatori) nu intră în free float.', example:'Dacă statul deține 80% din acțiunile Hidroelectrica, free float-ul este de ~20% — relativ mic, ceea ce poate face acțiunea mai puțin lichidă.' },
+ { letter:'F', name:'Fidelis', en:'Fidelis', def:'Program de titluri de stat emise de Statul Român, disponibile retail prin brokeri și bănci. Oferă dobânzi fixe (5-7% în RON, 4-5% în EUR), garanție suverană și impozit 0%. Una din cele mai bune modalități de economisire în România.', example:'Cumperi titluri Fidelis RON cu dobândă 6%/an. La 10.000 RON investiți, primești 600 RON dobândă anuală, fără impozit.' },
+ { letter:'I', name:'IRIS BVB', en:'IRIS — Issuers Reporting System', def:'Sistemul de raportare al BVB unde companiile listate publică rapoarte financiare, declarații, hotărâri AGA și alte informații obligatorii. Accesibil gratuit la iris.bvb.ro.', example:'Înainte de a investi în TLV, citești pe IRIS raportul anual al Băncii Transilvania pentru a înțelege situația financiară.' },
+ { letter:'L', name:'Lichiditate', en:'Liquidity', def:'Ușurința cu care un instrument financiar poate fi cumpărat sau vândut la prețul dorit, fără a mișca semnificativ prețul pieței. Acțiunile cu volum mare de tranzacționare sunt mai lichide.', example:'SNP (Petrom) e foarte lichid — poți cumpăra sau vinde milioane de RON instantaneu. O acțiune AeRO mică poate fi greu de vândut rapid.' },
+ { letter:'O', name:'Ordin limitat', en:'Limit Order', def:'Ordin de cumpărare sau vânzare în care specifici prețul maxim pe care ești dispus să-l plătești (la cumpărare) sau prețul minim pe care îl accepți (la vânzare). Ordinul nu se execută dacă prețul pieței nu atinge nivelul specificat.', example:'Plasezi un ordin limitat de cumpărare pe SNP la 0.55 RON. Ordinul se execută doar dacă prețul scade la sau sub 0.55 RON.' },
+ { letter:'O', name:'Ordin la piață', en:'Market Order', def:'Ordin de cumpărare sau vânzare executat imediat la cel mai bun preț disponibil pe piață. Nu specifici un preț — ordinul se execută instant indiferent de prețul curent.', example:'Plasezi un ordin la piață pentru 100 acțiuni TLV → se execută imediat la prețul curent de ~21.40 RON.' },
+ { letter:'P', name:'P/E (Price to Earnings)', en:'Price to Earnings Ratio', def:'Raportul dintre prețul unei acțiuni și profitul per acțiune. Indică de câte ori plătești profitul anual al companiei. Un P/E mic (sub 10) sugerează o acțiune ieftină relativ la profitabilitate.', example:'SNP are P/E de ~5x. La prețul actual, plătești 5 ani de profit pentru a deține acțiunea. Multe companii globale au P/E de 20-30x.' },
+ { letter:'P', name:'Portofoliu', en:'Portfolio', def:'Ansamblul tuturor investițiilor deținute de un investitor. Un portofoliu bine diversificat include mai multe tipuri de instrumente (acțiuni, obligațiuni, ETF-uri) și mai multe sectoare economice.', example:'Portofoliu echilibrat: 40% SNP+TLV+BRD, 30% ETF BET, 20% Fidelis RON, 10% obligațiuni.' },
+ { letter:'R', name:'Randament dividend', en:'Dividend Yield', def:'Raportul dintre dividendul anual plătit și prețul curent al acțiunii, exprimat procentual. Indică cât câștigi anual din dividende raportat la investiția ta.', example:'TGN plătește 37 RON dividend, acțiunea costă 380 RON → randament = 37/380 = 9.7%' },
+ { letter:'S', name:'Stop-loss', en:'Stop-Loss Order', def:'Ordin automat de vânzare plasat la un preț sub cel curent, pentru a limita pierderea maximă. Dacă prețul scade la nivelul stop-loss, acțiunile se vând automat.', example:'Cumperi SNP la 0.60 RON și plasezi stop-loss la 0.50 RON. Dacă prețul scade la 0.50, brokerul vinde automat, limitând pierderea la ~17%.' },
+ { letter:'T', name:'Titluri de stat', en:'Government Bonds / Treasury Securities', def:'Instrumente de datorie emise de Statul Român. Statul împrumută bani de la cetățeni și plătește dobândă. Cel mai sigur instrument de investiție disponibil în România — garantat de stat.', example:'Titlurile de stat Fidelis sunt o formă de titluri de stat disponibilă retail, cu dobânzi de 5-7% în RON.' },
+ { letter:'V', name:'Volatilitate', en:'Volatility', def:'Măsura fluctuațiilor de preț ale unui instrument financiar pe o perioadă de timp. Un activ volatil înregistrează variații mari de preț (în sus și în jos). Risc mai mare, dar și potențial de câștig mai mare.', example:'BTC (Bitcoin) e foarte volatil — poate crește sau scădea 20% într-o zi. O acțiune BVB mare ca SNP e mult mai stabilă.' },
+ { letter:'Y', name:'Yield', en:'Yield', def:'Randamentul generat de un instrument financiar, exprimat ca procent din valoarea investiției. Poate fi calculat pentru dividende (dividend yield), dobânzi (yield obligațiune) sau câștiguri totale.', example:'Dacă investești 10.000 RON în Fidelis cu dobândă 6%, yield-ul tău este 6% = 600 RON pe an.' },
+];
+
+// Group by letter
+const byLetter = {};
+terms.forEach(t => {
+ if (!byLetter[t.letter]) byLetter[t.letter] = [];
+ byLetter[t.letter].push(t);
+});
+
+function renderGlosar(filter = '') {
+ const container = document.getElementById('glosarContent');
+ const lc = filter.toLowerCase();
+ let totalVisible = 0;
+
+ container.innerHTML = '';
+ Object.keys(byLetter).sort().forEach(letter => {
+  const filtered = byLetter[letter].filter(t =>
+   !filter || t.name.toLowerCase().includes(lc) || t.def.toLowerCase().includes(lc)
+  );
+  if (!filtered.length) return;
+  totalVisible += filtered.length;
+
+  const section = document.createElement('div');
+  section.className = 'letter-section';
+  section.id = 'letter-' + letter;
+  section.innerHTML = `<div class="letter-heading reveal">${letter}</div><div class="term-list">` +
+   filtered.map((t, i) => `
+    <div class="term-item reveal delay-${i % 4}">
+     <div class="term-name">${t.name}<span class="term-en">${t.en}</span></div>
+     <div class="term-def">${t.def}</div>
+     ${t.example ? `<div class="term-example">Exemplu: ${t.example}</div>` : ''}
+    </div>
+   `).join('') +
+   '</div>';
+  container.appendChild(section);
+ });
+
+ document.getElementById('noResultsGlosar').classList.toggle('show', totalVisible === 0);
+  // Re-init reveal for dynamically added elements
+  setTimeout(function() {
+    if (window._revealIO) window._revealIO.disconnect();
+    var els = container.querySelectorAll('.reveal');
+    var io = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+    }, { threshold: 0.05, rootMargin: '0px 0px -20px 0px' });
+    els.forEach(function(el) { io.observe(el); });
+    window._revealIO = io;
+  }, 50);
+
+ // Build alpha nav
+ const alphaGrid = document.getElementById('alphaGrid');
+ alphaGrid.innerHTML = '';
+ 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(l => {
+  if (!byLetter[l]) return;
+  const a = document.createElement('a');
+  a.href = '#letter-' + l;
+  a.className = 'alpha-btn has-items';
+  a.textContent = l;
+  alphaGrid.appendChild(a);
+ });
+}
+
+function searchGlosar(val) {
+ renderGlosar(val);
+}
+
+renderGlosar();
+</script>
+<script defer="" src="shared.js"></script>
+<script defer src="/cookie-consent.js"></script>
+</body>
+</html>
